@@ -25,6 +25,7 @@ if(!$posts){
     <!-- SIDEBAR -->
     <aside class="sidebar">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <div class="logo">🏛️</div>
 
         <a href="dashboard.php">Dashboard</a>
@@ -33,6 +34,8 @@ if(!$posts){
         <a href="procurement.php">Procurement</a>
         <a href="../logout.php">Logout</a>
 =======
+=======
+>>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 
         <div class="logo">🏛️</div>
 
@@ -42,6 +45,9 @@ if(!$posts){
         <a href="procurement.php" class="active">Procurement</a>
         <a href="../logout.php">Logout</a>
 
+<<<<<<< HEAD
+>>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
+=======
 >>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
     </aside>
 

@@ -27,8 +27,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     header("Location: jobs.php?success=1");
     exit();
+=======
+    echo "SUCCESS INSERTED"; // temporary test
+>>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 =======
     echo "SUCCESS INSERTED"; // temporary test
 >>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539

@@ -268,7 +268,10 @@ body {
         <a href="#" class="active">Jobs</a>
         <a href="applicants.php">Applicants</a>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <a href="procurement.php">Procurement</a>
+=======
+>>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 =======
 >>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
         <a href="../logout.php">Logout</a>

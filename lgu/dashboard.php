@@ -4,12 +4,15 @@ include '../config/db.php';
 
 $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 if(isset($_GET['success'])): ?>
 <script>
 alert("✅ Job posted successfully!");
 </script>
 
+=======
+>>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 =======
 >>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 ?>
