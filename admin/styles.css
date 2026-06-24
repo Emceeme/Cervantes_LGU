@@ -1,0 +1,302 @@
+/* =========================
+   RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a, #1e293b, #2563eb);
+    overflow-x: hidden;
+}
+
+/* BLUR EFFECT */
+.bg-blur {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -1;
+}
+
+.blur1 {
+    width: 350px;
+    height: 350px;
+    background: #3b82f6;
+    top: -100px;
+    left: -100px;
+}
+
+.blur2 {
+    width: 450px;
+    height: 450px;
+    background: #8b5cf6;
+    bottom: -150px;
+    right: -150px;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    width: 260px;
+    padding: 30px 20px;
+
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(25px);
+
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.logo {
+    font-size: 50px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.menu-btn {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+
+    text-align: center;
+    text-decoration: none;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.12);
+    color: white;
+
+    transition: 0.3s;
+}
+
+.menu-btn:hover {
+    transform: translateX(6px);
+    background: rgba(255,255,255,0.22);
+}
+
+.menu-btn.active {
+    background: white;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.menu-btn.logout {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.menu-btn.logout:hover {
+    background: rgba(239, 68, 68, 0.4);
+}
+
+/* =========================
+   MAIN
+========================= */
+.main-content {
+    flex: 1;
+    padding: 40px;
+}
+
+.top-bar h2 {
+    color: white;
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+
+    padding: 25px;
+    margin-bottom: 20px;
+
+    color: white;
+}
+
+.muted {
+    color: rgba(255,255,255,0.7);
+    margin-top: 5px;
+}
+
+/* =========================
+   FORM HEADER
+========================= */
+.form-header h3 {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.form-header p {
+    font-size: 14px;
+}
+
+/* =========================
+   FORM GRID (FIXED CLEAN)
+========================= */
+.form-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* INPUT BOX */
+.input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-box label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+}
+
+/* INPUT */
+.input-box input {
+    padding: 14px;
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.12);
+
+    color: white;
+    outline: none;
+
+    transition: 0.3s;
+}
+
+.input-box input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.input-box input:focus {
+    border: 1px solid #60a5fa;
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-1px);
+}
+
+/* FULL WIDTH */
+.full {
+    grid-column: span 2;
+}
+
+/* BUTTON */
+.btn-primary {
+    grid-column: span 2;
+
+    padding: 14px;
+    border-radius: 12px;
+
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #ffffff, #e5e7eb);
+    color: #1d4ed8;
+
+    font-weight: 600;
+    font-size: 15px;
+
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+}
+
+/* =========================
+   TABLE STYLE
+========================= */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.table thead {
+    background: rgba(255,255,255,0.2);
+}
+
+.table th,
+.table td {
+    padding: 14px;
+    text-align: left;
+    color: white;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: 0.2s;
+}
+
+.table tbody tr:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* delete button */
+.btn-danger {
+    background: rgba(239, 68, 68, 0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.5);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+    }
+
+    .menu-btn {
+        min-width: 140px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full,
+    .btn-primary {
+        grid-column: span 1;
+    }
+}
