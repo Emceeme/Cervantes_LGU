@@ -3,18 +3,6 @@ session_start();
 include '../config/db.php';
 
 $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-if(isset($_GET['success'])): ?>
-<script>
-alert("✅ Job posted successfully!");
-</script>
-
-=======
->>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
-=======
->>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +15,12 @@ alert("✅ Job posted successfully!");
 
 <body>
 
+<?php if(isset($_GET['success'])): ?>
+<div id="successPopup" class="success-popup">
+    Job posted successfully!
+</div>
+<?php endif; ?>
+
 <div class="bg-blur blur1"></div>
 <div class="bg-blur blur2"></div>
 
@@ -37,24 +31,21 @@ alert("✅ Job posted successfully!");
         <div class="logo">🏛️</div>
 
         <a href="dashboard.php">Dashboard</a>
-        <a href="#" class="active">Jobs</a>
         <a href="applicants.php">Applicants</a>
         <a href="procurement.php">Procurement</a>
+        <a href="newsfeed.php">News Feed</a>
         <a href="../logout.php">Logout</a>
     </aside>
 
     <!-- MAIN -->
     <main class="main-content">
 
-        <!-- HEADER -->
         <div class="top-bar">
             <h2>Job Management</h2>
         </div>
 
-        <!-- ADD BUTTON -->
         <button id="openModal" class="add-btn">+</button>
 
-        <!-- JOB TABLE -->
         <section class="card">
 
             <h3>Posted Jobs</h3>
@@ -75,28 +66,30 @@ alert("✅ Job posted successfully!");
 
                 <tbody>
 
-                <?php while($row = $jobs->fetch_assoc()) { ?>
+                <?php while($row = $jobs->fetch_assoc()): ?>
 
-                    <tr>
-                        <td><?php echo $row['job_title']; ?></td>
-                        <td><?php echo $row['department']; ?></td>
-                        <td><?php echo $row['employment_type']; ?></td>
-                        <td><?php echo $row['salary']; ?></td>
-                        <td>
-                            <span class="status">
-                                <?php echo $row['status']; ?>
-                            </span>
-                        </td>
-                        <td>
-                            <a class="btn-danger"
-                               href="delete_job.php?id=<?php echo $row['id']; ?>"
-                               onclick="return confirm('Delete this job?')">
-                               Delete
-                            </a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><?= htmlspecialchars($row['job_title']) ?></td>
+                    <td><?= htmlspecialchars($row['department']) ?></td>
+                    <td><?= htmlspecialchars($row['employment_type']) ?></td>
+                    <td><?= htmlspecialchars($row['salary']) ?></td>
 
-                <?php } ?>
+                    <td>
+                        <span class="status">
+                            <?= htmlspecialchars($row['status']) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <a class="btn-danger"
+                           href="../handler/delete_job.php?id=<?= $row['id'] ?>"
+                           onclick="return confirm('Delete this job?')">
+                           Delete
+                        </a>
+                    </td>
+                </tr>
+
+                <?php endwhile; ?>
 
                 </tbody>
 
@@ -117,17 +110,19 @@ alert("✅ Job posted successfully!");
 
         <h2>Create Job Posting</h2>
 
-        <form action="post_job.php" method="POST">
+        <!-- FIXED PATH -->
+        <form action="../handler/post_job.php" method="POST">
 
             <input type="text" name="job_title" placeholder="Job Title" required>
 
             <input type="text" name="department" placeholder="Department" required>
 
             <select name="employment_type" required>
-                <option>Permanent</option>
-                <option>Contractual</option>
-                <option>Job Order</option>
-                <option>Part-Time</option>
+                <option value="">Select Employment Type</option>
+                <option value="Permanent">Permanent</option>
+                <option value="Contractual">Contractual</option>
+                <option value="Job Order">Job Order</option>
+                <option value="Part-Time">Part-Time</option>
             </select>
 
             <input type="text" name="salary" placeholder="Salary">
@@ -151,14 +146,29 @@ const modal = document.getElementById("jobModal");
 const openBtn = document.getElementById("openModal");
 const closeBtn = document.getElementById("closeModal");
 
-openBtn.onclick = () => modal.style.display = "flex";
-closeBtn.onclick = () => modal.style.display = "none";
+openBtn.onclick = () => {
+    modal.style.display = "flex";
+};
+
+closeBtn.onclick = () => {
+    modal.style.display = "none";
+};
 
 window.onclick = (e) => {
     if(e.target === modal){
         modal.style.display = "none";
     }
 };
+
+// success popup
+const popup = document.getElementById("successPopup");
+
+if(popup){
+    setTimeout(() => {
+        popup.style.opacity = "0";
+        setTimeout(() => popup.remove(), 500);
+    }, 3000);
+}
 </script>
 
 </body>

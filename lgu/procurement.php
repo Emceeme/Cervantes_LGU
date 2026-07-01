@@ -8,6 +8,18 @@ if(!$posts){
 }
 ?>
 
+<style>
+    close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+</style>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,31 +36,13 @@ if(!$posts){
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-<<<<<<< HEAD
-<<<<<<< HEAD
         <div class="logo">🏛️</div>
 
         <a href="dashboard.php">Dashboard</a>
-        <a href="#" class="active">Jobs</a>
         <a href="applicants.php">Applicants</a>
         <a href="procurement.php">Procurement</a>
+        <a href="newsfeed.php">News Feed</a>
         <a href="../logout.php">Logout</a>
-=======
-=======
->>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
-
-        <div class="logo">🏛️</div>
-
-        <a href="dashboard.php">Dashboard</a>
-        <a href="jobs.php">Jobs</a>
-        <a href="applicants.php">Applicants</a>
-        <a href="procurement.php" class="active">Procurement</a>
-        <a href="../logout.php">Logout</a>
-
-<<<<<<< HEAD
->>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
-=======
->>>>>>> 0b3fa6079a9c5adc408cef2ff7364f1e35f8d539
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -100,7 +94,7 @@ onclick="document.getElementById('modal').style.display='block'">
 
     <td>
         <?php if(!$row['award_winner']): ?>
-            <form action="award_procurement.php" method="POST">
+            <form action="../handler/award_procurement.php" method="POST">
                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
                 <input type="text" name="winner" placeholder="Winner Name" required>
                 <button class="award-btn">Award</button>
@@ -122,8 +116,8 @@ onclick="document.getElementById('modal').style.display='block'">
 <!-- ADD MODAL -->
 <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);">
     <div style="background:white;color:black;width:400px;margin:10% auto;padding:20px;border-radius:10px;">
-
-        <form action="upload_procurement.php" method="POST" enctype="multipart/form-data">
+            
+        <form action="../handler/upload_procurement.php" method="POST" enctype="multipart/form-data">
 
             <input type="text" name="title" placeholder="Title" required><br><br>
 
@@ -142,4 +136,22 @@ onclick="document.getElementById('modal').style.display='block'">
 </div>
 
 </body>
+
+<script>
+    function openModal(){
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display = "none";
+}
+
+window.onclick = function(event){
+    const modal = document.getElementById("modal");
+
+    if(event.target == modal){
+        closeModal();
+    }
+}
+</script>
 </html>

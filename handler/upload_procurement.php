@@ -34,6 +34,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $stmt->execute();
 
-    header("Location: procurement.php");
+    header("Location: ../lgu/procurement.php");
     exit();
 }

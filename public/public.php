@@ -4,9 +4,13 @@ include '../config/db.php';
 $jobs = $conn->query("
     SELECT *
     FROM jobs
-    WHERE status='OPEN'
-    ORDER BY created_at DESC
+    WHERE status = 'OPEN'
+    ORDER BY id DESC
 ");
+
+if (!$jobs) {
+    die("SQL Error: " . $conn->error);
+}
 ?>
 
 <!DOCTYPE html>

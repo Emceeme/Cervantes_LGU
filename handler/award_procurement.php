@@ -15,6 +15,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->bind_param("si", $winner, $id);
     $stmt->execute();
 
-    header("Location: procurement.php");
+    header("Location: ../lgu/procurement.php");
     exit();
 }

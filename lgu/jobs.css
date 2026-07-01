@@ -79,7 +79,7 @@ body {
     color: white;
 
     padding: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 
     border-radius: 12px;
 
@@ -97,6 +97,39 @@ body {
     background: white;
     color: #2563eb;
     font-weight: 600;
+}
+
+/* SUCCESS TOAST */
+.success-toast{
+    position:fixed;
+    top:20px;
+    right:20px;
+
+    background:#22c55e;
+    color:white;
+
+    padding:15px 20px;
+    border-radius:12px;
+
+    font-weight:600;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+    z-index:9999;
+
+    animation:slideIn .4s ease;
+}
+
+@keyframes slideIn{
+    from{
+        opacity:0;
+        transform:translateX(50px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
 }
 
 /* =========================
