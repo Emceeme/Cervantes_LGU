@@ -2,14 +2,38 @@
 session_start();
 include '../config/db.php';
 
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
 $user_id = $_SESSION['id'];
 
-$posts = $conn->query("
+$stmt = $conn->prepare("
     SELECT *
     FROM news_posts
-    WHERE user_id = $user_id
+    WHERE user_id = ?
     ORDER BY id DESC
 ");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$posts = $stmt->get_result();
+
+$notice = "";
+if (isset($_GET['success'])) {
+    $notice = "News post published successfully.";
+} elseif (isset($_GET['deleted'])) {
+    $notice = "News post deleted.";
+} elseif (isset($_GET['error'])) {
+    $errors = [
+        'missing' => "Please fill in the title and content.",
+        'upload'  => "Image upload failed. Please try again.",
+        'save'    => "Could not save the news post. Please try again.",
+        'delete'  => "Could not delete the news post. Please try again.",
+        'invalid' => "Invalid request.",
+    ];
+    $notice = $errors[$_GET['error']] ?? "Something went wrong.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +65,12 @@ $posts = $conn->query("
     <main class="main-content">
 
         <h2>News Feed Management</h2>
+
+        <?php if($notice): ?>
+        <div style="padding:12px 16px;margin-bottom:15px;border-radius:8px;background:#eef;border:1px solid #ccd;color:#334;">
+            <?= htmlspecialchars($notice) ?>
+        </div>
+        <?php endif; ?>
 
         <button class="add-btn"
         onclick="document.getElementById('modal').style.display='flex'">

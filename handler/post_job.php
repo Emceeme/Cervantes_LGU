@@ -15,35 +15,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // FORCE STATUS TO MATCH PUBLIC PAGE
     $status = "OPEN";
 
-    // INSERT QUERY (SAFE PREPARED STATEMENT)
-    $stmt = $conn->prepare("
-        INSERT INTO jobs
-        (job_title, department, employment_type, salary, location, description, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-    ");
+    try {
+        // INSERT QUERY (SAFE PREPARED STATEMENT)
+        $stmt = $conn->prepare("
+            INSERT INTO jobs
+            (job_title, department, employment_type, salary, location, description, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        ");
 
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
+        $stmt->bind_param(
+            "sssssss",
+            $title,
+            $dept,
+            $type,
+            $salary,
+            $location,
+            $desc,
+            $status
+        );
 
-    $stmt->bind_param(
-        "sssssss",
-        $title,
-        $dept,
-        $type,
-        $salary,
-        $location,
-        $desc,
-        $status
-    );
-
-    if ($stmt->execute()) {
-        // SUCCESS → go back to dashboard with popup
-        header("Location: ../lgu/dashboard.php?success=1");
+        $stmt->execute();
+    } catch (mysqli_sql_exception $e) {
+        error_log("Failed to insert job: " . $e->getMessage());
+        header("Location: ../lgu/dashboard.php?error=failed");
         exit();
-    } else {
-        die("Insert failed: " . $stmt->error);
     }
+
+    // SUCCESS → go back to dashboard with popup
+    header("Location: ../lgu/dashboard.php?success=1");
+    exit();
 
 } else {
     header("Location: ../lgu/dashboard.php");
