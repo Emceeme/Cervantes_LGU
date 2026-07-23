@@ -9,12 +9,18 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username=?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    try {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username=?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } catch (mysqli_sql_exception $e) {
+        error_log("Login query failed: " . $e->getMessage());
+        $error = "Something went wrong. Please try again later.";
+        $result = null;
+    }
 
-    if ($result->num_rows == 1) {
+    if ($result && $result->num_rows == 1) {
 
         $user = $result->fetch_assoc();
 
@@ -36,7 +42,7 @@ if (isset($_POST['login'])) {
             $error = "Wrong password";
         }
 
-    } else {
+    } elseif ($result) {
         $error = "User not found";
     }
 }

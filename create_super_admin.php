@@ -15,21 +15,26 @@ $email = "admin@lgu.local";
 $password = password_hash("admin123", PASSWORD_DEFAULT);
 $role = "SUPER_ADMIN";
 
-$stmt = $conn->prepare("
-INSERT INTO users (first_name,last_name,username,email,password,role)
-VALUES (?,?,?,?,?,?)
-");
+try {
+    $stmt = $conn->prepare("
+    INSERT INTO users (first_name,last_name,username,email,password,role)
+    VALUES (?,?,?,?,?,?)
+    ");
 
-$stmt->bind_param("ssssss",
-    $first_name,
-    $last_name,
-    $username,
-    $email,
-    $password,
-    $role
-);
+    $stmt->bind_param("ssssss",
+        $first_name,
+        $last_name,
+        $username,
+        $email,
+        $password,
+        $role
+    );
 
-$stmt->execute();
+    $stmt->execute();
+} catch (mysqli_sql_exception $e) {
+    error_log("Failed to create super admin: " . $e->getMessage());
+    die("Failed to create Super Admin. Please check the server logs.");
+}
 
 echo "Super Admin created successfully!";
 ?>

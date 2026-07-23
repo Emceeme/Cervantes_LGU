@@ -19,6 +19,21 @@ $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
 <div id="successPopup" class="success-popup">
     Job posted successfully!
 </div>
+<?php elseif(isset($_GET['deleted'])): ?>
+<div id="successPopup" class="success-popup">
+    Job deleted successfully!
+</div>
+<?php elseif(isset($_GET['error'])): ?>
+<?php
+$dashErrors = [
+    'invalid' => "Invalid request.",
+    'failed'  => "The operation failed. Please try again.",
+];
+$dashError = $dashErrors[$_GET['error']] ?? "Something went wrong.";
+?>
+<div id="successPopup" class="success-popup" style="background:#c0392b;">
+    <?= htmlspecialchars($dashError) ?>
+</div>
 <?php endif; ?>
 
 <div class="bg-blur blur1"></div>

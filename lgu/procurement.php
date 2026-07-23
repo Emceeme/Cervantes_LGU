@@ -3,8 +3,18 @@ include '../config/db.php';
 
 $posts = $conn->query("SELECT * FROM procurement_posts ORDER BY id DESC");
 
-if(!$posts){
-    die("Query Error: " . $conn->error);
+$notice = "";
+if (isset($_GET['success'])) {
+    $notice = "Procurement notice uploaded successfully.";
+} elseif (isset($_GET['awarded'])) {
+    $notice = "Procurement awarded successfully.";
+} elseif (isset($_GET['error'])) {
+    $errors = [
+        'missing' => "Please complete all required fields.",
+        'upload'  => "File upload failed. Please try again.",
+        'save'    => "Could not save the record. Please try again.",
+    ];
+    $notice = $errors[$_GET['error']] ?? "Something went wrong.";
 }
 ?>
 
@@ -49,6 +59,12 @@ if(!$posts){
     <main class="main-content">
 
         <h2>🏛️ Procurement Management</h2>
+
+<?php if($notice): ?>
+<div style="padding:12px 16px;margin-bottom:15px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);">
+    <?= htmlspecialchars($notice) ?>
+</div>
+<?php endif; ?>
 
 <button class="add-btn"
 onclick="document.getElementById('modal').style.display='block'">

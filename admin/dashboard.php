@@ -54,6 +54,24 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
                 <p class="muted">Fill out the form to add a new LGU account.</p>
             </div>
 
+            <?php
+            $notice = "";
+            if (isset($_GET['success'])) {
+                $notice = "LGU account created successfully.";
+            } elseif (isset($_GET['error'])) {
+                $adminErrors = [
+                    'duplicate' => "That username or email is already taken.",
+                    'failed'    => "Could not create the account. Please try again.",
+                ];
+                $notice = $adminErrors[$_GET['error']] ?? "Something went wrong.";
+            }
+            ?>
+            <?php if($notice): ?>
+            <p class="muted" style="padding:10px;border-radius:8px;background:rgba(255,255,255,0.1);">
+                <?= htmlspecialchars($notice) ?>
+            </p>
+            <?php endif; ?>
+
             <form method="POST" action="create_lgu.php" class="form-grid">
 
                 <div class="input-box">
