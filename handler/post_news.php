@@ -1,6 +1,9 @@
 <?php
 session_start();
 include '../config/db.php';
+require_once __DIR__ . '/../src/Helpers.php';
+
+use Cervantes\Helpers;
 
 $user_id = $_SESSION['id'];
 
@@ -11,7 +14,7 @@ $image = '';
 
 if (!empty($_FILES['image']['name'])) {
 
-    $image = time() . '_' . basename($_FILES['image']['name']);
+    $image = Helpers::uploadFileName($_FILES['image']['name']);
 
     $uploadDir = "../uploads/news/";
 

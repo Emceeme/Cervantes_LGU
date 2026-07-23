@@ -1,6 +1,9 @@
 <?php
 session_start();
 include 'config/db.php';
+require_once __DIR__ . '/src/Helpers.php';
+
+use Cervantes\Helpers;
 
 $error = "";
 
@@ -25,11 +28,7 @@ if (isset($_POST['login'])) {
             $_SESSION['name'] = $user['first_name'];
 
             // REDIRECT BASED ON ROLE
-            if ($user['role'] == "SUPER_ADMIN") {
-                header("Location: admin/dashboard.php");
-            } else {
-                header("Location: lgu/dashboard.php");
-            }
+            header("Location: " . Helpers::loginRedirect($user['role']));
             exit();
 
         } else {

@@ -7,13 +7,16 @@ if (!isset($_SESSION['id'])) {
 }
 
 include '../config/db.php';
+require_once __DIR__ . '/../src/Helpers.php';
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+use Cervantes\Helpers;
+
+if (!Helpers::isValidId($_GET['id'] ?? null)) {
     header("Location: ../lgu/dashboard.php?error=invalid");
     exit();
 }
 
-$id = (int) $_GET['id'];
+$id = Helpers::toId($_GET['id']);
 
 $stmt = $conn->prepare("DELETE FROM jobs WHERE id = ?");
 

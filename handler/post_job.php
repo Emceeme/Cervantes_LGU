@@ -1,6 +1,9 @@
 <?php
 session_start();
 include '../config/db.php';
+require_once __DIR__ . '/../src/Helpers.php';
+
+use Cervantes\Helpers;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -13,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $desc = $_POST['description'];
 
     // FORCE STATUS TO MATCH PUBLIC PAGE
-    $status = "OPEN";
+    $status = Helpers::defaultJobStatus();
 
     // INSERT QUERY (SAFE PREPARED STATEMENT)
     $stmt = $conn->prepare("
