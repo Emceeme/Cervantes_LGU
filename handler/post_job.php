@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -39,14 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->execute()) {
         // SUCCESS → go back to dashboard with popup
-        header("Location: ../lgu/dashboard.php?success=1");
-        exit();
+        redirect('../lgu/dashboard.php?success=1');
     } else {
         die("Insert failed: " . $stmt->error);
     }
 
 } else {
-    header("Location: ../lgu/dashboard.php");
-    exit();
+    redirect('../lgu/dashboard.php');
 }
 ?>

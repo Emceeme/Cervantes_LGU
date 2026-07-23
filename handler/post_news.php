@@ -1,29 +1,21 @@
 <?php
-session_start();
 include '../config/db.php';
+
+start_session();
 
 $user_id = $_SESSION['id'];
 
 $title = $_POST['title'];
 $content = $_POST['content'];
 
-$image = '';
+$image = save_uploaded_file('image', "../uploads/news/");
 
-if (!empty($_FILES['image']['name'])) {
+if ($image === false) {
+    die("Image upload failed.");
+}
 
-    $image = time() . '_' . basename($_FILES['image']['name']);
-
-    $uploadDir = "../uploads/news/";
-
-    // Create the folder if it doesn't exist
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    // Upload the image
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $image)) {
-        die("Image upload failed.");
-    }
+if ($image === null) {
+    $image = '';
 }
 
 $stmt = $conn->prepare("
@@ -42,6 +34,5 @@ $image
 
 $stmt->execute();
 
-header("Location: ../lgu/newsfeed.php");
-exit();
+redirect('../lgu/newsfeed.php');
 ?>

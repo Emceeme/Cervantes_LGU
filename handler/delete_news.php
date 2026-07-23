@@ -11,6 +11,5 @@ WHERE id=?
 $stmt->bind_param("i",$id);
 $stmt->execute();
 
-header("Location: ../lgu/newsfeed.php");
-exit();
+redirect('../lgu/newsfeed.php');
 ?>

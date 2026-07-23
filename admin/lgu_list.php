@@ -1,11 +1,7 @@
 <?php
-session_start();
 include '../config/db.php';
 
-if (!isset($_SESSION['name'])) {
-    header("Location: ../login.php");
-    exit();
-}
+require_login();
 
 $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
 ?>
@@ -26,13 +22,7 @@ $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
 <div class="container">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">🏛️</div>
-
-        <a class="menu-btn" href="dashboard.php">Dashboard</a>
-        <a class="menu-btn active" href="lgu_list.php">LGU Accounts</a>
-        <a class="menu-btn logout" href="../logout.php">Logout</a>
-    </aside>
+    <?php $activePage = 'lgu_list'; include __DIR__ . '/sidebar.php'; ?>
 
     <!-- MAIN -->
     <main class="main-content">

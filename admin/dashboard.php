@@ -1,9 +1,7 @@
 <?php
-session_start();
+include '../config/db.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
-    die("Access denied");
-}
+require_super_admin();
 ?>
 
 <!DOCTYPE html>
@@ -23,14 +21,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
 <div class="container">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">🏛️</div>
-
-        <a class="menu-btn active" href="dashboard.php">Dashboard</a>
-        <a class="menu-btn" href="#create">Create LGU</a>
-        <a class="menu-btn" href="lgu_list.php">LGU Accounts</a>
-        <a class="menu-btn logout" href="../logout.php">Logout</a>
-    </aside>
+    <?php $activePage = 'dashboard'; include __DIR__ . '/sidebar.php'; ?>
 
     <!-- MAIN -->
     <main class="main-content">

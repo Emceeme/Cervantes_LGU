@@ -26,17 +26,7 @@ $posts = $conn->query("
 
 <div class="container">
 
-    <aside class="sidebar">
-
-        <div class="logo">🏛️</div>
-
-        <a href="dashboard.php">Dashboard</a>
-        <a href="applicants.php">Applicants</a>
-        <a href="procurement.php">Procurement</a>
-        <a href="#" class="active">News Feed</a>
-        <a href="../logout.php">Logout</a>
-
-    </aside>
+    <?php $activePage = 'newsfeed'; include __DIR__ . '/sidebar.php'; ?>
 
     <main class="main-content">
 
