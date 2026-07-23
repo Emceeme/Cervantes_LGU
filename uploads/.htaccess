@@ -1,0 +1,7 @@
+# Prevent execution of any server-side scripts in the uploads directory.
+php_flag engine off
+AddType text/plain .php .php3 .php4 .php5 .php7 .phtml .phar .pht .cgi .pl .py .sh
+
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|pht|cgi|pl|py|sh|htaccess)$">
+    Require all denied
+</FilesMatch>

@@ -1,12 +1,11 @@
 <?php
-session_start();
+require '../config/auth.php';
+require_role('SUPER_ADMIN', '../login.php');
 include '../config/db.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
-    die("Access denied");
-}
-
 if (isset($_POST['create'])) {
+
+    verify_csrf();
 
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];

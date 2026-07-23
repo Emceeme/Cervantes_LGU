@@ -1,8 +1,11 @@
 <?php
-session_start();
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    verify_csrf();
 
     // GET FORM DATA
     $title = $_POST['job_title'];

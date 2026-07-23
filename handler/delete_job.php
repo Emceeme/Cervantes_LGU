@@ -1,10 +1,7 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['id'])) {
-    header("Location: ../login.php");
-    exit();
-}
+require '../config/auth.php';
+require_login('../login.php');
+verify_csrf();
 
 include '../config/db.php';
 

@@ -1,4 +1,6 @@
 <?php
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 $applicants = $conn->query("
@@ -97,14 +99,14 @@ $applicants = $conn->query("
 
                         <td>
                             <a class="resume-link"
-                                href="../public/<?= $row['resume']; ?>"
+                                href="../public/<?= htmlspecialchars($row['resume'], ENT_QUOTES); ?>"
                                 target="_blank">
                                 View Resume
                             </a>
                         </td>
 
                         <td class="applicant-text">
-                            <?= $row['created_at']; ?>
+                            <?= htmlspecialchars($row['created_at']); ?>
                         </td>
 
                     </tr>

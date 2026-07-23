@@ -165,7 +165,7 @@ th{
     </td>
 
     <td>
-        <?= $row['created_at'] ?>
+        <?= htmlspecialchars($row['created_at']) ?>
     </td>
 
 </tr>

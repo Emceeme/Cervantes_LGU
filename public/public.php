@@ -86,9 +86,9 @@ if (!$jobs) {
             <!-- VIEW -->
             <button class="view-btn"
                 onclick="openModal(
-                    '<?= addslashes($row['job_title']) ?>',
-                    '<?= addslashes($row['department']) ?>',
-                    '<?= addslashes($row['description']) ?>'
+                    <?= htmlspecialchars(json_encode($row['job_title'], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>,
+                    <?= htmlspecialchars(json_encode($row['department'], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>,
+                    <?= htmlspecialchars(json_encode($row['description'], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>
                 )">
                 View Details
             </button>

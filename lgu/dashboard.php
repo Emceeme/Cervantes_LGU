@@ -1,5 +1,6 @@
 <?php
-session_start();
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
@@ -82,7 +83,7 @@ $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
 
                     <td>
                         <a class="btn-danger"
-                           href="../handler/delete_job.php?id=<?= $row['id'] ?>"
+                           href="../handler/delete_job.php?id=<?= $row['id'] ?>&csrf_token=<?= urlencode(csrf_token()) ?>"
                            onclick="return confirm('Delete this job?')">
                            Delete
                         </a>
@@ -112,6 +113,8 @@ $jobs = $conn->query("SELECT * FROM jobs ORDER BY id DESC");
 
         <!-- FIXED PATH -->
         <form action="../handler/post_job.php" method="POST">
+
+            <?= csrf_field() ?>
 
             <input type="text" name="job_title" placeholder="Job Title" required>
 
