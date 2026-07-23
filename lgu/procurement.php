@@ -1,4 +1,6 @@
 <?php
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 $posts = $conn->query("SELECT * FROM procurement_posts ORDER BY id DESC");
@@ -73,7 +75,7 @@ onclick="document.getElementById('modal').style.display='block'">
     <td><?= htmlspecialchars($row['title']) ?></td>
 
     <td>
-        <a href="../uploads/procurement/<?= $row['file_path'] ?>" target="_blank">
+        <a href="../uploads/procurement/<?= htmlspecialchars($row['file_path'], ENT_QUOTES) ?>" target="_blank">
             View File
         </a>
     </td>
@@ -82,7 +84,7 @@ onclick="document.getElementById('modal').style.display='block'">
         <?php if($row['award_winner']) : ?>
             <span class="status-awarded">AWARDED</span>
         <?php else: ?>
-            <span class="status-open"><?= $row['status'] ?></span>
+            <span class="status-open"><?= htmlspecialchars($row['status']) ?></span>
         <?php endif; ?>
     </td>
 
@@ -90,11 +92,12 @@ onclick="document.getElementById('modal').style.display='block'">
         <?= $row['award_winner'] ? htmlspecialchars($row['award_winner']) : '-' ?>
     </td>
 
-    <td><?= $row['created_at'] ?></td>
+    <td><?= htmlspecialchars($row['created_at']) ?></td>
 
     <td>
         <?php if(!$row['award_winner']): ?>
             <form action="../handler/award_procurement.php" method="POST">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
                 <input type="text" name="winner" placeholder="Winner Name" required>
                 <button class="award-btn">Award</button>
@@ -118,6 +121,8 @@ onclick="document.getElementById('modal').style.display='block'">
     <div style="background:white;color:black;width:400px;margin:10% auto;padding:20px;border-radius:10px;">
             
         <form action="../handler/upload_procurement.php" method="POST" enctype="multipart/form-data">
+
+            <?= csrf_field() ?>
 
             <input type="text" name="title" placeholder="Title" required><br><br>
 

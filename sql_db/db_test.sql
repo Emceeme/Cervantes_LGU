@@ -88,19 +88,6 @@ CREATE TABLE procurement_posts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (
-    first_name,
-    last_name,
-    username,
-    email,
-    password,
-    role
-)
-VALUES (
-    'System',
-    'Administrator',
-    'superadmin',
-    'admin@lgu.gov.ph',
-    '$2y$10$J6m0L7e0b5d1i1QyI0M5wO2h2u1wM7nV7N4n1rD3W4l2P6m9a8b7K',
-    'SUPER_ADMIN'
-);
+-- The initial SUPER_ADMIN account is intentionally NOT seeded here.
+-- Create it with the CLI bootstrap script so no password/hash is committed:
+--   SUPER_ADMIN_PASSWORD='<strong-password>' php create_super_admin.php

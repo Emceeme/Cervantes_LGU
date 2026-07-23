@@ -1,11 +1,7 @@
 <?php
-session_start();
+require '../config/auth.php';
+require_role('SUPER_ADMIN', '../login.php');
 include '../config/db.php';
-
-if (!isset($_SESSION['name'])) {
-    header("Location: ../login.php");
-    exit();
-}
 
 $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
 ?>
@@ -61,13 +57,13 @@ $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()) { ?>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
-                            <td><?php echo $row['first_name'] . " " . $row['last_name']; ?></td>
-                            <td><?php echo $row['username']; ?></td>
-                            <td><?php echo $row['email']; ?></td>
-                            <td><?php echo $row['role']; ?></td>
+                            <td><?php echo (int) $row['id']; ?></td>
+                            <td><?php echo htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['username']); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['role']); ?></td>
                             <td>
-                                <a href="delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger">Delete</a>
+                                <a href="delete_user.php?id=<?php echo (int) $row['id']; ?>&csrf_token=<?php echo urlencode(csrf_token()); ?>" class="btn-danger">Delete</a>
                             </td>
                         </tr>
                     <?php } ?>

@@ -1,7 +1,11 @@
 <?php
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+    verify_csrf();
 
     $id = $_POST['id'];
     $winner = $_POST['winner'];

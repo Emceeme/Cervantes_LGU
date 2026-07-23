@@ -1,15 +1,19 @@
 <?php
-session_start();
+require '../config/auth.php';
+require_login('../login.php');
 include '../config/db.php';
 
 $user_id = $_SESSION['id'];
 
-$posts = $conn->query("
+$stmt = $conn->prepare("
     SELECT *
     FROM news_posts
-    WHERE user_id = $user_id
+    WHERE user_id = ?
     ORDER BY id DESC
 ");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$posts = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -58,41 +62,19 @@ if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
     <img src="<?= htmlspecialchars($imagePath) ?>" class="news-image">
 <?php
-} else {
-?>
-    <div style="
-        background:#fff3cd;
-        color:#856404;
-        padding:10px;
-        border-radius:8px;
-        margin-bottom:15px;
-        border:1px solid #ffeeba;
-    ">
-        <strong>⚠ Image not found</strong><br><br>
-
-        <strong>Database Value:</strong><br>
-        <?= htmlspecialchars($row['image']) ?><br><br>
-
-        <strong>Looking For:</strong><br>
-        <?= htmlspecialchars($imagePath) ?><br><br>
-
-        <strong>file_exists():</strong>
-        <?= file_exists($imagePath) ? "TRUE" : "FALSE"; ?>
-    </div>
-<?php
 }
 ?>
             <h3><?= htmlspecialchars($row['title']) ?></h3>
 
             <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
 
-            <small><?= $row['created_at'] ?></small>
+            <small><?= htmlspecialchars($row['created_at']) ?></small>
 
             <br><br>
 
             <a
             class="delete-btn"
-            href="../handler/delete_news.php?id=<?= $row['id'] ?>"
+            href="../handler/delete_news.php?id=<?= $row['id'] ?>&csrf_token=<?= urlencode(csrf_token()) ?>"
             onclick="return confirm('Delete post?')">
             Delete
             </a>
@@ -123,6 +105,8 @@ if (!empty($row['image']) && file_exists($imagePath)) {
         action="../handler/post_news.php"
         method="POST"
         enctype="multipart/form-data">
+
+            <?= csrf_field() ?>
 
             <input
             type="text"

@@ -1,9 +1,6 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
-    die("Access denied");
-}
+require '../config/auth.php';
+require_role('SUPER_ADMIN', '../login.php');
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +39,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
 
         <!-- WELCOME -->
         <section class="card">
-            <h3>Welcome, <?php echo $_SESSION['name']; ?> 👋</h3>
+            <h3>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?> 👋</h3>
             <p class="muted">Manage LGU accounts, users, and system access efficiently.</p>
         </section>
 
@@ -55,6 +52,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "SUPER_ADMIN") {
             </div>
 
             <form method="POST" action="create_lgu.php" class="form-grid">
+
+                <?= csrf_field() ?>
 
                 <div class="input-box">
                     <label>First Name</label>

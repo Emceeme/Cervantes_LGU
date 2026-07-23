@@ -58,7 +58,7 @@ $image="../uploads/news/".$row['image'];
 
 ?>
 
-<img src="<?= $image ?>">
+<img src="<?= htmlspecialchars($image, ENT_QUOTES) ?>">
 
 <?php } ?>
 
@@ -78,7 +78,7 @@ $image="../uploads/news/".$row['image'];
 
 <p>
 
-<?= substr(strip_tags($row['content']),0,120) ?>
+<?= htmlspecialchars(substr(strip_tags($row['content']),0,120)) ?>
 
 ...
 
@@ -90,13 +90,13 @@ class="view-btn"
 
 onclick='openNews(
 
-<?= json_encode($row["title"]) ?>,
+<?= htmlspecialchars(json_encode($row["title"], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>,
 
-<?= json_encode($row["content"]) ?>,
+<?= htmlspecialchars(json_encode($row["content"], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>,
 
-<?= json_encode($row["image"]) ?>,
+<?= htmlspecialchars(json_encode($row["image"], JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>,
 
-<?= json_encode(date("F d, Y h:i A",strtotime($row["created_at"]))) ?>
+<?= htmlspecialchars(json_encode(date("F d, Y h:i A",strtotime($row["created_at"])), JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP), ENT_QUOTES) ?>
 
 )'
 
