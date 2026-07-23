@@ -6,18 +6,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $title = $_POST['title'];
     $status = $_POST['status'];
 
-    $file = $_FILES['file']['name'];
-    $tmp = $_FILES['file']['tmp_name'];
+    $originalName = $_FILES['file']['name'];
 
-    $folder = "../uploads/procurement/";
+    $filename = save_uploaded_file('file', "../uploads/procurement/");
 
-    if(!is_dir($folder)){
-        mkdir($folder, 0777, true);
+    if(!$filename){
+        die("File upload failed.");
     }
-
-    $filename = time() . "_" . $file;
-
-    move_uploaded_file($tmp, $folder . $filename);
 
     $stmt = $conn->prepare("
         INSERT INTO procurement_posts
@@ -28,12 +23,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->bind_param("ssss",
         $title,
         $filename,
-        $file,
+        $originalName,
         $status
     );
 
     $stmt->execute();
 
-    header("Location: ../lgu/procurement.php");
-    exit();
+    redirect('../lgu/procurement.php');
 }

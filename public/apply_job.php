@@ -15,17 +15,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         die("Resume file missing.");
     }
 
-    $fileName = time() . "_" . basename($_FILES['resume']['name']);
-
     $uploadDir = "uploads/";
-    $uploadPath = $uploadDir . $fileName;
 
-    if(!move_uploaded_file(
-        $_FILES['resume']['tmp_name'],
-        $uploadPath
-    )){
+    $fileName = save_uploaded_file('resume', $uploadDir);
+
+    if(!$fileName){
         die("Failed to upload resume.");
     }
+
+    $uploadPath = $uploadDir . $fileName;
 
     $stmt = $conn->prepare("
         INSERT INTO applicants

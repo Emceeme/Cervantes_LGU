@@ -8,28 +8,15 @@ if ($check->num_rows > 0) {
     die("Super Admin already exists.");
 }
 
-$first_name = "System";
-$last_name = "Admin";
-$username = "superadmin";
-$email = "admin@lgu.local";
-$password = password_hash("admin123", PASSWORD_DEFAULT);
-$role = "SUPER_ADMIN";
-
-$stmt = $conn->prepare("
-INSERT INTO users (first_name,last_name,username,email,password,role)
-VALUES (?,?,?,?,?,?)
-");
-
-$stmt->bind_param("ssssss",
-    $first_name,
-    $last_name,
-    $username,
-    $email,
-    $password,
-    $role
+create_user(
+    $conn,
+    "System",
+    "Admin",
+    "superadmin",
+    "admin@lgu.local",
+    password_hash("admin123", PASSWORD_DEFAULT),
+    "SUPER_ADMIN"
 );
-
-$stmt->execute();
 
 echo "Super Admin created successfully!";
 ?>
