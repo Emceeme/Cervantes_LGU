@@ -1,21 +1,24 @@
 <?php
 
 include '../config/db.php';
+require_once __DIR__ . '/../src/Helpers.php';
+
+use Cervantes\Helpers;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-    $job_id = intval($_POST['job_id']);
+    $job_id = Helpers::toId($_POST['job_id']);
 
-    $full_name = trim($_POST['full_name']);
-    $email = trim($_POST['email']);
-    $phone = trim($_POST['phone']);
-    $message = trim($_POST['message']);
+    $full_name = Helpers::sanitizeText($_POST['full_name']);
+    $email = Helpers::sanitizeText($_POST['email']);
+    $phone = Helpers::sanitizeText($_POST['phone']);
+    $message = Helpers::sanitizeText($_POST['message']);
 
     if(!isset($_FILES['resume'])){
         die("Resume file missing.");
     }
 
-    $fileName = time() . "_" . basename($_FILES['resume']['name']);
+    $fileName = Helpers::uploadFileName($_FILES['resume']['name']);
 
     $uploadDir = "uploads/";
     $uploadPath = $uploadDir . $fileName;

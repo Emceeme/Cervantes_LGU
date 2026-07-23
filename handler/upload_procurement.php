@@ -1,5 +1,8 @@
 <?php
 include '../config/db.php';
+require_once __DIR__ . '/../src/Helpers.php';
+
+use Cervantes\Helpers;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
@@ -15,7 +18,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         mkdir($folder, 0777, true);
     }
 
-    $filename = time() . "_" . $file;
+    $filename = Helpers::uploadFileName($file);
 
     move_uploaded_file($tmp, $folder . $filename);
 
