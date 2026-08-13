@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where To Stay | Municipality of Cervantes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="accom.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="about.html">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accommodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="public/public.php">Job Posting</a>
+                            <a href="public/procurement.php">Procurement Notice</a>
+                            <a href="public/philgeps.php">PhilGEPS</a>
+                            <a href="public/bids_awards.php">Bids and Awards</a>
+                            <a href="public/invitation_to_bid.php">Invitation to Bid</a>
+                            <a href="public/bid_bulletin.php">Bid Bulletin</a>
+                            <a href="public/notice_of_award.php">Notice of Award</a>
+                            <a href="public/notice_to_proceed.php">Notice to Proceed</a>
+                            <a href="public/news.php">News</a>
+                            <a href="public/scholarship.php">Scholarship</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===========================
+         PAGE HEADER
+    ============================ -->
+
+    <section class="hero">
+
+        <h1>Where To Stay</h1>
+
+        <p>
+            Discover comfortable accommodations in the Municipality of Cervantes.
+            Experience the beauty of nature while enjoying a relaxing stay.
+        </p>
+
+    </section>
+
+ <!-- ==========================================
+     ACCOMMODATION CARDS
+========================================== -->
+
+<section class="cards">
+
+    <!-- CARD 1 -->
+    <div class="card">
+
+        <img src="images/accomodations/greenfields.jpg" alt="Green Fields">
+
+        <div class="card-content">
+
+            <span class="badge">Lodge</span>
+
+            <h3>Green Fields</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. Libang, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱2,500 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accomodations/greenfields.jpg"
+
+                data-title="Green Fields"
+
+                data-location="Brgy. Libang, Cervantes, Ilocos Sur"
+
+                data-rate="₱2,500 per Night"
+
+                data-description="Enjoy breathtaking mountain scenery, spacious family rooms, free parking, Wi-Fi, a restaurant, and easy access to nearby tourist destinations."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 2 -->
+
+    <div class="card">
+
+        <img src="images/accomodations/kabakiran.jpg" alt="Valley Inn">
+
+        <div class="card-content">
+
+            <span class="badge">Inn</span>
+
+            <h3>Valley Inn</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. Dinwede, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱1,800 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accomodations/kabakiran.jpg"
+
+                data-title="Valley Inn"
+
+                data-location="Brgy. Dinwede, Cervantes, Ilocos Sur"
+
+                data-rate="₱1,800 per Night"
+
+                data-description="Affordable accommodations with cozy rooms, complimentary Wi-Fi, hot showers, parking, and beautiful valley views."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 3 -->
+
+    <div class="card">
+
+        <img src="images/accommodations/highland-lodge.jpg" alt="Highland Lodge">
+
+        <div class="card-content">
+
+            <span class="badge">Lodge</span>
+
+            <h3>Highland Lodge</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. Comillas, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱2,000 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accommodations/highland-lodge.jpg"
+
+                data-title="Highland Lodge"
+
+                data-location="Brgy. Comillas, Cervantes, Ilocos Sur"
+
+                data-rate="₱2,000 per Night"
+
+                data-description="Modern lodge featuring spacious rooms, relaxing mountain views, conference space, and excellent customer service."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 4 -->
+
+    <div class="card">
+
+        <img src="images/accommodations/pine-resort.jpg" alt="Pine Resort">
+
+        <div class="card-content">
+
+            <span class="badge">Resort</span>
+
+            <h3>Pine Resort</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. San Juan, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱2,300 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accommodations/pine-resort.jpg"
+
+                data-title="Pine Resort"
+
+                data-location="Brgy. San Juan, Cervantes, Ilocos Sur"
+
+                data-rate="₱2,300 per Night"
+
+                data-description="Experience the cool pine forest atmosphere with comfortable accommodations, cottages, and recreational facilities."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 5 -->
+
+    <div class="card">
+
+        <img src="images/accommodations/riverside-hotel.jpg" alt="Riverside Hotel">
+
+        <div class="card-content">
+
+            <span class="badge">Hotel</span>
+
+            <h3>Riverside Hotel</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. Poblacion, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱2,100 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accommodations/riverside-hotel.jpg"
+
+                data-title="Riverside Hotel"
+
+                data-location="Brgy. Poblacion, Cervantes, Ilocos Sur"
+
+                data-rate="₱2,100 per Night"
+
+                data-description="A peaceful riverside hotel offering comfortable accommodations, excellent dining, and convenient access to the town proper."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD 6 -->
+
+    <div class="card">
+
+        <img src="images/accommodations/greenfields.jpg" alt="Green fields">
+
+        <div class="card-content">
+
+            <span class="badge">Lodge</span>
+
+            <h3>Green Fields</h3>
+
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Brgy. Aluling, Cervantes</p>
+
+            <p class="price">Starting at <strong>₱2,700 / Night</strong></p>
+
+            <button
+                class="view-btn"
+
+                data-image="images/accommodations/greenfields.jpg"
+
+                data-title="Green Fields"
+
+                data-location="Brgy. Aluling, Cervantes, Ilocos Sur"
+
+                data-rate="₱2,700 per Night"
+
+                data-description="Premium suites featuring luxurious rooms, panoramic mountain views, conference facilities, and first-class guest services."
+
+            >
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- ===========================
+         DETAILS MODAL
+    ============================ -->
+
+    <div class="modal" id="modal">
+
+        <div class="modal-content">
+
+            <span class="close-btn">&times;</span>
+
+            <img id="modalImage" src="" alt="Accommodation">
+
+            <div class="modal-details">
+
+                <h2 id="modalTitle"></h2>
+
+                <p>
+                    <strong>Location:</strong>
+                    <span id="modalLocation"></span>
+                </p>
+
+                <p>
+                    <strong>Rates:</strong>
+                    <span id="modalRate"></span>
+                </p>
+
+                <h3>Description</h3>
+
+                <p id="modalDescription"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>

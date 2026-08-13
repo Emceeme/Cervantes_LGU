@@ -1,15 +1,34 @@
 <?php
 session_start();
+require_once '../config/security.php';
 include '../config/db.php';
+
+// Set security headers
+setSecurityHeaders();
+
+// SECURITY GUARD: Restrict access to Mayor's Office, LGU departments & Super Admins only
+$department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
+if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
+    logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'newsfeed', 'department' => $department]);
+    http_response_code(403);
+    die("Access Denied: You do not have permission to view LGU records.");
+}
 
 $user_id = $_SESSION['id'];
 
-$posts = $conn->query("
+$posts_stmt = $conn->prepare("
     SELECT *
     FROM news_posts
-    WHERE user_id = $user_id
+    WHERE user_id = ?
     ORDER BY id DESC
 ");
+$posts_stmt->bind_param("i", $user_id);
+$posts_stmt->execute();
+$posts = $posts_stmt->get_result();
+$posts_stmt->close();
+
+// Generate CSRF token
+$csrf_token = generateCsrfToken();
 ?>
 
 <!DOCTYPE html>
@@ -17,9 +36,7 @@ $posts = $conn->query("
 <head>
 <meta charset="UTF-8">
 <title>News Feed Management</title>
-
 <link rel="stylesheet" href="newsfeed.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -27,20 +44,21 @@ $posts = $conn->query("
 <div class="container">
 
     <aside class="sidebar">
-
-        <div class="logo">🏛️</div>
-
-        <a href="dashboard.php">Dashboard</a>
-        <a href="applicants.php">Applicants</a>
-        <a href="procurement.php">Procurement</a>
-        <a href="#" class="active">News Feed</a>
-        <a href="../logout.php">Logout</a>
-
+        <div class="logo">LGU <span>Portal</span></div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="applicants.php">Applicants</a>
+            <a href="procurement.php">Procurement</a>
+            <a href="newsfeed.php" class="active">News Feed</a>
+            <a href="scholarship_applications.php">Scholarship Applications</a>
+            <a href="../logout.php">Logout</a>
+        </nav>
     </aside>
 
     <main class="main-content">
 
         <h2>News Feed Management</h2>
+        <p>Manage LGU announcements and updates</p>
 
         <button class="add-btn"
         onclick="document.getElementById('modal').style.display='flex'">
@@ -61,42 +79,31 @@ if (!empty($row['image']) && file_exists($imagePath)) {
 } else {
 ?>
     <div style="
-        background:#fff3cd;
-        color:#856404;
-        padding:10px;
+        background:#FEF3C7;
+        color:#92400E;
+        padding:15px;
+        margin:20px;
         border-radius:8px;
-        margin-bottom:15px;
-        border:1px solid #ffeeba;
+        border:1px solid #FCD34D;
     ">
         <strong>⚠ Image not found</strong><br><br>
-
-        <strong>Database Value:</strong><br>
-        <?= htmlspecialchars($row['image']) ?><br><br>
-
-        <strong>Looking For:</strong><br>
-        <?= htmlspecialchars($imagePath) ?><br><br>
-
-        <strong>file_exists():</strong>
-        <?= file_exists($imagePath) ? "TRUE" : "FALSE"; ?>
+        <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
+        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?>
     </div>
 <?php
 }
 ?>
-            <h3><?= htmlspecialchars($row['title']) ?></h3>
-
-            <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
-
-            <small><?= $row['created_at'] ?></small>
-
-            <br><br>
-
-            <a
-            class="delete-btn"
-            href="../handler/delete_news.php?id=<?= $row['id'] ?>"
-            onclick="return confirm('Delete post?')">
-            Delete
-            </a>
-
+            <div class="card-content">
+                <h3><?= htmlspecialchars($row['title']) ?></h3>
+                <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                <small><?= $row['created_at'] ?></small>
+                <a
+                class="delete-btn"
+                href="handler/delete_news.php?id=<?= $row['id'] ?>"
+                onclick="return confirm('Delete post?')">
+                Delete
+                </a>
+            </div>
         </div>
 
         <?php endwhile; ?>
@@ -110,37 +117,33 @@ if (!empty($row['image']) && file_exists($imagePath)) {
 <div id="modal" class="modal">
 
     <div class="modal-content">
-
-        <span
-        class="close"
-        onclick="document.getElementById('modal').style.display='none'">
-        ×
-        </span>
-
-        <h2>Create News</h2>
+        <div class="modal-header">
+            <h2>Create News Post</h2>
+            <span class="close" onclick="document.getElementById('modal').style.display='none'">×</span>
+        </div>
 
         <form
-        action="../handler/post_news.php"
+        action="handler/post_news.php"
         method="POST"
         enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
-            <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            required>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" placeholder="Enter news title" required>
+            </div>
 
-            <textarea
-            name="content"
-            rows="8"
-            placeholder="News Content"
-            required></textarea>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea name="content" rows="8" placeholder="Enter news content" required></textarea>
+            </div>
 
-            <input
-            type="file"
-            name="image">
+            <div class="form-group">
+                <label>Image</label>
+                <input type="file" name="image">
+            </div>
 
-            <button type="submit">
+            <button class="btn btn-primary" type="submit">
                 Publish News
             </button>
 

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - Municipality of Cervantes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="about.html">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accommodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="public/public.php">Job Posting</a>
+                            <a href="public/procurement.php">Procurement Notice</a>
+                            <a href="public/philgeps.php">PhilGEPS</a>
+                            <a href="public/bids_awards.php">Bids and Awards</a>
+                            <a href="public/invitation_to_bid.php">Invitation to Bid</a>
+                            <a href="public/bid_bulletin.php">Bid Bulletin</a>
+                            <a href="public/notice_of_award.php">Notice of Award</a>
+                            <a href="public/notice_to_proceed.php">Notice to Proceed</a>
+                            <a href="public/news.php">News</a>
+                            <a href="public/scholarship.php">Scholarship</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="hero-section">
+        <h2 class="section-title">Our Services</h2>
+        <div class="title-underline"></div>
+        <div class="about-container">
+            <div class="about-card">
+                <div class="card-icon-header">
+                    <div class="icon-box"><i class="fas fa-building"></i></div>
+                    <h3>Municipal Services</h3>
+                </div>
+                <p>Access various municipal services including job postings, procurement notices, and scholarship programs.</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-briefcase"></i></div>
+                    <h4>Job Postings</h4>
+                    <p>Find employment opportunities within the municipality</p>
+                    <a href="public/public.php" class="service-link">View Jobs <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-file-contract"></i></div>
+                    <h4>Procurement</h4>
+                    <p>Access procurement notices and bidding opportunities</p>
+                    <a href="public/procurement.php" class="service-link">View Procurement <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-globe"></i></div>
+                    <h4>PhilGEPS</h4>
+                    <p>Philippine Government Electronic Procurement System</p>
+                    <a href="public/philgeps.php" class="service-link">Access PhilGEPS <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-gavel"></i></div>
+                    <h4>Bids & Awards</h4>
+                    <p>View successful bids and project awards</p>
+                    <a href="public/bids_awards.php" class="service-link">View Awards <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-newspaper"></i></div>
+                    <h4>News & Updates</h4>
+                    <p>Stay updated with latest municipal news</p>
+                    <a href="public/news.php" class="service-link">Read News <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h4>Scholarships</h4>
+                    <p>Education assistance and scholarship programs</p>
+                    <a href="public/scholarship.php" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentElement;
+                dropdown.classList.toggle('hovered');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('hovered');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

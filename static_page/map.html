@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipality of Cervantes - Tourist Destinations Map</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Shared Brand Design System -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Map Layout Overrides */
+        .map-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px 60px;
+        }
+
+        .map-container-wrapper {
+            background: var(--pure-white);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--light-blue);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.06);
+        }
+
+        #tourist-map {
+            height: 600px;
+            width: 100%;
+            border-radius: 12px;
+            z-index: 1; /* Keeps map elements neatly below navigation dropdowns */
+        }
+
+        /* Themed Leaflet Popup Modifications */
+        .spot-popup {
+            padding: 4px;
+        }
+        .spot-popup h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: var(--primary-blue);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .spot-popup h3 i {
+            color: var(--primary-blue);
+        }
+        .spot-popup p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        /* Map Info Bar */
+        .map-info-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .info-item i {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .info-item span {
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .map-info-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .info-item {
+                justify-content: center;
+            }
+
+            #tourist-map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <!-- MATCHED DESIGN NAVBAR -->
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="about.html">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accommodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="public/public.php">Job Posting</a>
+                            <a href="public/procurement.php">Procurement Notice</a>
+                            <a href="public/philgeps.php">PhilGEPS</a>
+                            <a href="public/bids_awards.php">Bids and Awards</a>
+                            <a href="public/invitation_to_bid.php">Invitation to Bid</a>
+                            <a href="public/bid_bulletin.php">Bid Bulletin</a>
+                            <a href="public/notice_of_award.php">Notice of Award</a>
+                            <a href="public/notice_to_proceed.php">Notice to Proceed</a>
+                            <a href="public/news.php">News</a>
+                            <a href="public/scholarship.php">Scholarship</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAP CONTAINER VIEWPORT -->
+    <main class="map-section">
+        <h2 class="section-title">Explore Cervantes Destinations</h2>
+        <div class="title-underline"></div>
+
+        <div class="map-info-bar">
+            <div class="info-item">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Interactive Tourist Map</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-location-arrow"></i>
+                <span>5 Featured Destinations</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Click markers for details</span>
+            </div>
+        </div>
+
+        <div class="map-container-wrapper">
+            <div id="tourist-map"></div>
+        </div>
+    </main>
+
+    <!-- Leaflet JS Dependencies -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // 1. Array Dataset of Tourist Attractions in Cervantes, Ilocos Sur
+        const touristSpots = [
+            {
+                name: "Bessang Pass Natural Monument",
+                lat: 16.9531, 
+                lng: 120.6894,
+                description: "A historical protected mountain pass commemorating the victory of Filipino soldiers over the Japanese Imperial Army in 1945."
+            },
+            {
+                name: "Yamashita Cave",
+                lat: 16.9925, 
+                lng: 120.7180,
+                description: "Used as a base and hideout by General Yamashita during World War II, surrounded by lush pine forests."
+            },
+            {
+                name: "Gambang Falls",
+                lat: 16.9420, 
+                lng: 120.7610,
+                description: "A majestic cascading waterfall offering icy cold mountain waters perfect for nature adventurers."
+            },
+            {
+                name: "Nakayang View Deck",
+                lat: 16.9745, 
+                lng: 120.7022,
+                description: "Offers a stunning panoramic view of the entire valley of Cervantes and the winding mountain highways."
+            },
+            {
+                name: "Abra River (Cervantes Section)",
+                lat: 16.9982, 
+                lng: 120.7415,
+                description: "The massive river system cutting through the valley, offering breathtaking mountain-meets-water landscapes."
+            }
+        ];
+
+        // 2. Initialize the Map centered globally over Cervantes town proper
+        const map = L.map('tourist-map').setView([16.9868, 120.7314], 12);
+
+        // 3. Load OpenStreetMap Tiles (Free)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 4. Loop through the array data and automatically drop the location pins
+        touristSpots.forEach(function(spot) {
+            const popupContent = `
+                <div class="spot-popup">
+                    <h3><i class="fas fa-map-marker-alt"></i> ${spot.name}</h3>
+                    <p>${spot.description}</p>
+                </div>
+            `;
+
+            L.marker([spot.lat, spot.lng])
+                .addTo(map)
+                .bindPopup(popupContent);
+        });
+    </script>
+</body>
+</html>

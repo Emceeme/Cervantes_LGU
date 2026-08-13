@@ -1,0 +1,32 @@
+# Environment variables
+.env
+.env.local
+
+# Storage directories
+storage/
+storage/logs/
+storage/rate_limits/
+storage/login_attempts/
+
+# Uploads
+uploads/
+uploads/news/
+uploads/procurement/
+
+# MSWD Documents (private storage)
+storage/mswd_documents/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup

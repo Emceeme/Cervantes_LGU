@@ -1,13 +1,27 @@
 <?php
 session_start();
+require_once '../config/security.php';
 include '../config/db.php';
 
-if (!isset($_SESSION['name'])) {
+// Set security headers
+setSecurityHeaders();
+
+// 🔒 SECURITY GUARD: Super Admin only
+if (!isset($_SESSION['name']) || $_SESSION['role'] !== 'SUPER_ADMIN') {
+    logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'admin_lgu_list']);
     header("Location: ../login.php");
     exit();
 }
 
-$result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
+// Fetch all LGU users (Excluding Super Admins) to show Role and Department
+$query = "SELECT id, first_name, last_name, username, email, role, department 
+          FROM users 
+          WHERE role != 'SUPER_ADMIN' 
+          ORDER BY department ASC, id DESC";
+$result_stmt = $conn->prepare($query);
+$result_stmt->execute();
+$result = $result_stmt->get_result();
+$result_stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +30,7 @@ $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
 <meta charset="UTF-8">
 <title>LGU Accounts</title>
 <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -44,7 +59,7 @@ $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
         <section class="card">
 
             <h3>Registered LGU Employees</h3>
-            <p class="muted">All LGU accounts created by Super Admin</p>
+            <p class="muted">All Sub-Admins and Staff accounts across different departments.</p>
 
             <table class="table">
                 <thead>
@@ -53,24 +68,45 @@ $result = $conn->query("SELECT * FROM users WHERE role='LGU' ORDER BY id DESC");
                         <th>Name</th>
                         <th>Username</th>
                         <th>Email</th>
+                        <th>Department</th> <!-- Added Department Column -->
                         <th>Role</th>
                         <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <?php while ($row = $result->fetch_assoc()) { ?>
+                    <?php if ($result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                
+                                <!-- Department Column Output -->
+                                <td>
+                                    <span style="font-weight: 500; color: #38bdf8;">
+                                        <?php echo htmlspecialchars($row['department'] ?? 'Unassigned'); ?>
+                                    </span>
+                                </td>
+                                
+                                <!-- Role Output -->
+                                <td>
+                                    <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">
+                                        <?php echo htmlspecialchars($row['role']); ?>
+                                    </span>
+                                </td>
+                                
+                                <td>
+                                    <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
-                            <td><?php echo $row['first_name'] . " " . $row['last_name']; ?></td>
-                            <td><?php echo $row['username']; ?></td>
-                            <td><?php echo $row['email']; ?></td>
-                            <td><?php echo $row['role']; ?></td>
-                            <td>
-                                <a href="delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger">Delete</a>
-                            </td>
+                            <td colspan="7" style="text-align: center; color: #94a3b8;">No LGU accounts found.</td>
                         </tr>
-                    <?php } ?>
+                    <?php endif; ?>
                 </tbody>
 
             </table>

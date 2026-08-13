@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Cervantes - Municipality of Cervantes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header / Navbar (Kept identical to image_5118a0.jpg layout) -->
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <!-- MATCHED DESIGN NAVBAR -->
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="#">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accommodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="../public/public.php">Job Posting</a>
+                            <a href="../public/procurement.php">PHILGEPS</a>
+                            <a href="../public/news.php">News</a>
+                            <a href="#">BIDS AND AWARDS</a>
+                            <a href="#">Scholarship Package</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+            </div>
+        </nav>
+    </header>
+    <!-- Simple Elegant About Content Section -->
+    <main class="about-container">
+        <div class="about-header">
+            <h2>About Cervantes</h2>
+            <p class="subtitle">Discover the Summer Capital of Ilocos Sur</p>
+            <div class="title-underline"></div>
+        </div>
+
+        <section class="about-card">
+            <div class="card-icon-header">
+                <div class="icon-box"><i class="fas fa-landmark"></i></div>
+                <h3>Our History</h3>
+            </div>
+            <p>Cervantes holds a profound place in heritage, acting as a strategic historical mountain pass bridging the coastal regions to the grand Cordillera ranges. It is widely celebrated as the home of the historic Battle of Bessang Pass fought during World War II, serving as a monument to the bravery and resilience of our local heroes.</p>
+        </section>
+
+        <div class="about-row">
+            <section class="about-card half-width">
+                <div class="card-icon-header">
+                    <div class="icon-box"><i class="fas fa-eye"></i></div>
+                    <h3>Our Vision</h3>
+                </div>
+                <p>To establish Cervantes as a premier eco-tourism destination and progressive agro-industrial hub in northern Luzon, driven by transparent, inclusive, and adaptive governance.</p>
+            </section>
+
+            <section class="about-card half-width">
+                <div class="card-icon-header">
+                    <div class="icon-box"><i class="fas fa-bullseye"></i></div>
+                    <h3>Our Mission</h3>
+                </div>
+                <p>To uplift the quality of life for every citizen by promoting resilient agricultural programs, safeguarding environmental biodiversity, and preserving cultural identity.</p>
+            </section>
+        </div>
+
+        <section class="about-card">
+            <div class="card-icon-header">
+                <div class="icon-box"><i class="fas fa-info-circle"></i></div>
+                <h3>Fast Facts</h3>
+            </div>
+            <div class="facts-grid">
+                <div class="fact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Located in Ilocos Sur, Philippines</span>
+                </div>
+                <div class="fact-item">
+                    <i class="fas fa-mountain"></i>
+                    <span>Mountainous terrain with cool climate</span>
+                </div>
+                <div class="fact-item">
+                    <i class="fas fa-users"></i>
+                    <span>Rich cultural heritage</span>
+                </div>
+                <div class="fact-item">
+                    <i class="fas fa-tree"></i>
+                    <span>Eco-tourism destination</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentElement;
+                dropdown.classList.toggle('hovered');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('hovered');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

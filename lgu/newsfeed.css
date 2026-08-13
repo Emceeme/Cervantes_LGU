@@ -1,318 +1,410 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+/* =========================
+   GOVERNMENT BLUE THEME
+   Professional LGU Newsfeed Styling
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Poppins', sans-serif;
 }
 
-body{
-    min-height:100vh;
-    background:linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
-    color:#fff;
+body {
+    min-height: 100vh;
+    background: #F8FAFC;
+    color: #1E293B;
 }
 
-/*==============================
-LAYOUT
-==============================*/
-
-.container{
-    display:flex;
-    min-height:100vh;
+/* =========================
+   LAYOUT
+========================= */
+.container {
+    display: flex;
+    min-height: 100vh;
 }
 
 /* =========================
    SIDEBAR
 ========================= */
 .sidebar {
-    width: 260px;
-    padding: 25px 20px;
-
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(20px);
-
-    border-right: 1px solid rgba(255,255,255,0.2);
+    width: 280px;
+    background: #1E3A8A;
+    padding: 30px 20px;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
 }
 
 .logo {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
+    color: white;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.logo span {
+    color: #60A5FA;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .sidebar a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     text-decoration: none;
-    color: white;
-
-    padding: 14px;
-    margin-bottom: 20px;
-
-    border-radius: 12px;
-
-    background: rgba(255,255,255,0.10);
-
-    transition: 0.3s;
+    color: rgba(255,255,255,0.8);
+    padding: 14px 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
 }
 
 .sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
     transform: translateX(5px);
-    background: rgba(255,255,255,0.20);
 }
 
 .sidebar a.active {
-    background: white;
-    color: #2563eb;
+    background: #3B82F6;
+    color: white;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-/* SUCCESS TOAST */
-.success-toast{
-    position:fixed;
-    top:20px;
-    right:20px;
-
-    background:#22c55e;
-    color:white;
-
-    padding:15px 20px;
-    border-radius:12px;
-
-    font-weight:600;
-
-    box-shadow:0 10px 25px rgba(0,0,0,.25);
-
-    z-index:9999;
-
-    animation:slideIn .4s ease;
+/* =========================
+   SUCCESS TOAST
+========================= */
+.success-toast {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: #059669;
+    color: white;
+    padding: 18px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
+    z-index: 9999;
+    animation: slideIn 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-@keyframes slideIn{
-    from{
-        opacity:0;
-        transform:translateX(50px);
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
     }
-
-    to{
-        opacity:1;
-        transform:translateX(0);
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 
-/*==============================
-MAIN
-==============================*/
-
-.main-content{
-    flex:1;
-    padding:45px;
+/* =========================
+   MAIN CONTENT
+========================= */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    background: #F8FAFC;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 30px;
+    align-content: start;
 }
 
-.main-content h2{
-    font-size:38px;
-    margin-bottom:35px;
+.main-content h2 {
+    grid-column: 1 / -1;
+    font-size: 32px;
+    color: #1E3A8A;
+    margin-bottom: 10px;
+    font-weight: 700;
 }
 
-/*==============================
-POST GRID
-==============================*/
-
-.main-content{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-    gap:30px;
-    align-content:start;
+.main-content > p {
+    grid-column: 1 / -1;
+    color: #64748B;
+    font-size: 15px;
+    margin-bottom: 20px;
 }
 
-.main-content h2{
-    grid-column:1/-1;
+/* =========================
+   NEWS CARD
+========================= */
+.card {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-/*==============================
-CARD
-==============================*/
-
-.card{
-    background:rgba(255,255,255,.12);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.15);
-    border-radius:22px;
-    overflow:hidden;
-    transition:.35s;
-    display:flex;
-    flex-direction:column;
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
 }
 
-.card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 20px 40px rgba(0,0,0,.25);
+.news-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 1px solid #E2E8F0;
 }
 
-.news-image{
-    width:100%;
-    height:240px;
-    object-fit:cover;
+.card-content {
+    padding: 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-/*==============================
-CARD CONTENT
-==============================*/
-
-.card h3{
-    padding:20px 20px 10px;
-    font-size:24px;
+.card h3 {
+    font-size: 20px;
+    color: #1E3A8A;
+    margin-bottom: 12px;
+    font-weight: 700;
+    line-height: 1.4;
 }
 
-.card p{
-    padding:0 20px;
-    line-height:1.7;
-    color:#e5e7eb;
+.card p {
+    color: #475569;
+    line-height: 1.7;
+    font-size: 15px;
+    margin-bottom: 15px;
+    flex: 1;
 }
 
-.card small{
-    display:block;
-    padding:15px 20px;
-    color:#cbd5e1;
+.card small {
+    display: block;
+    color: #64748B;
+    font-size: 13px;
+    padding-top: 15px;
+    border-top: 1px solid #F1F5F9;
 }
 
-/*==============================
-DELETE BUTTON
-==============================*/
-
-.delete-btn{
-    display:block;
-    margin:20px;
-    text-align:center;
-    padding:12px;
-    background:#ef4444;
-    color:#fff;
-    text-decoration:none;
-    border-radius:12px;
-    font-weight:600;
-    transition:.3s;
+/* =========================
+   DELETE BUTTON
+========================= */
+.delete-btn {
+    display: block;
+    margin: 15px 25px 25px;
+    text-align: center;
+    padding: 12px;
+    background: #DC2626;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.delete-btn:hover{
-    background:#dc2626;
+.delete-btn:hover {
+    background: #B91C1C;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-/*==============================
-ADD BUTTON
-==============================*/
-
-.add-btn{
-    position:fixed;
-    right:40px;
-    bottom:40px;
-
-    width:65px;
-    height:65px;
-
-    border:none;
-    border-radius:50%;
-
-    background:#fff;
-    color:#2563eb;
-
-    font-size:34px;
-    cursor:pointer;
-
-    box-shadow:0 12px 25px rgba(0,0,0,.35);
-
-    transition:.3s;
+/* =========================
+   ADD BUTTON
+========================= */
+.add-btn {
+    position: fixed;
+    right: 40px;
+    bottom: 40px;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.add-btn:hover{
-    transform:scale(1.1);
+.add-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 12px 35px rgba(30, 58, 138, 0.5);
 }
 
-/*==============================
-MODAL
-==============================*/
-
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.75);
-    justify-content:center;
-    align-items:center;
-    z-index:999;
+/* =========================
+   MODAL
+========================= */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.modal-content{
-    width:650px;
-    max-width:90%;
-    background:#fff;
-    color:#222;
-    border-radius:20px;
-    padding:30px;
-    position:relative;
+.modal-content {
+    width: 650px;
+    max-width: 90%;
+    background: white;
+    color: #1E293B;
+    border-radius: 16px;
+    padding: 35px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease;
 }
 
-.modal-content h2{
-    margin-bottom:20px;
-    color:#111827;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #F1F5F9;
+}
+
+.modal-header h2 {
+    font-size: 24px;
+    color: #1E3A8A;
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1E3A8A;
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .modal-content input,
-.modal-content textarea{
-    width:100%;
-    padding:14px;
-    margin-bottom:15px;
-    border:1px solid #ddd;
-    border-radius:12px;
-    outline:none;
+.modal-content textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #1E293B;
+    transition: all 0.3s ease;
+    outline: none;
 }
 
-.modal-content button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:12px;
-    background:#2563eb;
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
+.modal-content input:focus,
+.modal-content textarea:focus {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.modal-content button:hover{
-    background:#1d4ed8;
+.modal-content textarea {
+    resize: vertical;
+    min-height: 120px;
 }
 
-.close{
-    position:absolute;
-    right:20px;
-    top:15px;
-    font-size:34px;
-    cursor:pointer;
-    color:#555;
+.modal-content button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #1E3A8A;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/*==============================
-RESPONSIVE
-==============================*/
-
-@media(max-width:900px){
-
-.container{
-    flex-direction:column;
+.modal-content button:hover {
+    background: #1E40AF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
 }
 
-.sidebar{
-    width:100%;
-    display:flex;
-    overflow-x:auto;
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 32px;
+    cursor: pointer;
+    color: #64748B;
+    transition: color 0.3s;
+    line-height: 1;
 }
 
-.sidebar a{
-    min-width:130px;
-    text-align:center;
+.close:hover {
+    color: #DC2626;
 }
 
-.main-content{
-    padding:20px;
-    grid-template-columns:1fr;
-}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+    }
 
+    .sidebar {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .sidebar a {
+        white-space: nowrap;
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+    }
+
+    .main-content {
+        padding: 20px;
+        grid-template-columns: 1fr;
+    }
+
+    .add-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        right: 20px;
+        bottom: 20px;
+    }
+
+    .modal-content {
+        padding: 25px;
+        width: 95%;
+    }
 }

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipality of Cervantes - Mayor's Office</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <!-- MATCHED DESIGN NAVBAR -->
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="#">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accomodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="public/public.php">Job Posting</a>
+                            <a href="public/procurement.php">Procurement Notice</a>
+                            <a href="public/philgeps.php">PhilGEPS</a>
+                            <a href="public/bids_awards.php">Bids and Awards</a>
+                            <a href="public/invitation_to_bid.php">Invitation to Bid</a>
+                            <a href="public/bid_bulletin.php">Bid Bulletin</a>
+                            <a href="public/notice_of_award.php">Notice of Award</a>
+                            <a href="public/notice_to_proceed.php">Notice to Proceed</a>
+                            <a href="public/news.php">News</a>
+                            <a href="public/scholarship.php">Scholarship</a>
+                        </div>
+                    </div>
+
+                    <a href="#" class="nav-item contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="hero-section">
+        <h2 class="section-title">Mayor's Office</h2>
+        <div class="title-underline"></div>
+
+        <div class="grid-container">
+            <div class="card circle-card">
+                <!-- Mayor's Profile Image added here -->
+                <div class="profile-image-container">
+                    <img src="https://tse1.mm.bing.net/th/id/OIP.YNr_SYktStEzQN7ChwfglgHaFP?pid=Api&P=0&h=180" alt="Mayor of Cervantes" class="mayor-profile-img">
+                </div>
+                <h3>Profile Of the Mayor</h3>
+                <button class="btn-blue">View Profile</button>
+            </div>
+
+            <div class="middle-cards">
+                <div class="card square-card">
+                    <div class="card-header">
+                        <div class="small-icon"><i class="fas fa-user"></i></div>
+                        <h3>Mayor Of Cervantes</h3>
+                    </div>
+                    <div class="card-line"></div>
+                    <p>Learn more about the leadership, vision, and initiatives of our municipality.</p>
+                    <button class="btn-blue">Learn More</button>
+                </div>
+
+                <div class="card square-card">
+                    <div class="card-header">
+                        <div class="small-icon info-icon">i</div>
+                        <h3>Mayor's info</h3>
+                    </div>
+                    <div class="card-line"></div>
+                    <p>Stay updated with the latest announcements, programs, and activities from the Mayor's Office.</p>
+                    <button class="btn-blue">View Updates</button>
+                </div>
+            </div>
+<!-- Right: Municipal Logo Banner -->
+            <div class="card right-banner">
+                <div class="banner-circle">
+                    <!-- Swapped icon for the official municipal logo image -->
+                    <div class="logo-image-container">
+                        <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="Cervantes Municipal Logo" class="muni-logo-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-body">
+                <div class="modal-icon-container"></div>
+                <h2 id="modalTitle">Modal Title</h2>
+                <div class="modal-divider"></div>
+                <div id="modalText">Modal body text goes here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

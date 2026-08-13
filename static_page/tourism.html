@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="tourism.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tourism - Municipality of Cervantes</title>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div class="bg"></div>
+
+    <header class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo-area">
+                    <div class="seal-placeholder"></div>
+                    <div class="logo-text">
+                        <span class="muni-title">MUNICIPALITY OF</span>
+                        <h1 class="muni-name">CERVANTES</h1>
+                        <span class="muni-subtitle">ILOCOS SUR</span>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                    <a href="index.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="about.html">Historical Background</a>
+                            <a href="map.html">Cervantes Map</a>
+                            <a href="#">Barangays</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item active">TOURISM <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="tourism.html">Destinations</a>
+                            <a href="accommodation.html">Where to stay</a>
+                            <a href="#">Bessang Pass History</a>
+                            <a href="#">Events</a>
+                            <a href="#">Resort</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="dropdown-toggle nav-item">SERVICES <span class="arrow">▼</span></button>
+                        <div class="dropdown-content">
+                            <a href="public/public.php">Job Posting</a>
+                            <a href="public/procurement.php">Procurement Notice</a>
+                            <a href="public/philgeps.php">PhilGEPS</a>
+                            <a href="public/bids_awards.php">Bids and Awards</a>
+                            <a href="public/invitation_to_bid.php">Invitation to Bid</a>
+                            <a href="public/bid_bulletin.php">Bid Bulletin</a>
+                            <a href="public/notice_of_award.php">Notice of Award</a>
+                            <a href="public/notice_to_proceed.php">Notice to Proceed</a>
+                            <a href="public/news.php">News</a>
+                            <a href="public/scholarship.php">Scholarship</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
+            </div>
+        </nav>
+    </header>
+
+    <script>
+        document.querySelectorAll('.dropdown-toggle').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentElement;
+                dropdown.classList.toggle('hovered');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('hovered');
+                }
+            });
+        });
+    </script>
+
+
+    <!-- MAIN SLIDER INTERFACE -->
+    <div class="container main-slider">
+        <div class="slide">
+            <div class="item" style="background-image:url('https://www.rngph.com/wp-content/uploads/2021/05/186528767_481615279735582_3959088796353590631_n-1.jpeg');">
+                <div class="content">
+                    <div class="icon-wrapper"><i class="fas fa-mountain"></i></div>
+                    <div class="name">Red Soil</div>
+                    <div class="des">The Red Soil (locally known as the Pilipil Red Soil) in Cervantes, Ilocos Sur, is a striking, Mars-like natural attraction that has become a popular off-the-beaten-path destination for hikers and eco-tourists.</div>
+                    <button class="explore-btn"><i class="fas fa-compass"></i> Explore</button>
+                </div>
+            </div>
+
+            <div class="item" style="background-image:url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5f72ec3a-5bde-49e3-8511-93698e99e90b/dcpvpg1-c0129d8a-37d7-4d38-a667-47c355433096.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzVmNzJlYzNhLTViZGUtNDllMy04NTExLTkzNjk4ZTk5ZTkwYlwvZGNwdnBnMS1jMDEyOWQ4YS0zN2Q3LTRkMzgtYTY2Ny00N2MzNTU0MzMwOTYuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.JfVAQeJyPae9udohNWPVQV_OJae7ZqKWic3Y3gbe9YI');">
+                <div class="content">
+                    <div class="icon-wrapper"><i class="fas fa-monument"></i></div>
+                    <div class="name">Bessang Pass Monument</div>
+                    <div class="des">The Bessang Pass Natural Monument is a protected area and historical site located in Cervantes, Ilocos Sur, Philippines. It commemorates one of the most significant victories of World War II.</div>
+                    <button class="explore-btn"><i class="fas fa-compass"></i> Explore</button>
+                </div>
+            </div>
+
+            <div class="item" style="background-image:url('https://images.unsplash.com/photo-1483982258113-b72862e6cff6?q=80&w=1170');">
+                <div class="content">
+                    <div class="icon-wrapper"><i class="fas fa-water"></i></div>
+                    <div class="name">Gambang Falls</div>
+                    <div class="des">A majestic cascading waterfall offering icy cold mountain waters perfect for nature adventurers and swimming enthusiasts.</div>
+                    <button class="explore-btn"><i class="fas fa-compass"></i> Explore</button>
+                </div>
+            </div>
+
+            <div class="item" style="background-image:url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070');">
+                <div class="content">
+                    <div class="icon-wrapper"><i class="fas fa-hiking"></i></div>
+                    <div class="name">Nakayang View Deck</div>
+                    <div class="des">Offers a stunning panoramic view of the entire valley of Cervantes and the winding mountain highways.</div>
+                    <button class="explore-btn"><i class="fas fa-compass"></i> Explore</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-navigation">
+            <button class="prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+<!-- Dynamic Popup Modal for Tourism Exploration -->
+    <div id="tourismModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-body">
+                <div id="modalImage" class="modal-hero-image"></div>
+                <h2 id="modalTitle">Destination Title</h2>
+                <div class="modal-divider"></div>
+                <p id="modalText">Detailed tourism information...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+</html>

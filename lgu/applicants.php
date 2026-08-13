@@ -1,7 +1,20 @@
 <?php
+session_start();
+require_once '../config/security.php';
 include '../config/db.php';
 
-$applicants = $conn->query("
+// Set security headers
+setSecurityHeaders();
+
+// SECURITY GUARD: Restrict access to Mayor's Office, LGU departments & Super Admins only
+$department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
+if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
+    logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'applicants', 'department' => $department]);
+    http_response_code(403);
+    die("Access Denied: You do not have permission to view LGU records.");
+}
+
+$applicants_stmt = $conn->prepare("
     SELECT 
         a.*,
         j.job_title
@@ -9,6 +22,9 @@ $applicants = $conn->query("
     LEFT JOIN jobs j ON a.job_id = j.id
     ORDER BY a.id DESC
 ");
+$applicants_stmt->execute();
+$applicants = $applicants_stmt->get_result();
+$applicants_stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -16,44 +32,42 @@ $applicants = $conn->query("
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Applicants</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="jobs.css"
-<style>
-
-</style>
+<link rel="stylesheet" href="jobs.css">
 </head>
 
 <body>
-
-<div class="bg-blur blur1"></div>
-<div class="bg-blur blur2"></div>
 
 <div class="container">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="logo">🏛️</div>
-
-        <a href="dashboard.php">Dashboard</a>
-        <a href="applicants.php">Applicants</a>
-        <a href="procurement.php">Procurement</a>
-        <a href="newsfeed.php">News Feed</a>
-        <a href="../logout.php">Logout</a>
+        <div class="logo">LGU <span>Portal</span></div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="applicants.php" class="active">Applicants</a>
+            <a href="procurement.php">Procurement</a>
+            <a href="newsfeed.php">News Feed</a>
+            <a href="../logout.php">Logout</a>
+        </nav>
     </aside>
 
     <!-- MAIN -->
     <main class="main-content">
 
-        <h2 class="page-title">Applicants</h2>
+        <div class="top-bar">
+            <h2>Job Applicants</h2>
+            <p>View and manage all job applications</p>
+        </div>
 
-        <div class="card">
+        <section class="card">
+            <div class="card-header">
+                <h3>Applicant List</h3>
+            </div>
 
         <?php if($applicants->num_rows > 0): ?>
 
-            <table class="applicants-table">
+            <table class="table">
 
                 <thead>
                     <tr>
@@ -72,41 +86,23 @@ $applicants = $conn->query("
                 <?php while($row = $applicants->fetch_assoc()): ?>
 
                     <tr>
-
-                        <td class="applicant-text">
-                            <?= htmlspecialchars($row['full_name']); ?>
-                        </td>
-
-                        <td class="applicant-text">
-                            <?= htmlspecialchars($row['email']); ?>
-                        </td>
-
-                        <td class="applicant-text">
-                            <?= htmlspecialchars($row['phone']); ?>
-                        </td>
-
+                        <td><?= htmlspecialchars($row['full_name']); ?></td>
+                        <td><?= htmlspecialchars($row['email']); ?></td>
+                        <td><?= htmlspecialchars($row['phone']); ?></td>
                         <td>
-                            <span class="job-tag">
+                            <span class="status active">
                                 <?= htmlspecialchars($row['job_title']); ?>
                             </span>
                         </td>
-
-                        <td class="applicant-text">
-                            <?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...
-                        </td>
-
+                        <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
                         <td>
-                            <a class="resume-link"
-                                href="../public/<?= $row['resume']; ?>"
+                            <a class="btn btn-secondary"
+                                href="public/<?= $row['resume']; ?>"
                                 target="_blank">
                                 View Resume
                             </a>
                         </td>
-
-                        <td class="applicant-text">
-                            <?= $row['created_at']; ?>
-                        </td>
-
+                        <td><?= $row['created_at']; ?></td>
                     </tr>
 
                 <?php endwhile; ?>
@@ -117,13 +113,13 @@ $applicants = $conn->query("
 
         <?php else: ?>
 
-            <div class="empty-box">
-                No applicants yet.
+            <div style="text-align: center; padding: 40px; color: #64748B;">
+                <p>No applicants yet.</p>
             </div>
 
         <?php endif; ?>
 
-        </div>
+        </section>
 
     </main>
 
