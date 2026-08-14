@@ -30,19 +30,22 @@ function run_migration($file_path, $conn) {
     echo "Running: $file_path\n";
     
     if (!file_exists($file_path)) {
-        echo "  ✗ File not found\n";
+        echo "  ✗ File not\n";
         return false;
     }
     
-    // Save current directory
-    $original_dir = getcwd();
-    
-    // Change to the directory containing the migration file
+    // Get the directory of the migration file
     $migration_dir = dirname($file_path);
+    
+    // Make the $conn connection available to the migration file
+    // by including it in the global scope
+    global $conn;
+    
+    // Change to the migration directory so relative includes work
+    $original_dir = getcwd();
     chdir($migration_dir);
     
     // Include the migration file
-    // The migration file should use the $conn connection
     include basename($file_path);
     
     // Restore original directory

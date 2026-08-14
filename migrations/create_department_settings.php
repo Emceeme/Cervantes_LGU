@@ -2,7 +2,8 @@
 // Migration: Create department_settings table
 // PostgreSQL-compatible version
 
-include '../config/db.php';
+// Use absolute path for config
+require_once __DIR__ . '/../config/db.php';
 
 // Detect database type
 $is_postgres = (strpos(getenv('DATABASE_URL') ?? '', 'postgres') !== false) || 
