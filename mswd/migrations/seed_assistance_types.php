@@ -188,7 +188,10 @@ try {
         }
     }
     
-    $stmt->close();
+    // Only close statement for MySQLi (PDO doesn't have close())
+    if (!($conn instanceof PDO)) {
+        $stmt->close();
+    }
     
     echo "\n✓ Seeded $count assistance types successfully!\n";
     

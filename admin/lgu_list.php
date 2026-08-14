@@ -20,8 +20,15 @@ $query = "SELECT id, first_name, last_name, username, email, role, department
           ORDER BY department ASC, id DESC";
 $result_stmt = $conn->prepare($query);
 $result_stmt->execute();
-$result = $result_stmt->get_result();
-$result_stmt->close();
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $result = $result_stmt->fetchAll();
+} else {
+    // MySQLi
+    $result = $result_stmt->get_result();
+    $result_stmt->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -75,37 +82,72 @@ $result_stmt->close();
                 </thead>
 
                 <tbody>
-                    <?php if ($result->num_rows > 0): ?>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                    <?php if ($conn instanceof PDO): ?>
+                        <?php if (count($result) > 0): ?>
+                            <?php foreach ($result as $row): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                    
+                                    <!-- Department Column Output -->
+                                    <td>
+                                        <span style="font-weight: 500; color: #38bdf8;">
+                                            <?php echo htmlspecialchars($row['department'] ?? 'Unassigned'); ?>
+                                        </span>
+                                    </td>
+                                    
+                                    <!-- Role Output -->
+                                    <td>
+                                        <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">
+                                            <?php echo htmlspecialchars($row['role']); ?>
+                                        </span>
+                                    </td>
+                                    
+                                    <td>
+                                        <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['id']); ?></td>
-                                <td><?php echo htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></td>
-                                <td><?php echo htmlspecialchars($row['username']); ?></td>
-                                <td><?php echo htmlspecialchars($row['email']); ?></td>
-                                
-                                <!-- Department Column Output -->
-                                <td>
-                                    <span style="font-weight: 500; color: #38bdf8;">
-                                        <?php echo htmlspecialchars($row['department'] ?? 'Unassigned'); ?>
-                                    </span>
-                                </td>
-                                
-                                <!-- Role Output -->
-                                <td>
-                                    <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">
-                                        <?php echo htmlspecialchars($row['role']); ?>
-                                    </span>
-                                </td>
-                                
-                                <td>
-                                    <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
-                                </td>
+                                <td colspan="7" style="text-align: center; color: #94a3b8;">No LGU accounts found.</td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endif; ?>
                     <?php else: ?>
-                        <tr>
-                            <td colspan="7" style="text-align: center; color: #94a3b8;">No LGU accounts found.</td>
-                        </tr>
+                        <?php if ($result->num_rows > 0): ?>
+                            <?php while ($row = $result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                    
+                                    <!-- Department Column Output -->
+                                    <td>
+                                        <span style="font-weight: 500; color: #38bdf8;">
+                                            <?php echo htmlspecialchars($row['department'] ?? 'Unassigned'); ?>
+                                        </span>
+                                    </td>
+                                    
+                                    <!-- Role Output -->
+                                    <td>
+                                        <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">
+                                            <?php echo htmlspecialchars($row['role']); ?>
+                                        </span>
+                                    </td>
+                                    
+                                    <td>
+                                        <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: #94a3b8;">No LGU accounts found.</td>
+                            </tr>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </tbody>
 
