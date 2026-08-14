@@ -34,9 +34,19 @@ function run_migration($file_path, $conn) {
         return false;
     }
     
+    // Save current directory
+    $original_dir = getcwd();
+    
+    // Change to the directory containing the migration file
+    $migration_dir = dirname($file_path);
+    chdir($migration_dir);
+    
     // Include the migration file
     // The migration file should use the $conn connection
-    include $file_path;
+    include basename($file_path);
+    
+    // Restore original directory
+    chdir($original_dir);
     
     echo "  ✓ Completed\n";
     return true;

@@ -29,10 +29,15 @@ if ($is_postgres) {
     )";
 }
 
-if ($conn->query($sql) === TRUE) {
-    echo "Table 'department_settings' created successfully.<br>";
+if ($conn->query($sql)) {
+    echo "✓ department_settings table created successfully.<br>";
 } else {
-    die("Error creating table: " . $conn->error);
+    if ($conn instanceof PDO) {
+        $error = $conn->errorInfo();
+        die("Error creating table: " . ($error[2] ?? 'Unknown error'));
+    } else {
+        die("Error creating table: " . $conn->error);
+    }
 }
 
 // Insert default settings for each department
