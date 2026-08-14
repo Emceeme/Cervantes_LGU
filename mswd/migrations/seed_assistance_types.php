@@ -121,48 +121,39 @@ $assistance_types = [
 
 try {
     if ($is_postgres) {
-        // PostgreSQL with ON CONFLICT to avoid duplicates
-        $stmt = $conn->prepare("
-            INSERT INTO assistance_types 
-            (name, description, eligibility_requirements, process_steps, required_documents, is_active)
-            VALUES (?, ?, ?, ?, ?, 1)
-            ON CONFLICT (name) DO NOTHING
-        ");
-        
-        if ($conn instanceof PDO) {
-            $count = 0;
-            foreach ($assistance_types as $type) {
-                $result = $stmt->execute([
-                    $type['name'],
-                    $type['description'],
-                    $type['eligibility_requirements'],
-                    $type['process_steps'],
-                    $type['required_documents']
-                ]);
+        // PostgreSQL - insert without ON CONFLICT (handle duplicates by checking first)
+        $count = 0;
+        foreach ($assistance_types as $type) {
+            // Check if already exists
+            $check_stmt = $conn->prepare("SELECT id FROM assistance_types WHERE name = ?");
+            $check_stmt->execute([$type['name']]);
+            $existing = $check_stmt->fetch();
+            
+            if (!$existing) {
+                $stmt = $conn->prepare("INSERT INTO assistance_types (name, description, eligibility_requirements, process_steps, required_documents, is_active) VALUES (?, ?, ?, ?, ?, 1)");
                 
-                if ($result) {
-                    echo "✓ Added: {$type['name']}\n";
-                    $count++;
-                }
-            }
-        } else {
-            $count = 0;
-            foreach ($assistance_types as $type) {
-                $stmt->bind_param(
-                    "sssss",
-                    $type['name'],
-                    $type['description'],
-                    $type['eligibility_requirements'],
-                    $type['process_steps'],
-                    $type['required_documents']
-                );
-                
-                if ($stmt->execute()) {
-                    echo "✓ Added: {$type['name']}\n";
-                    $count++;
+                if ($conn instanceof PDO) {
+                    $result = $stmt->execute([
+                        $type['name'],
+                        $type['description'],
+                        $type['eligibility_requirements'],
+                        $type['process_steps'],
+                        $type['required_documents']
+                    ]);
+                    
+                    if ($result) {
+                        echo "✓ Added: {$type['name']}\n";
+                        $count++;
+                    }
                 } else {
-                    echo "✗ Failed to add {$type['name']}: " . $stmt->error . "\n";
+                    $stmt->bind_param("sssss", $type['name'], $type['description'], $type['eligibility_requirements'], $type['process_steps'], $type['required_documents']);
+                    if ($stmt->execute()) {
+                        echo "✓ Added: {$type['name']}\n";
+                        $count++;
+                    }
                 }
+            } else {
+                echo "⊘ Skipped (already exists): {$type['name']}\n";
             }
         }
     } else {
