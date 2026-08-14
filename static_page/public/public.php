@@ -13,12 +13,15 @@ $jobs_stmt = $conn->prepare("
     ORDER BY id DESC
 ");
 $jobs_stmt->execute();
-$jobs = $jobs_stmt->get_result();
 
-if (!$jobs) {
-    die("SQL Error: " . $conn->error);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $jobs = $jobs_stmt->fetchAll();
+} else {
+    // MySQLi
+    $jobs = $jobs_stmt->get_result();
+    $jobs_stmt->close();
 }
-$jobs_stmt->close();
 
 // Generate CSRF token
 $csrf_token = generateCsrfToken();
@@ -45,7 +48,31 @@ $csrf_token = generateCsrfToken();
         <div class="container">
             <div class="card">
                 <h3 style="margin-bottom: 15px;">Available Positions</h3>
-                <?php if($jobs->num_rows > 0): ?>
+                <?php if($conn instanceof PDO): ?>
+                    <?php if(count($jobs) > 0): ?>
+                <div class="jobs-grid">
+                    <?php foreach($jobs as $row): ?>
+                    <div class="job-card">
+                        <span class="status-open"><?= htmlspecialchars($row['employment_type']) ?></span>
+                        <h3><?= htmlspecialchars($row['job_title']) ?></h3>
+                        <p class="department"><?= htmlspecialchars($row['department']) ?></p>
+                        <p><?= htmlspecialchars(substr($row['description'], 0, 120)) ?>...</p>
+                        <div class="job-footer">
+                            <span>📍 <?= htmlspecialchars($row['location']) ?></span>
+                            <span>💰 <?= htmlspecialchars($row['salary']) ?></span>
+                        </div>
+                        <div class="job-actions">
+                            <button class="file-link" onclick="openModal('<?= addslashes($row['job_title']) ?>', '<?= addslashes($row['department']) ?>', '<?= addslashes($row['description']) ?>')">View Details</button>
+                            <button class="file-link" onclick="openApply(<?= $row['id']; ?>)">Apply Now</button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                    <?php else: ?>
+                <div class="empty">No available job postings.</div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if($jobs->num_rows > 0): ?>
                 <div class="jobs-grid">
                     <?php while($row = $jobs->fetch_assoc()): ?>
                     <div class="job-card">
@@ -64,8 +91,9 @@ $csrf_token = generateCsrfToken();
                     </div>
                     <?php endwhile; ?>
                 </div>
-                <?php else: ?>
+                    <?php else: ?>
                 <div class="empty">No available job postings.</div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>

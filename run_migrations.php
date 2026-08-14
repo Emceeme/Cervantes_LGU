@@ -59,6 +59,7 @@ function run_migration($file_path, $conn) {
 $migrations = [
     'migrations/create_users_table.php',
     'migrations/create_department_settings.php',
+    'migrations/create_jobs_table.php',
     'mswd/migrations/create_tables.php',
     'mswd/migrations/seed_assistance_types.php',
     'migrations/add_applicant_account_link.php',
