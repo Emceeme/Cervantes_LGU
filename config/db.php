@@ -3,25 +3,50 @@
 require_once __DIR__ . '/env.php';
 
 // Check for cloud platform DATABASE_URL (Heroku, Render, etc.)
-if (getenv('DATABASE_URL')) {
-    $db_url = parse_url(getenv('DATABASE_URL'));
-    $db_host = $db_url['host'];
-    $db_user = $db_url['user'];
-    $db_pass = $db_url['pass'];
-    $db_name = ltrim($db_url['path'], '/');
-    $db_port = $db_url['port'] ?? 3306;
+$database_url = getenv('DATABASE_URL');
+
+if ($database_url) {
+    // Parse DATABASE_URL
+    $db_url = parse_url($database_url);
     
-    // Create MySQL connection for cloud platforms
-    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
-    
-    if ($conn->connect_error) {
-        if (env('APP_DEBUG', false)) {
-            die("Database connection failed: " . $conn->connect_error);
-        } else {
-            die("Database connection failed. Please contact system administrator.");
-        }
+    if ($db_url === false) {
+        die("Invalid DATABASE_URL format");
     }
-    $conn->set_charset("utf8mb4");
+    
+    $db_host = $db_url['host'] ?? '';
+    $db_user = $db_url['user'] ?? '';
+    $db_pass = $db_url['pass'] ?? '';
+    $db_name = ltrim($db_url['path'] ?? '', '/');
+    $db_port = $db_url['port'] ?? 5432;
+    
+    // Check if PostgreSQL or MySQL
+    if (strpos($database_url, 'postgres') !== false) {
+        // PostgreSQL connection using PDO
+        try {
+            $dsn = "pgsql:host={$db_host};port={$db_port};dbname={$db_name}";
+            $conn = new PDO($dsn, $db_user, $db_pass);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            if (env('APP_DEBUG', false)) {
+                die("PostgreSQL connection failed: " . $e->getMessage());
+            } else {
+                die("Database connection failed. Please contact system administrator.");
+            }
+        }
+    } else {
+        // MySQL connection for cloud platforms
+        $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
+        
+        if ($conn->connect_error) {
+            if (env('APP_DEBUG', false)) {
+                die("MySQL connection failed: " . $conn->connect_error);
+            } else {
+                die("Database connection failed. Please contact system administrator.");
+            }
+        }
+        $conn->set_charset("utf8mb4");
+    }
 } else {
     // Traditional MySQL connection for local deployment
     $db_host = env('DB_HOST', 'localhost');
