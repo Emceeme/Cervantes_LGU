@@ -1,17 +1,33 @@
 <?php
 // Migration: Create department_settings table
-// This migration creates a table to store department-specific settings
+// PostgreSQL-compatible version
 
 include '../config/db.php';
 
+// Detect database type
+$is_postgres = (strpos(getenv('DATABASE_URL') ?? '', 'postgres') !== false) || 
+               ($conn instanceof PDO);
+
 // Create table
-$sql = "CREATE TABLE IF NOT EXISTS department_settings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    department VARCHAR(100) NOT NULL UNIQUE,
-    settings_json JSON NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
+if ($is_postgres) {
+    // PostgreSQL syntax
+    $sql = "CREATE TABLE IF NOT EXISTS department_settings (
+        id SERIAL PRIMARY KEY,
+        department VARCHAR(100) NOT NULL UNIQUE,
+        settings_json JSONB NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+} else {
+    // MySQL syntax
+    $sql = "CREATE TABLE IF NOT EXISTS department_settings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        department VARCHAR(100) NOT NULL UNIQUE,
+        settings_json JSON NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+}
 
 if ($conn->query($sql) === TRUE) {
     echo "Table 'department_settings' created successfully.<br>";
@@ -73,8 +89,23 @@ $default_settings = [
 ];
 
 foreach ($default_settings as $department => $settings) {
-    $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) ON DUPLICATE KEY UPDATE settings_json = VALUES(settings_json)");
-    $stmt->bind_param("ss", $department, $settings);
+    if ($is_postgres) {
+        // PostgreSQL syntax with ON CONFLICT
+        $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) 
+                                ON CONFLICT (department) DO UPDATE SET settings_json = EXCLUDED.settings_json");
+        if ($conn instanceof PDO) {
+            $stmt->execute([$department, $settings]);
+        } else {
+            $stmt->bind_param("ss", $department, $settings);
+            $stmt->execute();
+        }
+    } else {
+        // MySQL syntax with ON DUPLICATE KEY UPDATE
+        $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) 
+                                ON DUPLICATE KEY UPDATE settings_json = VALUES(settings_json)");
+        $stmt->bind_param("ss", $department, $settings);
+        $stmt->execute();
+    }
     
     if ($stmt->execute()) {
         echo "Default settings for '$department' inserted successfully.<br>";

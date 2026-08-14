@@ -1,6 +1,7 @@
 <?php
 /**
  * MSWD Assistance Types Seed Script
+ * PostgreSQL-compatible version
  * Populates assistance_types table with predefined assistance programs
  * 
  * Usage: php mswd/migrations/seed_assistance_types.php
@@ -9,6 +10,10 @@
 require_once __DIR__ . '/../../config/db.php';
 
 echo "Seeding assistance types...\n\n";
+
+// Detect database type
+$is_postgres = (strpos(getenv('DATABASE_URL') ?? '', 'postgres') !== false) || 
+               ($conn instanceof PDO);
 
 $assistance_types = [
     [
@@ -115,32 +120,80 @@ $assistance_types = [
 ];
 
 try {
-    $stmt = $conn->prepare("
-        INSERT INTO assistance_types 
-        (name, description, eligibility_requirements, process_steps, required_documents, is_active)
-        VALUES (?, ?, ?, ?, ?, 1)
-    ");
-    
-    if (!$stmt) {
-        throw new Exception("Failed to prepare statement: " . $conn->error);
-    }
-    
-    $count = 0;
-    foreach ($assistance_types as $type) {
-        $stmt->bind_param(
-            "sssss",
-            $type['name'],
-            $type['description'],
-            $type['eligibility_requirements'],
-            $type['process_steps'],
-            $type['required_documents']
-        );
+    if ($is_postgres) {
+        // PostgreSQL with ON CONFLICT to avoid duplicates
+        $stmt = $conn->prepare("
+            INSERT INTO assistance_types 
+            (name, description, eligibility_requirements, process_steps, required_documents, is_active)
+            VALUES (?, ?, ?, ?, ?, 1)
+            ON CONFLICT (name) DO NOTHING
+        ");
         
-        if ($stmt->execute()) {
-            echo "✓ Added: {$type['name']}\n";
-            $count++;
+        if ($conn instanceof PDO) {
+            $count = 0;
+            foreach ($assistance_types as $type) {
+                $result = $stmt->execute([
+                    $type['name'],
+                    $type['description'],
+                    $type['eligibility_requirements'],
+                    $type['process_steps'],
+                    $type['required_documents']
+                ]);
+                
+                if ($result) {
+                    echo "✓ Added: {$type['name']}\n";
+                    $count++;
+                }
+            }
         } else {
-            echo "✗ Failed to add {$type['name']}: " . $stmt->error . "\n";
+            $count = 0;
+            foreach ($assistance_types as $type) {
+                $stmt->bind_param(
+                    "sssss",
+                    $type['name'],
+                    $type['description'],
+                    $type['eligibility_requirements'],
+                    $type['process_steps'],
+                    $type['required_documents']
+                );
+                
+                if ($stmt->execute()) {
+                    echo "✓ Added: {$type['name']}\n";
+                    $count++;
+                } else {
+                    echo "✗ Failed to add {$type['name']}: " . $stmt->error . "\n";
+                }
+            }
+        }
+    } else {
+        // MySQL
+        $stmt = $conn->prepare("
+            INSERT INTO assistance_types 
+            (name, description, eligibility_requirements, process_steps, required_documents, is_active)
+            VALUES (?, ?, ?, ?, ?, 1)
+        ");
+        
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement: " . $conn->error);
+        }
+        
+        $count = 0;
+        foreach ($assistance_types as $type) {
+            $stmt->bind_param(
+                "sssss",
+                $type['name'],
+                $type['description'],
+                $type['eligibility_requirements'],
+                $type['process_steps'],
+                $type['required_documents']
+            );
+            
+            if ($stmt->execute()) {
+                echo "✓ Added: {$type['name']}\n";
+                $count++;
+            } else {
+                echo "✗ Failed to add {$type['name']}: " . $stmt->error . "\n";
+            }
         }
     }
     
