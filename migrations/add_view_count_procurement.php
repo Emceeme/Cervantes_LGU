@@ -16,12 +16,13 @@ if ($conn->query($sql)) {
     echo "✅ view_count column added to procurement_posts table.<br>";
 } else {
     // Check if column already exists
-    if ($is_postgres) {
+    if ($conn instanceof PDO) {
         $check = $conn->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'procurement_posts' AND column_name = 'view_count'");
         if ($check && $check->rowCount() > 0) {
             echo "✅ view_count column already exists.<br>";
         } else {
-            echo "❌ Error adding view_count column: " . $conn->error . "<br>";
+            $error = $conn->errorInfo();
+            echo "❌ Error adding view_count column: " . ($error[2] ?? 'Unknown error') . "<br>";
         }
     } else {
         $check = $conn->query("SHOW COLUMNS FROM procurement_posts LIKE 'view_count'");
@@ -33,5 +34,8 @@ if ($conn->query($sql)) {
     }
 }
 
-$conn->close();
+// Only close connection for MySQLi (PDO doesn't have close())
+if (!($conn instanceof PDO)) {
+    $conn->close();
+}
 ?>

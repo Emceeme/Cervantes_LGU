@@ -18,12 +18,13 @@ if ($is_postgres) {
 if ($conn->query($sql)) {
     echo "✓ category column added\n";
 } else {
-    if ($is_postgres) {
+    if ($conn instanceof PDO) {
         $check = $conn->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'procurement_posts' AND column_name = 'category'");
         if ($check && $check->rowCount() > 0) {
             echo "✓ category column already exists\n";
         } else {
-            echo "✗ Error adding column: " . $conn->error . "\n";
+            $error = $conn->errorInfo();
+            echo "✗ Error adding column: " . ($error[2] ?? 'Unknown error') . "\n";
             exit(1);
         }
     } else {
@@ -48,12 +49,13 @@ if ($is_postgres) {
 if ($conn->query($sql)) {
     echo "✓ custom_date column added\n";
 } else {
-    if ($is_postgres) {
+    if ($conn instanceof PDO) {
         $check = $conn->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'procurement_posts' AND column_name = 'custom_date'");
         if ($check && $check->rowCount() > 0) {
             echo "✓ custom_date column already exists\n";
         } else {
-            echo "✗ Error adding column: " . $conn->error . "\n";
+            $error = $conn->errorInfo();
+            echo "✗ Error adding column: " . ($error[2] ?? 'Unknown error') . "\n";
             exit(1);
         }
     } else {

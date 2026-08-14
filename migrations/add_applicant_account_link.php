@@ -25,11 +25,21 @@ if ($conn->query($sql) === TRUE) {
     echo "Column 'applicant_id' added to applications table successfully.<br>";
 } else {
     // Check if column already exists
-    if (strpos($conn->error, "Duplicate column name") !== false || 
-        strpos($conn->error, "column") !== false) {
-        echo "Column 'applicant_id' already exists in applications table.<br>";
+    if ($conn instanceof PDO) {
+        $error = $conn->errorInfo();
+        $error_msg = $error[2] ?? '';
+        if (strpos($error_msg, "column") !== false || strpos($error_msg, "already exists") !== false) {
+            echo "Column 'applicant_id' already exists in applications table.<br>";
+        } else {
+            die("Error adding column: " . $error_msg);
+        }
     } else {
-        die("Error adding column: " . $conn->error);
+        if (strpos($conn->error, "Duplicate column name") !== false || 
+            strpos($conn->error, "column") !== false) {
+            echo "Column 'applicant_id' already exists in applications table.<br>";
+        } else {
+            die("Error adding column: " . $conn->error);
+        }
     }
 }
 

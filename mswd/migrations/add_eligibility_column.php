@@ -40,7 +40,12 @@ if ($column_exists) {
     if ($conn->query($sql)) {
         echo "✓ Added eligibility_requirements column\n";
     } else {
-        die("✗ Failed to add column: " . $conn->error);
+        if ($conn instanceof PDO) {
+            $error = $conn->errorInfo();
+            die("✗ Failed to add column: " . ($error[2] ?? 'Unknown error'));
+        } else {
+            die("✗ Failed to add column: " . $conn->error);
+        }
     }
 }
 
@@ -66,7 +71,12 @@ if (!$process_exists) {
     if ($conn->query($sql_process)) {
         echo "✓ Added process_steps column\n";
     } else {
-        echo "Warning: Failed to add process_steps column: " . $conn->error . "\n";
+        if ($conn instanceof PDO) {
+            $error = $conn->errorInfo();
+            echo "Warning: Failed to add process_steps column: " . ($error[2] ?? 'Unknown error') . "\n";
+        } else {
+            echo "Warning: Failed to add process_steps column: " . $conn->error . "\n";
+        }
     }
 }
 

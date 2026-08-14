@@ -82,7 +82,12 @@ if ($is_postgres) {
 if ($conn->query($sql)) {
     echo "✅ scholarship_applications table created successfully.<br>";
 } else {
-    echo "❌ Error creating scholarship_applications table: " . $conn->error . "<br>";
+    if ($conn instanceof PDO) {
+        $error = $conn->errorInfo();
+        echo "❌ Error creating scholarship_applications table: " . ($error[2] ?? 'Unknown error') . "<br>";
+    } else {
+        echo "❌ Error creating scholarship_applications table: " . $conn->error . "<br>";
+    }
 }
 
 // Create indexes for PostgreSQL
@@ -90,5 +95,8 @@ foreach ($indexes as $index_sql) {
     $conn->query($index_sql);
 }
 
-$conn->close();
+// Only close connection for MySQLi (PDO doesn't have close())
+if (!($conn instanceof PDO)) {
+    $conn->close();
+}
 ?>
