@@ -19,6 +19,11 @@ if ($database_url) {
     $db_name = ltrim($db_url['path'] ?? '', '/');
     $db_port = $db_url['port'] ?? 5432;
     
+    // Debug: Show parsed values (remove in production)
+    if (env('APP_DEBUG', false)) {
+        error_log("DATABASE_URL parsed: host=$db_host, user=$db_user, name=$db_name, port=$db_port");
+    }
+    
     // Check if PostgreSQL or MySQL
     if (strpos($database_url, 'postgres') !== false) {
         // PostgreSQL connection using PDO
@@ -29,7 +34,7 @@ if ($database_url) {
             $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             if (env('APP_DEBUG', false)) {
-                die("PostgreSQL connection failed: " . $e->getMessage());
+                die("PostgreSQL connection failed: " . $e->getMessage() . " | DSN: $dsn");
             } else {
                 die("Database connection failed. Please contact system administrator.");
             }

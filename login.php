@@ -44,109 +44,210 @@ if (isset($_POST['login'])) {
         }
         else {
             // 1. Fetch user by username OR email
-            $stmt = $conn->prepare("SELECT id, first_name, last_name, username, email, password, role, department FROM users WHERE username = ? OR email = ?");
-            $stmt->bind_param("ss", $username_or_email, $username_or_email);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            if ($conn instanceof PDO) {
+                // PostgreSQL/PDO
+                $stmt = $conn->prepare("SELECT id, first_name, last_name, username, email, password, role, department FROM users WHERE username = ? OR email = ?");
+                $stmt->execute([$username_or_email, $username_or_email]);
+                $user = $stmt->fetch();
+                
+                if ($user) {
+                    // 2. Verify password hash
+                    if (password_verify($password, $user['password'])) {
 
-            if ($result->num_rows === 1) {
+                        // Track successful login (resets attempt counter)
+                        trackLoginAttempt($username_or_email, true);
+                        trackLoginAttempt($client_ip, true);
 
-                $user = $result->fetch_assoc();
+                        // Store full session parameters
+                        $_SESSION['id']         = $user['id'];
+                        $_SESSION['user_id']    = $user['id']; 
+                        $_SESSION['username']   = $user['username'];
+                        $_SESSION['name']       = $user['first_name'] . ' ' . $user['last_name'];
+                        $_SESSION['role']       = $user['role'];
+                        $_SESSION['department'] = html_entity_decode($user['department'], ENT_QUOTES);
+                        $_SESSION['login_time'] = time();
 
-                // 2. Verify password hash
-                if (password_verify($password, $user['password'])) {
+                        // Log successful login
+                        logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
 
-                    // Track successful login (resets attempt counter)
-                    trackLoginAttempt($username_or_email, true);
-                    trackLoginAttempt($client_ip, true);
-
-                    // Store full session parameters
-                    $_SESSION['id']         = $user['id'];
-                    $_SESSION['user_id']    = $user['id']; 
-                    $_SESSION['username']   = $user['username'];
-                    $_SESSION['name']       = $user['first_name'] . ' ' . $user['last_name'];
-                    $_SESSION['role']       = $user['role'];
-                    $_SESSION['department'] = html_entity_decode($user['department'], ENT_QUOTES);
-                    $_SESSION['login_time'] = time();
-
-                    // Log successful login
-                    logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
-
-                    // 3. ROUTING LOGIC
-                    
-                    // A. Super Admins (highest priority)
-                    if ($user['role'] === 'SUPER_ADMIN') {
-                        header("Location: admin/dashboard.php");
-                        exit();
-                    }
-
-                    // B. MSWD Department (based on department, not role)
-                    if ($user['department'] === 'MSWD') {
-                        header("Location: mswd/worker/dashboard.php");
-                        exit();
-                    }
-
-                    // C. Treasury Department Staff
-                    if ($user['department'] === 'Treasury') {
-                        header("Location: treasury/dashboard.php");
-                        exit();
-                    }
-
-                    // D. Mayor's Office and other LGU departments
-                    if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
-                        header("Location: lgu/dashboard.php");
-                        exit();
-                    }
-
-                    // E. APPLICANT Role (MSWD applicants with accounts)
-                    if ($user['role'] === 'APPLICANT') {
-                        header("Location: mswd/applicant/my-applications.php");
-                        exit();
-                    }
-
-                    // F. Citizens (only if not in Treasury or MSWD department)
-                    if ($user['role'] === 'CITIZEN') {
-                        header("Location: treasury/citizen/dashboard.php");
-                        exit();
-                    }
-
-                    // F. Other LGU Departments (Mayor's Office, HR, IT, etc.)
-                    else {
-                        if ($user['role'] === 'ADMIN') {
-                            header("Location: lgu/manage_employees.php");
-                        } else {
-                            header("Location: lgu/dashboard.php");
+                        // 3. ROUTING LOGIC
+                        
+                        // A. Super Admins (highest priority)
+                        if ($user['role'] === 'SUPER_ADMIN') {
+                            header("Location: admin/dashboard.php");
+                            exit();
                         }
-                        exit();
-                    }
 
+                        // B. MSWD Department (based on department, not role)
+                        if ($user['department'] === 'MSWD') {
+                            header("Location: mswd/worker/dashboard.php");
+                            exit();
+                        }
+
+                        // C. Treasury Department Staff
+                        if ($user['department'] === 'Treasury') {
+                            header("Location: treasury/dashboard.php");
+                            exit();
+                        }
+
+                        // D. Mayor's Office and other LGU departments
+                        if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
+                            header("Location: lgu/dashboard.php");
+                            exit();
+                        }
+
+                        // E. APPLICANT Role (MSWD applicants with accounts)
+                        if ($user['role'] === 'APPLICANT') {
+                            header("Location: mswd/applicant/my-applications.php");
+                            exit();
+                        }
+
+                        // F. Citizens (only if not in Treasury or MSWD department)
+                        if ($user['role'] === 'CITIZEN') {
+                            header("Location: treasury/citizen/dashboard.php");
+                            exit();
+                        }
+
+                        // F. Other LGU Departments (Mayor's Office, HR, IT, etc.)
+                        else {
+                            if ($user['role'] === 'ADMIN') {
+                                header("Location: lgu/manage_employees.php");
+                            } else {
+                                header("Location: lgu/dashboard.php");
+                            }
+                            exit();
+                        }
+
+                    } else {
+                        $error = "Invalid password.";
+                        // Track failed login attempt
+                        $is_blocked = trackLoginAttempt($username_or_email, false);
+                        trackLoginAttempt($client_ip, false);
+                        
+                        logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'invalid_password']);
+                        
+                        if ($is_blocked) {
+                            $error = "Too many failed login attempts. Please try again later.";
+                        }
+                    }
                 } else {
-                    $error = "Invalid password.";
+                    $error = "User not found.";
                     // Track failed login attempt
                     $is_blocked = trackLoginAttempt($username_or_email, false);
                     trackLoginAttempt($client_ip, false);
                     
-                    logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'invalid_password']);
+                    logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'user_not_found']);
+                    
+                    if ($is_blocked) {
+                        $error = "Too many failed login attempts. Please try again later.";
+                    }
+                }
+            } else {
+                // MySQLi
+                $stmt = $conn->prepare("SELECT id, first_name, last_name, username, email, password, role, department FROM users WHERE username = ? OR email = ?");
+                $stmt->bind_param("ss", $username_or_email, $username_or_email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($result->num_rows === 1) {
+
+                    $user = $result->fetch_assoc();
+
+                    // 2. Verify password hash
+                    if (password_verify($password, $user['password'])) {
+
+                        // Track successful login (resets attempt counter)
+                        trackLoginAttempt($username_or_email, true);
+                        trackLoginAttempt($client_ip, true);
+
+                        // Store full session parameters
+                        $_SESSION['id']         = $user['id'];
+                        $_SESSION['user_id']    = $user['id']; 
+                        $_SESSION['username']   = $user['username'];
+                        $_SESSION['name']       = $user['first_name'] . ' ' . $user['last_name'];
+                        $_SESSION['role']       = $user['role'];
+                        $_SESSION['department'] = html_entity_decode($user['department'], ENT_QUOTES);
+                        $_SESSION['login_time'] = time();
+
+                        // Log successful login
+                        logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
+
+                        // 3. ROUTING LOGIC
+                        
+                        // A. Super Admins (highest priority)
+                        if ($user['role'] === 'SUPER_ADMIN') {
+                            header("Location: admin/dashboard.php");
+                            exit();
+                        }
+
+                        // B. MSWD Department (based on department, not role)
+                        if ($user['department'] === 'MSWD') {
+                            header("Location: mswd/worker/dashboard.php");
+                            exit();
+                        }
+
+                        // C. Treasury Department Staff
+                        if ($user['department'] === 'Treasury') {
+                            header("Location: treasury/dashboard.php");
+                            exit();
+                        }
+
+                        // D. Mayor's Office and other LGU departments
+                        if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
+                            header("Location: lgu/dashboard.php");
+                            exit();
+                        }
+
+                        // E. APPLICANT Role (MSWD applicants with accounts)
+                        if ($user['role'] === 'APPLICANT') {
+                            header("Location: mswd/applicant/my-applications.php");
+                            exit();
+                        }
+
+                        // F. Citizens (only if not in Treasury or MSWD department)
+                        if ($user['role'] === 'CITIZEN') {
+                            header("Location: treasury/citizen/dashboard.php");
+                            exit();
+                        }
+
+                        // F. Other LGU Departments (Mayor's Office, HR, IT, etc.)
+                        else {
+                            if ($user['role'] === 'ADMIN') {
+                                header("Location: lgu/manage_employees.php");
+                            } else {
+                                header("Location: lgu/dashboard.php");
+                            }
+                            exit();
+                        }
+
+                    } else {
+                        $error = "Invalid password.";
+                        // Track failed login attempt
+                        $is_blocked = trackLoginAttempt($username_or_email, false);
+                        trackLoginAttempt($client_ip, false);
+                        
+                        logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'invalid_password']);
+                        
+                        if ($is_blocked) {
+                            $error = "Too many failed login attempts. Please try again later.";
+                        }
+                    }
+
+                } else {
+                    $error = "User not found.";
+                    // Track failed login attempt
+                    $is_blocked = trackLoginAttempt($username_or_email, false);
+                    trackLoginAttempt($client_ip, false);
+                    
+                    logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'user_not_found']);
                     
                     if ($is_blocked) {
                         $error = "Too many failed login attempts. Please try again later.";
                     }
                 }
 
-            } else {
-                $error = "User not found.";
-                // Track failed login attempt
-                $is_blocked = trackLoginAttempt($username_or_email, false);
-                trackLoginAttempt($client_ip, false);
-                
-                logSecurityEvent('login_failed', null, ['ip' => $client_ip, 'username' => $username_or_email, 'reason' => 'user_not_found']);
-                
-                if ($is_blocked) {
-                    $error = "Too many failed login attempts. Please try again later.";
-                }
+                $stmt->close();
             }
-
-            $stmt->close();
         }
     }
 }
