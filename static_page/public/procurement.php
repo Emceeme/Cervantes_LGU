@@ -57,18 +57,38 @@ $sql .= " ORDER BY custom_date DESC, created_at DESC";
 
 $posts_stmt = $conn->prepare($sql);
 if (!$posts_stmt) {
-    die("Prepare Error: " . $conn->error . " SQL: " . $sql);
+    if ($conn instanceof PDO) {
+        die("Prepare Error: " . implode(", ", $conn->errorInfo()) . " SQL: " . $sql);
+    } else {
+        die("Prepare Error: " . $conn->error . " SQL: " . $sql);
+    }
 }
-if (!empty($params)) {
-    $posts_stmt->bind_param($types, ...$params);
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if (!empty($params)) {
+        $posts_stmt->execute($params);
+    } else {
+        $posts_stmt->execute();
+    }
+    $posts = $posts_stmt->fetchAll();
+} else {
+    // MySQLi
+    if (!empty($params)) {
+        $posts_stmt->bind_param($types, ...$params);
+    }
+    $posts_stmt->execute();
+    $posts = $posts_stmt->get_result();
+    $posts_stmt->close();
 }
-$posts_stmt->execute();
-$posts = $posts_stmt->get_result();
 
 if(!$posts){
-    die("Query Error: " . $conn->error);
+    if ($conn instanceof PDO) {
+        die("Query Error: " . implode(", ", $conn->errorInfo()));
+    } else {
+        die("Query Error: " . $conn->error);
+    }
 }
-$posts_stmt->close();
 
 // Success message
 $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
@@ -135,8 +155,55 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
 
 <h3 style="margin-bottom: 15px;"><?= htmlspecialchars($category_name) ?></h3>
 
-<?php if($posts->num_rows > 0): ?>
+<?php if($conn instanceof PDO): ?>
+    <?php if(count($posts) > 0): ?>
+<table>
 
+<thead>
+<tr>
+    <th>Title</th>
+    <th>Category</th>
+    <th>Posting Date</th>
+    <th>File</th>
+</tr>
+</thead>
+
+<tbody>
+
+<?php foreach($posts as $row): ?>
+<tr>
+
+    <td>
+        <?= htmlspecialchars($row['title']) ?>
+    </td>
+    <td>
+        <?= htmlspecialchars($row['category']) ?>
+    </td>
+    <td>
+        <?= htmlspecialchars($row['custom_date'] ?? $row['created_at']) ?>
+    </td>
+    <td>
+        <a href="<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
+            📄 <?= htmlspecialchars($row['title']) ?>
+        </a>
+    </td>
+
+</tr>
+
+<?php endforeach; ?>
+
+</tbody>
+
+</table>
+
+    <?php else: ?>
+<div class="empty">
+    No procurement notices found.
+</div>
+
+    <?php endif; ?>
+<?php else: ?>
+    <?php if($posts->num_rows > 0): ?>
 <table>
 
 <thead>
@@ -151,26 +218,20 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
 <tbody>
 
 <?php while($row = $posts->fetch_assoc()): ?>
-
 <tr>
 
     <td>
         <?= htmlspecialchars($row['title']) ?>
     </td>
-
     <td>
         <?= htmlspecialchars($row['category']) ?>
     </td>
-
     <td>
-        <?= $row['custom_date'] ? date('M d, Y', strtotime($row['custom_date'])) : date('M d, Y', strtotime($row['created_at'])) ?>
+        <?= htmlspecialchars($row['custom_date'] ?? $row['created_at']) ?>
     </td>
-
     <td>
-        <a class="file-link"
-           href="download_procurement.php?id=<?= $row['id'] ?>"
-           target="_blank">
-            View / Download
+        <a href="<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
+            📄 <?= htmlspecialchars($row['title']) ?>
         </a>
     </td>
 
@@ -182,12 +243,12 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
 
 </table>
 
-<?php else: ?>
-
+    <?php else: ?>
 <div class="empty">
-    No procurement notices available for <?= htmlspecialchars(strtolower($category_name)) ?>.
+    No procurement notices found for <?= htmlspecialchars(strtolower($category_name)) ?>.
 </div>
 
+    <?php endif; ?>
 <?php endif; ?>
 
 </div>
