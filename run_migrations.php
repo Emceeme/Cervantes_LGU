@@ -57,6 +57,7 @@ function run_migration($file_path, $conn) {
 
 // List of migrations to run (in order)
 $migrations = [
+    'migrations/create_users_table.php',
     'migrations/create_department_settings.php',
     'mswd/migrations/create_tables.php',
     'mswd/migrations/seed_assistance_types.php',

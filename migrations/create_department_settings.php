@@ -116,11 +116,22 @@ foreach ($default_settings as $department => $settings) {
     if ($stmt->execute()) {
         echo "Default settings for '$department' inserted successfully.<br>";
     } else {
-        echo "Error inserting settings for '$department': " . $stmt->error . "<br>";
+        if ($conn instanceof PDO) {
+            echo "Error inserting settings for '$department': " . implode(", ", $stmt->errorInfo()) . "<br>";
+        } else {
+            echo "Error inserting settings for '$department': " . $stmt->error . "<br>";
+        }
     }
-    $stmt->close();
+    
+    // Only close statement for MySQLi (PDO doesn't have close())
+    if (!($conn instanceof PDO)) {
+        $stmt->close();
+    }
 }
 
-$conn->close();
+// Only close connection for MySQLi (PDO doesn't have close())
+if (!($conn instanceof PDO)) {
+    $conn->close();
+}
 echo "<br>Migration completed successfully!";
 ?>
