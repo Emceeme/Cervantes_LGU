@@ -15,18 +15,15 @@ if ($conn instanceof PDO) {
     // PostgreSQL/PDO
     $posts_stmt->execute([$category]);
     $posts = $posts_stmt->fetchAll();
+    // Empty result is not an error for PDO
 } else {
     // MySQLi
     $posts_stmt->bind_param("s", $category);
     $posts_stmt->execute();
     $posts = $posts_stmt->get_result();
     $posts_stmt->close();
-}
-
-if(!$posts){
-    if ($conn instanceof PDO) {
-        die("Query Error: " . implode(", ", $conn->errorInfo()));
-    } else {
+    
+    if(!$posts){
         die("Query Error: " . $conn->error);
     }
 }
