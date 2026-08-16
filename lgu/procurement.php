@@ -44,16 +44,29 @@ if (!empty($search_date)) {
 $sql .= " ORDER BY id DESC";
 
 $posts_stmt = $conn->prepare($sql);
-if (!empty($params)) {
-    $posts_stmt->bind_param($types, ...$params);
-}
-$posts_stmt->execute();
-$posts = $posts_stmt->get_result();
 
-if(!$posts){
-    die("Query Error: " . $conn->error);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if (!empty($params)) {
+        $posts_stmt->execute($params);
+    } else {
+        $posts_stmt->execute();
+    }
+    $posts = $posts_stmt->fetchAll();
+    // Empty result is not an error for PDO
+} else {
+    // MySQLi
+    if (!empty($params)) {
+        $posts_stmt->bind_param($types, ...$params);
+    }
+    $posts_stmt->execute();
+    $posts = $posts_stmt->get_result();
+    
+    if(!$posts){
+        die("Query Error: " . $conn->error);
+    }
+    $posts_stmt->close();
 }
-$posts_stmt->close();
 
 // Generate CSRF token
 $csrf_token = generateCsrfToken();
@@ -133,7 +146,8 @@ $csrf_token = generateCsrfToken();
                 </thead>
 
                 <tbody>
-                    <?php while($row=$posts->fetch_assoc()): ?>
+                    <?php if($conn instanceof PDO): ?>
+                        <?php foreach($posts as $row): ?>
 
                     <tr>
                         <td><?= htmlspecialchars($row['title']) ?></td>
@@ -163,7 +177,40 @@ $csrf_token = generateCsrfToken();
                         </td>
                     </tr>
 
-                    <?php endwhile; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php while($row=$posts->fetch_assoc()): ?>
+
+                    <tr>
+                        <td><?= htmlspecialchars($row['title']) ?></td>
+                        <td><?= htmlspecialchars($row['category'] ?? 'N/A') ?></td>
+                        <td>
+                            <a href="uploads/procurement/<?= $row['file_path'] ?>" target="_blank">
+                                View File
+                            </a>
+                        </td>
+
+                        <td>
+                            <?= $row['award_winner'] ? htmlspecialchars($row['award_winner']) : '-' ?>
+                        </td>
+
+                        <td>
+                            <span class="view-count"><?= number_format($row['view_count'] ?? 0) ?></span>
+                        </td>
+
+                        <td><?= $row['created_at'] ?></td>
+
+                        <td>
+                            <a href="handler/delete_procurement.php?id=<?= $row['id'] ?>" 
+                               class="delete-btn"
+                               onclick="return confirm('Are you sure you want to delete this procurement post?')">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </tbody>
 
             </table>
