@@ -14,7 +14,7 @@ if ($conn instanceof PDO) {
 
 if ($exists) {
     echo "Table 'news_posts' already exists. Skipping creation.\n";
-    exit;
+    return;
 }
 
 // Create table
