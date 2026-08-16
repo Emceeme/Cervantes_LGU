@@ -22,10 +22,18 @@ $posts_stmt = $conn->prepare("
     WHERE user_id = ?
     ORDER BY id DESC
 ");
-$posts_stmt->bind_param("i", $user_id);
-$posts_stmt->execute();
-$posts = $posts_stmt->get_result();
-$posts_stmt->close();
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $posts_stmt->execute([$user_id]);
+    $posts = $posts_stmt->fetchAll();
+} else {
+    // MySQLi
+    $posts_stmt->bind_param("i", $user_id);
+    $posts_stmt->execute();
+    $posts = $posts_stmt->get_result();
+    $posts_stmt->close();
+}
 
 // Generate CSRF token
 $csrf_token = generateCsrfToken();
@@ -65,7 +73,51 @@ $csrf_token = generateCsrfToken();
             +
         </button>
 
-        <?php while($row = $posts->fetch_assoc()): ?>
+        <?php if($conn instanceof PDO): ?>
+            <?php foreach($posts as $row): ?>
+
+        <div class="card">
+
+<?php
+$imagePath = "../uploads/news/" . $row['image'];
+
+if (!empty($row['image']) && file_exists($imagePath)) {
+?>
+    <img src="<?= htmlspecialchars($imagePath) ?>" class="news-image">
+<?php
+} else {
+?>
+    <div style="
+        background:#FEF3C7;
+        color:#92400E;
+        padding:15px;
+        margin:20px;
+        border-radius:8px;
+        border:1px solid #FCD34D;
+    ">
+        <strong>⚠ Image not found</strong><br><br>
+        <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
+        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?>
+    </div>
+<?php
+}
+?>
+            <div class="card-content">
+                <h3><?= htmlspecialchars($row['title']) ?></h3>
+                <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                <small><?= $row['created_at'] ?></small>
+                <a
+                class="delete-btn"
+                href="handler/delete_news.php?id=<?= $row['id'] ?>"
+                onclick="return confirm('Delete post?')">
+                Delete
+                </a>
+            </div>
+        </div>
+
+            <?php endforeach; ?>
+        <?php else: ?>
+            <?php while($row = $posts->fetch_assoc()): ?>
 
         <div class="card">
 
@@ -107,6 +159,7 @@ if (!empty($row['image']) && file_exists($imagePath)) {
         </div>
 
         <?php endwhile; ?>
+        <?php endif; ?>
 
     </main>
 
