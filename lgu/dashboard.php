@@ -16,9 +16,17 @@ if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $departmen
 
 // Fetch job listings
 $jobs_stmt = $conn->prepare("SELECT * FROM jobs ORDER BY id DESC");
-$jobs_stmt->execute();
-$jobs = $jobs_stmt->get_result();
-$jobs_stmt->close();
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $jobs_stmt->execute();
+    $jobs = $jobs_stmt->fetchAll();
+} else {
+    // MySQLi
+    $jobs_stmt->execute();
+    $jobs = $jobs_stmt->get_result();
+    $jobs_stmt->close();
+}
 
 // Generate CSRF token
 $csrf_token = generateCsrfToken();
@@ -84,8 +92,8 @@ $csrf_token = generateCsrfToken();
 
                 <tbody>
 
-                <?php while($row = $jobs->fetch_assoc()): ?>
-
+                <?php if($conn instanceof PDO): ?>
+                    <?php foreach($jobs as $row): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['job_title']) ?></td>
                     <td><?= htmlspecialchars($row['department']) ?></td>
@@ -106,8 +114,31 @@ $csrf_token = generateCsrfToken();
                         </a>
                     </td>
                 </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php while($row = $jobs->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['job_title']) ?></td>
+                    <td><?= htmlspecialchars($row['department']) ?></td>
+                    <td><?= htmlspecialchars($row['employment_type']) ?></td>
+                    <td><?= htmlspecialchars($row['salary']) ?></td>
 
-                <?php endwhile; ?>
+                    <td>
+                        <span class="status <?= strtolower($row['status']) ?>">
+                            <?= htmlspecialchars($row['status']) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <a class="btn-danger"
+                           href="handler/delete_job.php?id=<?= $row['id'] ?>"
+                           onclick="return confirm('Delete this job?')">
+                           Delete
+                        </a>
+                    </td>
+                </tr>
+                    <?php endwhile; ?>
+                <?php endif; ?>
 
                 </tbody>
 
