@@ -60,6 +60,7 @@ $migrations = [
     'migrations/create_users_table.php',
     'migrations/create_department_settings.php',
     'migrations/create_jobs_table.php',
+    'migrations/create_applicants_table.php',
     'migrations/create_news_posts_table.php',
     'migrations/create_procurement_posts_table.php',
     'mswd/migrations/create_tables.php',

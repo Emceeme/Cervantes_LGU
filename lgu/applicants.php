@@ -22,9 +22,17 @@ $applicants_stmt = $conn->prepare("
     LEFT JOIN jobs j ON a.job_id = j.id
     ORDER BY a.id DESC
 ");
-$applicants_stmt->execute();
-$applicants = $applicants_stmt->get_result();
-$applicants_stmt->close();
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $applicants_stmt->execute();
+    $applicants = $applicants_stmt->fetchAll();
+} else {
+    // MySQLi
+    $applicants_stmt->execute();
+    $applicants = $applicants_stmt->get_result();
+    $applicants_stmt->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +73,62 @@ $applicants_stmt->close();
                 <h3>Applicant List</h3>
             </div>
 
-        <?php if($applicants->num_rows > 0): ?>
+        <?php if($conn instanceof PDO): ?>
+            <?php if(count($applicants) > 0): ?>
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Job</th>
+                        <th>Message</th>
+                        <th>Resume</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                <?php foreach($applicants as $row): ?>
+
+                    <tr>
+                        <td><?= htmlspecialchars($row['full_name']); ?></td>
+                        <td><?= htmlspecialchars($row['email']); ?></td>
+                        <td><?= htmlspecialchars($row['phone']); ?></td>
+                        <td>
+                            <span class="status active">
+                                <?= htmlspecialchars($row['job_title']); ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
+                        <td>
+                            <a class="btn btn-secondary"
+                                href="public/<?= $row['resume']; ?>"
+                                target="_blank">
+                                View Resume
+                            </a>
+                        </td>
+                        <td><?= $row['created_at']; ?></td>
+                    </tr>
+
+                <?php endforeach; ?>
+
+                </tbody>
+
+            </table>
+
+        <?php else: ?>
+
+            <div style="text-align: center; padding: 40px; color: #64748B;">
+                <p>No applicants yet.</p>
+            </div>
+
+        <?php endif; ?>
+        <?php else: ?>
+            <?php if($applicants->num_rows > 0): ?>
 
             <table class="table">
 
@@ -117,6 +180,7 @@ $applicants_stmt->close();
                 <p>No applicants yet.</p>
             </div>
 
+        <?php endif; ?>
         <?php endif; ?>
 
         </section>
