@@ -35,16 +35,29 @@ $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Prepare Error: " . $conn->error . " SQL: " . $sql . "<br><br>NOTE: Make sure to run the migration: <a href='../migrations/create_scholarship_applications.php'>Click here to create scholarship_applications table</a>");
 }
-if (!empty($params)) {
-    $stmt->bind_param($types, ...$params);
-}
-$stmt->execute();
-$applications = $stmt->get_result();
 
-if (!$applications) {
-    die("Query Error: " . $conn->error);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if (!empty($params)) {
+        $stmt->execute($params);
+    } else {
+        $stmt->execute();
+    }
+    $applications = $stmt->fetchAll();
+    // Empty result is not an error for PDO
+} else {
+    // MySQLi
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $applications = $stmt->get_result();
+    
+    if (!$applications) {
+        die("Query Error: " . $conn->error);
+    }
+    $stmt->close();
 }
-$stmt->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -111,7 +124,8 @@ $stmt->close();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while($row = $applications->fetch_assoc()): ?>
+                    <?php if($conn instanceof PDO): ?>
+                        <?php foreach($applications as $row): ?>
                     <tr>
                         <td>
                             <strong><?= htmlspecialchars($row['full_name']) ?></strong><br>
@@ -141,12 +155,51 @@ $stmt->close();
                             <button class="view-btn" onclick='viewApplication(<?= json_encode($row) ?>)'>View Details</button>
                         </td>
                     </tr>
-                    <?php endwhile; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php while($row = $applications->fetch_assoc()): ?>
+                    <tr>
+                        <td>
+                            <strong><?= htmlspecialchars($row['full_name']) ?></strong><br>
+                            <small><?= htmlspecialchars($row['email']) ?></small><br>
+                            <small><?= htmlspecialchars($row['phone']) ?></small>
+                        </td>
+                        <td>
+                            <?= htmlspecialchars($row['school_name']) ?><br>
+                            <small><?= htmlspecialchars($row['course']) ?> - <?= htmlspecialchars($row['year_level']) ?></small>
+                        </td>
+                        <td><?= htmlspecialchars($row['gpa']) ?></td>
+                        <td>₱<?= number_format($row['family_income'], 2) ?></td>
+                        <td>
+                            <?php
+                            $status_class = '';
+                            switch($row['status']) {
+                                case 'PENDING': $status_class = 'status-open'; break;
+                                case 'UNDER_REVIEW': $status_class = 'status-open'; break;
+                                case 'APPROVED': $status_class = 'status-awarded'; break;
+                                case 'REJECTED': $status_class = 'status-rejected'; break;
+                            }
+                            ?>
+                            <span class="<?= $status_class ?>"><?= htmlspecialchars($row['status']) ?></span>
+                        </td>
+                        <td><?= date('M d, Y', strtotime($row['submitted_at'])) ?></td>
+                        <td>
+                            <button class="view-btn" onclick='viewApplication(<?= json_encode($row) ?>)'>View Details</button>
+                        </td>
+                    </tr>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
 
-            <?php if($applications->num_rows === 0): ?>
+            <?php if($conn instanceof PDO): ?>
+                <?php if(count($applications) === 0): ?>
             <div style="text-align: center; padding: 40px; opacity: 0.7;">No scholarship applications found.</div>
+                <?php endif; ?>
+            <?php else: ?>
+                <?php if($applications->num_rows === 0): ?>
+            <div style="text-align: center; padding: 40px; opacity: 0.7;">No scholarship applications found.</div>
+                <?php endif; ?>
             <?php endif; ?>
         </section>
     </main>

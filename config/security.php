@@ -21,7 +21,22 @@ function startSecureSession() {
         ini_set('session.use_strict_mode', 1);
         ini_set('session.cookie_samesite', ($is_https || $force_https) ? 'Strict' : 'Lax');
         
+        // Set session timeout to 30 minutes (1800 seconds)
+        ini_set('session.gc_maxlifetime', 1800);
+        session_set_cookie_params(1800);
+        
         session_start();
+        
+        // Session timeout check - redirect to login if inactive for 30 minutes
+        $timeout = 1800; // 30 minutes in seconds
+        if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
+            // Session expired - destroy and redirect to login
+            session_unset();
+            session_destroy();
+            header('Location: /login.php?timeout=1');
+            exit();
+        }
+        $_SESSION['last_activity'] = time();
         
         // Regenerate session ID periodically
         if (!isset($_SESSION['created'])) {
