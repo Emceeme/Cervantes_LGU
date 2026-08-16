@@ -55,9 +55,9 @@ if ($conn->query($sql)) {
 } else {
     if ($conn instanceof PDO) {
         $error = $conn->errorInfo();
-        die("Error creating jobs table: " . ($error[2] ?? 'Unknown error'));
+        echo "Error creating jobs table: " . ($error[2] ?? 'Unknown error') . "<br>";
     } else {
-        die("Error creating jobs table: " . $conn->error);
+        echo "Error creating jobs table: " . $conn->error . "<br>";
     }
 }
 
