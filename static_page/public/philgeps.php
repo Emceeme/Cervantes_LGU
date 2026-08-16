@@ -10,14 +10,26 @@ $posts_stmt = $conn->prepare("
     WHERE category = ?
     ORDER BY custom_date DESC, created_at DESC
 ");
-$posts_stmt->bind_param("s", $category);
-$posts_stmt->execute();
-$posts = $posts_stmt->get_result();
+
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $posts_stmt->execute([$category]);
+    $posts = $posts_stmt->fetchAll();
+} else {
+    // MySQLi
+    $posts_stmt->bind_param("s", $category);
+    $posts_stmt->execute();
+    $posts = $posts_stmt->get_result();
+    $posts_stmt->close();
+}
 
 if(!$posts){
-    die("Query Error: " . $conn->error);
+    if ($conn instanceof PDO) {
+        die("Query Error: " . implode(", ", $conn->errorInfo()));
+    } else {
+        die("Query Error: " . $conn->error);
+    }
 }
-$posts_stmt->close();
 
 $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
 ?>
@@ -45,7 +57,33 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
                 <div class="success-message">✅ Document uploaded successfully!</div>
                 <?php endif; ?>
                 <h3 style="margin-bottom: 15px;"><?= $category_name ?> Posts</h3>
-                <?php if($posts->num_rows > 0): ?>
+                <?php if($conn instanceof PDO): ?>
+                    <?php if(count($posts) > 0): ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($posts as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['title']) ?></td>
+                            <td><?= $row['custom_date'] ? date('M d, Y', strtotime($row['custom_date'])) : date('M d, Y', strtotime($row['created_at'])) ?></td>
+                            <td>
+                                <a class="file-link" href="download_procurement.php?id=<?= $row['id'] ?>" target="_blank">View / Download</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                    <?php else: ?>
+                <div class="empty">No <?= strtolower($category_name) ?> posts available.</div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if($posts->num_rows > 0): ?>
                 <table>
                     <thead>
                         <tr>
@@ -66,8 +104,9 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
                         <?php endwhile; ?>
                     </tbody>
                 </table>
-                <?php else: ?>
+                    <?php else: ?>
                 <div class="empty">No <?= strtolower($category_name) ?> posts available.</div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
