@@ -53,32 +53,41 @@ if ($is_postgres) {
 
 // Add foreign key constraint
 if ($is_postgres) {
-    // PostgreSQL syntax
-    $sql_fk = "ALTER TABLE applications 
-               ADD CONSTRAINT IF NOT EXISTS fk_applicant_id 
-               FOREIGN KEY (applicant_id) REFERENCES users(id) 
-               ON DELETE SET NULL";
+    // PostgreSQL syntax - check if constraint exists first
+    $check_constraint = $conn->query("SELECT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE constraint_name = 'fk_applicant_id' 
+        AND table_name = 'applications'
+    )");
+    $constraint_exists = $check_constraint->fetchColumn();
+    
+    if (!$constraint_exists) {
+        $sql_fk = "ALTER TABLE applications 
+                   ADD CONSTRAINT fk_applicant_id 
+                   FOREIGN KEY (applicant_id) REFERENCES users(id) 
+                   ON DELETE SET NULL";
+        
+        if ($conn->query($sql_fk) !== FALSE) {
+            echo "Foreign key constraint added successfully.<br>";
+        } else {
+            $error = $conn->errorInfo();
+            $error_msg = $error[2] ?? 'Unknown error';
+            echo "Warning: Could not add foreign key constraint: " . $error_msg . "<br>";
+        }
+    } else {
+        echo "Foreign key constraint already exists.<br>";
+    }
 } else {
     // MySQL syntax
     $sql_fk = "ALTER TABLE applications 
                ADD CONSTRAINT fk_applicant_id 
                FOREIGN KEY (applicant_id) REFERENCES users(id) 
                ON DELETE SET NULL";
-}
-
-if ($conn->query($sql_fk) !== FALSE) {
-    echo "Foreign key constraint added successfully.<br>";
-} else {
-    // Check if constraint already exists
-    if ($conn instanceof PDO) {
-        $error = $conn->errorInfo();
-        $error_msg = $error[2] ?? 'Unknown error';
-        if (strpos($error_msg, "Duplicate") !== false || strpos($error_msg, "constraint") !== false) {
-            echo "Foreign key constraint already exists.<br>";
-        } else {
-            echo "Warning: Could not add foreign key constraint: " . $error_msg . "<br>";
-        }
+    
+    if ($conn->query($sql_fk) !== FALSE) {
+        echo "Foreign key constraint added successfully.<br>";
     } else {
+        // Check if constraint already exists
         if (strpos($conn->error, "Duplicate foreign key constraint") !== false ||
             strpos($conn->error, "constraint") !== false) {
             echo "Foreign key constraint already exists.<br>";
