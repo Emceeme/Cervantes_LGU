@@ -8,16 +8,22 @@ $posts_stmt = $conn->prepare("
     FROM scholarship_posts
     ORDER BY created_at DESC
 ");
-if (!$posts_stmt) {
-    die("Prepare Error: " . $conn->error . "<br><br>NOTE: Make sure the scholarship_posts table exists. <a href='../../migrations/create_scholarship_posts.php'>Click here to create scholarship_posts table</a>");
-}
-$posts_stmt->execute();
-$posts = $posts_stmt->get_result();
 
-if(!$posts){
-    die("Query Error: " . $conn->error);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $posts_stmt->execute();
+    $posts = $posts_stmt->fetchAll();
+    // Empty result is not an error for PDO
+} else {
+    // MySQLi
+    $posts_stmt->execute();
+    $posts = $posts_stmt->get_result();
+    $posts_stmt->close();
+    
+    if(!$posts){
+        die("Query Error: " . $conn->error);
+    }
 }
-$posts_stmt->close();
 
 // Generate CSRF token
 $csrf_token = bin2hex(random_bytes(32));
@@ -50,7 +56,28 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
             
             <div class="card">
                 <h3 style="margin-bottom: 20px;">Available Scholarship Programs</h3>
-                <?php if($posts->num_rows > 0): ?>
+                <?php if($conn instanceof PDO): ?>
+                    <?php if(count($posts) > 0): ?>
+                <div class="news-grid">
+                    <?php foreach($posts as $row): ?>
+                    <div class="news-card">
+                        <?php if(!empty($row['image'])): ?>
+                        <img src="<?= AppConfig::uploads('scholarship/' . $row['image']) ?>" alt="Scholarship Image">
+                        <?php endif; ?>
+                        <div class="news-content">
+                            <h3><?= htmlspecialchars($row['title']) ?></h3>
+                            <p class="date"><?= date("F d, Y", strtotime($row['created_at'])) ?></p>
+                            <p><?= substr(strip_tags($row['description']), 0, 120) ?>...</p>
+                            <button class="file-link" onclick='openScholarship(<?= json_encode($row["title"]) ?>, <?= json_encode($row["description"]) ?>, <?= json_encode($row["image"]) ?>, <?= json_encode(date("F d, Y", strtotime($row["created_at"]))) ?>)'>View Details</button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                    <?php else: ?>
+                <div class="empty">No scholarship programs available at this time.</div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if($posts->num_rows > 0): ?>
                 <div class="news-grid">
                     <?php while($row = $posts->fetch_assoc()): ?>
                     <div class="news-card">
@@ -66,8 +93,9 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
                     </div>
                     <?php endwhile; ?>
                 </div>
-                <?php else: ?>
+                    <?php else: ?>
                 <div class="empty">No scholarship programs available at this time.</div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 
