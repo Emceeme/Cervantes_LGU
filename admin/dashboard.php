@@ -85,29 +85,55 @@ if (isset($_POST['create'])) {
 
     // Check if username already exists
     $check_username = $conn->prepare("SELECT id FROM users WHERE username = ?");
-    $check_username->bind_param("s", $username);
-    $check_username->execute();
-    if ($check_username->get_result()->num_rows > 0) {
-        $_SESSION['msg'] = "Username already exists";
-        $_SESSION['msg_type'] = "error";
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $check_username->execute([$username]);
+        $result = $check_username->fetchAll();
+        if (count($result) > 0) {
+            $_SESSION['msg'] = "Username already exists";
+            $_SESSION['msg_type'] = "error";
+            header("Location: dashboard.php");
+            exit();
+        }
+    } else {
+        // MySQLi
+        $check_username->bind_param("s", $username);
+        $check_username->execute();
+        if ($check_username->get_result()->num_rows > 0) {
+            $_SESSION['msg'] = "Username already exists";
+            $_SESSION['msg_type'] = "error";
+            $check_username->close();
+            header("Location: dashboard.php");
+            exit();
+        }
         $check_username->close();
-        header("Location: dashboard.php");
-        exit();
     }
-    $check_username->close();
 
     // Check if email already exists
     $check_email = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $check_email->bind_param("s", $email);
-    $check_email->execute();
-    if ($check_email->get_result()->num_rows > 0) {
-        $_SESSION['msg'] = "Email already exists";
-        $_SESSION['msg_type'] = "error";
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $check_email->execute([$email]);
+        $result = $check_email->fetchAll();
+        if (count($result) > 0) {
+            $_SESSION['msg'] = "Email already exists";
+            $_SESSION['msg_type'] = "error";
+            header("Location: dashboard.php");
+            exit();
+        }
+    } else {
+        // MySQLi
+        $check_email->bind_param("s", $email);
+        $check_email->execute();
+        if ($check_email->get_result()->num_rows > 0) {
+            $_SESSION['msg'] = "Email already exists";
+            $_SESSION['msg_type'] = "error";
+            $check_email->close();
+            header("Location: dashboard.php");
+            exit();
+        }
         $check_email->close();
-        header("Location: dashboard.php");
-        exit();
     }
-    $check_email->close();
 
     // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -118,17 +144,32 @@ if (isset($_POST['create'])) {
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
-    $stmt->bind_param("sssssss",
-        $first_name,
-        $last_name,
-        $username,
-        $email,
-        $hashed_password,
-        $role,
-        $department
-    );
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $result = $stmt->execute([
+            $first_name,
+            $last_name,
+            $username,
+            $email,
+            $hashed_password,
+            $role,
+            $department
+        ]);
+    } else {
+        // MySQLi
+        $stmt->bind_param("sssssss",
+            $first_name,
+            $last_name,
+            $username,
+            $email,
+            $hashed_password,
+            $role,
+            $department
+        );
+        $result = $stmt->execute();
+    }
 
-    if ($stmt->execute()) {
+    if ($result) {
         logSecurityEvent('user_created', $_SESSION['id'], [
             'username' => $username,
             'email' => $email,
@@ -139,13 +180,21 @@ if (isset($_POST['create'])) {
         $_SESSION['msg'] = "Account for {$first_name} {$last_name} ({$role}) created successfully!";
         $_SESSION['msg_type'] = "success";
     } else {
-        logError('Failed to create user: ' . $stmt->error);
-        $_SESSION['msg'] = "Database error: " . $stmt->error;
+        if ($conn instanceof PDO) {
+            $error = $stmt->errorInfo();
+            logError('Failed to create user: ' . ($error[2] ?? 'Unknown error'));
+            $_SESSION['msg'] = "Database error: " . ($error[2] ?? 'Unknown error');
+        } else {
+            logError('Failed to create user: ' . $stmt->error);
+            $_SESSION['msg'] = "Database error: " . $stmt->error;
+        }
         $_SESSION['msg_type'] = "error";
     }
 
-    $stmt->close();
-    $conn->close();
+    if (!($conn instanceof PDO)) {
+        $stmt->close();
+        $conn->close();
+    }
 
     header("Location: dashboard.php");
     exit();
@@ -278,11 +327,53 @@ if (isset($_POST['create'])) {
                 WHERE role IN ('ADMIN', 'EMPLOYEE') 
                 ORDER BY created_at DESC
             ");
-            $users_stmt->execute();
-            $users = $users_stmt->get_result();
+            if ($conn instanceof PDO) {
+                // PostgreSQL/PDO
+                $users_stmt->execute();
+                $users = $users_stmt->fetchAll();
+            } else {
+                // MySQLi
+                $users_stmt->execute();
+                $users = $users_stmt->get_result();
+            }
             
-            if ($users && $users->num_rows > 0):
+            if ($conn instanceof PDO) {
+                if (count($users) > 0):
             ?>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td><strong><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></strong></td>
+                            <td><?= htmlspecialchars($user['username']) ?></td>
+                            <td><?= htmlspecialchars($user['email']) ?></td>
+                            <td>
+                                <span style="font-size: 0.85rem; font-weight: 600; 
+                                    color: <?= $user['role'] === 'ADMIN' ? '#3b82f6' : '#22c55e' ?>;">
+                                    <?= htmlspecialchars($user['role']) ?>
+                                </span>
+                            </td>
+                            <td><?= htmlspecialchars($user['department']) ?></td>
+                            <td><?= date('M j, Y', strtotime($user['created_at'])) ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="muted">No users created yet.</p>
+            <?php endif; ?>
+            <?php } else { ?>
+                <?php if ($users && $users->num_rows > 0): ?>
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -315,7 +406,8 @@ if (isset($_POST['create'])) {
             <?php else: ?>
                 <p class="muted">No users created yet.</p>
             <?php endif; ?>
-            <?php $users_stmt->close(); ?>
+            <?php } ?>
+            <?php if (!($conn instanceof PDO)) { $users_stmt->close(); } ?>
         </section>
 
     </main>
