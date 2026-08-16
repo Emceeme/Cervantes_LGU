@@ -72,11 +72,21 @@ if ($conn->query($sql)) {
 // Step 3: Update existing records
 echo "\nStep 3: Populating custom_date for existing records...\n";
 $sql = "UPDATE procurement_posts SET custom_date = DATE(created_at) WHERE custom_date IS NULL";
-if ($conn->query($sql)) {
-    $affected = $conn instanceof PDO ? $conn->rowCount() : $conn->affected_rows;
+$stmt = $conn->query($sql);
+if ($stmt !== FALSE) {
+    if ($conn instanceof PDO) {
+        $affected = $stmt->rowCount();
+    } else {
+        $affected = $conn->affected_rows;
+    }
     echo "✓ Updated $affected existing records\n";
 } else {
-    echo "✗ Error updating records: " . $conn->error . "\n";
+    if ($conn instanceof PDO) {
+        $error = $conn->errorInfo();
+        echo "✗ Error updating records: " . ($error[2] ?? 'Unknown error') . "\n";
+    } else {
+        echo "✗ Error updating records: " . $conn->error . "\n";
+    }
     exit(1);
 }
 
