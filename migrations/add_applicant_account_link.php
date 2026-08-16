@@ -21,13 +21,13 @@ if ($is_postgres) {
             ADD INDEX idx_applicant_id (applicant_id)";
 }
 
-if ($conn->query($sql) === TRUE) {
+if ($conn->query($sql) !== FALSE) {
     echo "Column 'applicant_id' added to applications table successfully.<br>";
 } else {
     // Check if column already exists
     if ($conn instanceof PDO) {
         $error = $conn->errorInfo();
-        $error_msg = $error[2] ?? '';
+        $error_msg = $error[2] ?? 'Unknown error';
         if (strpos($error_msg, "column") !== false || strpos($error_msg, "already exists") !== false) {
             echo "Column 'applicant_id' already exists in applications table.<br>";
         } else {
@@ -66,18 +66,30 @@ if ($is_postgres) {
                ON DELETE SET NULL";
 }
 
-if ($conn->query($sql_fk) === TRUE) {
+if ($conn->query($sql_fk) !== FALSE) {
     echo "Foreign key constraint added successfully.<br>";
 } else {
     // Check if constraint already exists
-    if (strpos($conn->error, "Duplicate foreign key constraint") !== false ||
-        strpos($conn->error, "constraint") !== false) {
-        echo "Foreign key constraint already exists.<br>";
+    if ($conn instanceof PDO) {
+        $error = $conn->errorInfo();
+        $error_msg = $error[2] ?? 'Unknown error';
+        if (strpos($error_msg, "Duplicate") !== false || strpos($error_msg, "constraint") !== false) {
+            echo "Foreign key constraint already exists.<br>";
+        } else {
+            echo "Warning: Could not add foreign key constraint: " . $error_msg . "<br>";
+        }
     } else {
-        echo "Warning: Could not add foreign key constraint: " . $conn->error . "<br>";
+        if (strpos($conn->error, "Duplicate foreign key constraint") !== false ||
+            strpos($conn->error, "constraint") !== false) {
+            echo "Foreign key constraint already exists.<br>";
+        } else {
+            echo "Warning: Could not add foreign key constraint: " . $conn->error . "<br>";
+        }
     }
 }
 
-$conn->close();
+if (!($conn instanceof PDO)) {
+    $conn->close();
+}
 echo "<br>Migration completed successfully!";
 ?>
