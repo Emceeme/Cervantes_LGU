@@ -180,8 +180,8 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
         <?= htmlspecialchars($row['custom_date'] ?? $row['created_at']) ?>
     </td>
     <td>
-        <a href="<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
-            📄 <?= htmlspecialchars($row['title']) ?>
+        <a href="../../lgu/uploads/procurement/<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
+            📄 <?= htmlspecialchars($row['original_file_name']) ?>
         </a>
     </td>
 
@@ -227,8 +227,8 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
         <?= htmlspecialchars($row['custom_date'] ?? $row['created_at']) ?>
     </td>
     <td>
-        <a href="<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
-            📄 <?= htmlspecialchars($row['title']) ?>
+        <a href="../../lgu/uploads/procurement/<?= htmlspecialchars($row['file_path']) ?>" target="_blank" class="file-link">
+            📄 <?= htmlspecialchars($row['original_file_name']) ?>
         </a>
     </td>
 
