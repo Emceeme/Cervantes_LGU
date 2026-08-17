@@ -10,22 +10,42 @@ if (!$id) {
 
 // Get file info
 $stmt = $conn->prepare("SELECT file_path, original_file_name, view_count FROM procurement_posts WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
-    die("File not found");
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $stmt->execute([$id]);
+    $result = $stmt->fetchAll();
+    
+    if (count($result) === 0) {
+        die("File not found");
+    }
+    
+    $row = $result[0];
+} else {
+    // MySQLi
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        die("File not found");
+    }
+    
+    $row = $result->fetch_assoc();
+    $stmt->close();
 }
-
-$row = $result->fetch_assoc();
-$stmt->close();
 
 // Increment view count
 $update_stmt = $conn->prepare("UPDATE procurement_posts SET view_count = view_count + 1 WHERE id = ?");
-$update_stmt->bind_param("i", $id);
-$update_stmt->execute();
-$update_stmt->close();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $update_stmt->execute([$id]);
+} else {
+    // MySQLi
+    $update_stmt->bind_param("i", $id);
+    $update_stmt->execute();
+    $update_stmt->close();
+}
 
 // Serve file
 $file_path = __DIR__ . '/../../lgu/uploads/procurement/' . $row['file_path'];

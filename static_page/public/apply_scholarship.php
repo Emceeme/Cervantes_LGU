@@ -74,36 +74,66 @@ $stmt = $conn->prepare("
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
-$stmt->bind_param(
-    "sssssssssdississss",
-    $_POST['full_name'],
-    $_POST['email'],
-    $_POST['phone'],
-    $_POST['address'],
-    $_POST['birth_date'],
-    $_POST['gender'],
-    $_POST['civil_status'],
-    $_POST['school_name'],
-    $_POST['course'],
-    $_POST['year_level'],
-    $_POST['gpa'],
-    $_POST['family_income'],
-    $_POST['family_members'],
-    $_POST['parent_name'],
-    $_POST['parent_contact'],
-    $_POST['parent_occupation'],
-    $_POST['essay'] ?? '',
-    $file_path,
-    $original_file_name
-);
-
-if ($stmt->execute()) {
-    header("Location: scholarship.php?status=success");
-    exit();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $params = [
+        $_POST['full_name'],
+        $_POST['email'],
+        $_POST['phone'],
+        $_POST['address'],
+        $_POST['birth_date'],
+        $_POST['gender'],
+        $_POST['civil_status'],
+        $_POST['school_name'],
+        $_POST['course'],
+        $_POST['year_level'],
+        $_POST['gpa'],
+        $_POST['family_income'],
+        $_POST['family_members'],
+        $_POST['parent_name'],
+        $_POST['parent_contact'],
+        $_POST['parent_occupation'],
+        $_POST['essay'] ?? '',
+        $file_path,
+        $original_file_name
+    ];
+    if ($stmt->execute($params)) {
+        header("Location: scholarship.php?status=success");
+        exit();
+    } else {
+        die("Database Error: " . implode(', ', $stmt->errorInfo()));
+    }
 } else {
-    die("Database Error: " . $stmt->error);
+    // MySQLi
+    $stmt->bind_param(
+        "sssssssssdississss",
+        $_POST['full_name'],
+        $_POST['email'],
+        $_POST['phone'],
+        $_POST['address'],
+        $_POST['birth_date'],
+        $_POST['gender'],
+        $_POST['civil_status'],
+        $_POST['school_name'],
+        $_POST['course'],
+        $_POST['year_level'],
+        $_POST['gpa'],
+        $_POST['family_income'],
+        $_POST['family_members'],
+        $_POST['parent_name'],
+        $_POST['parent_contact'],
+        $_POST['parent_occupation'],
+        $_POST['essay'] ?? '',
+        $file_path,
+        $original_file_name
+    );
+    if ($stmt->execute()) {
+        header("Location: scholarship.php?status=success");
+        exit();
+    } else {
+        die("Database Error: " . $stmt->error);
+    }
+    $stmt->close();
+    $conn->close();
 }
-
-$stmt->close();
-$conn->close();
 ?>

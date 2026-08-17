@@ -51,29 +51,40 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         (?,?,?,?,?,?)
     ");
 
-    $stmt->bind_param(
-        "isssss",
-        $job_id,
-        $full_name,
-        $email,
-        $phone,
-        $message,
-        $uploadPath
-    );
-
-    if($stmt->execute()){
-
-        echo "
-        <script>
-            alert('Application submitted successfully!');
-            window.location='public.php';
-        </script>
-        ";
-
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        if($stmt->execute([$job_id, $full_name, $email, $phone, $message, $uploadPath])){
+            echo "
+            <script>
+                alert('Application submitted successfully!');
+                window.location='public.php';
+            </script>
+            ";
+        } else {
+            echo "Database Error: " . implode(', ', $stmt->errorInfo());
+        }
     } else {
-
-        echo "Database Error: " . $stmt->error;
-
+        // MySQLi
+        $stmt->bind_param(
+            "isssss",
+            $job_id,
+            $full_name,
+            $email,
+            $phone,
+            $message,
+            $uploadPath
+        );
+        if($stmt->execute()){
+            echo "
+            <script>
+                alert('Application submitted successfully!');
+                window.location='public.php';
+            </script>
+            ";
+        } else {
+            echo "Database Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
 
 }

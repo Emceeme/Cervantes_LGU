@@ -30,34 +30,64 @@ $id = $_GET['id'];
 
 // Get the file path before deleting
 $stmt = $conn->prepare("SELECT file_path FROM procurement_posts WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
-    header("Location: ../procurement.php?error=Post+not+found");
-    exit();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $stmt->execute([$id]);
+    $result = $stmt->fetchAll();
+    
+    if (count($result) === 0) {
+        header("Location: ../procurement.php?error=Post+not+found");
+        exit();
+    }
+    
+    $file_path = $result[0]['file_path'];
+} else {
+    // MySQLi
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        header("Location: ../procurement.php?error=Post+not+found");
+        exit();
+    }
+    
+    $row = $result->fetch_assoc();
+    $file_path = $row['file_path'];
+    $stmt->close();
 }
-
-$row = $result->fetch_assoc();
-$file_path = $row['file_path'];
-$stmt->close();
 
 // Delete from database
 $stmt = $conn->prepare("DELETE FROM procurement_posts WHERE id = ?");
-$stmt->bind_param("i", $id);
 
-if ($stmt->execute()) {
-    // Delete the file from uploads folder
-    $upload_dir = __DIR__ . '/../uploads/procurement/';
-    if (file_exists($upload_dir . $file_path)) {
-        unlink($upload_dir . $file_path);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if ($stmt->execute([$id])) {
+        // Delete the file from uploads folder
+        $upload_dir = __DIR__ . '/../uploads/procurement/';
+        if (file_exists($upload_dir . $file_path)) {
+            unlink($upload_dir . $file_path);
+        }
+        
+        header("Location: ../procurement.php?status=deleted");
+    } else {
+        header("Location: ../procurement.php?error=Failed+to+delete");
     }
-    
-    header("Location: ../procurement.php?status=deleted");
 } else {
-    header("Location: ../procurement.php?error=Failed+to+delete");
+    // MySQLi
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+        // Delete the file from uploads folder
+        $upload_dir = __DIR__ . '/../uploads/procurement/';
+        if (file_exists($upload_dir . $file_path)) {
+            unlink($upload_dir . $file_path);
+        }
+        
+        header("Location: ../procurement.php?status=deleted");
+    } else {
+        header("Location: ../procurement.php?error=Failed+to+delete");
+    }
+    $stmt->close();
 }
-
-$stmt->close();
 ?>

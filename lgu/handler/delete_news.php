@@ -10,8 +10,15 @@ DELETE FROM news_posts
 WHERE id=?
 ");
 
-$stmt->bind_param("i",$id);
-$stmt->execute();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $stmt->execute([$id]);
+} else {
+    // MySQLi
+    $stmt->bind_param("i",$id);
+    $stmt->execute();
+    $stmt->close();
+}
 
 header("Location: ../newsfeed.php");
 exit();

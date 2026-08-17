@@ -32,14 +32,22 @@ $stmt = $conn->prepare("
     WHERE id = ?
 ");
 
-$stmt->bind_param("ssii", $status, $notes, $_SESSION['id'], $id);
-
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if ($stmt->execute([$status, $notes, $_SESSION['id'], $id])) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => implode(', ', $stmt->errorInfo())]);
+    }
 } else {
-    echo json_encode(['success' => false, 'error' => $stmt->error]);
+    // MySQLi
+    $stmt->bind_param("ssii", $status, $notes, $_SESSION['id'], $id);
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => $stmt->error]);
+    }
+    $stmt->close();
+    $conn->close();
 }
-
-$stmt->close();
-$conn->close();
 ?>

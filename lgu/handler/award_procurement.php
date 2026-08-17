@@ -12,8 +12,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         WHERE id = ?
     ");
 
-    $stmt->bind_param("si", $winner, $id);
-    $stmt->execute();
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $stmt->execute([$winner, $id]);
+    } else {
+        // MySQLi
+        $stmt->bind_param("si", $winner, $id);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     header("Location: ../procurement.php");
     exit();

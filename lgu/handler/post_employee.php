@@ -33,15 +33,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check for duplicate username or email
     $check = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-    $check->bind_param("ss", $username, $email);
-    $check->execute();
     
-    if ($check->get_result()->num_rows > 0) {
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $check->execute([$username, $email]);
+        $result = $check->fetchAll();
+        
+        if (count($result) > 0) {
+            header("Location: ../manage_employees.php?error=Username+or+Email+already+exists");
+            exit();
+        }
+    } else {
+        // MySQLi
+        $check->bind_param("ss", $username, $email);
+        $check->execute();
+        
+        if ($check->get_result()->num_rows > 0) {
+            $check->close();
+            header("Location: ../manage_employees.php?error=Username+or+Email+already+exists");
+            exit();
+        }
         $check->close();
-        header("Location: ../manage_employees.php?error=Username+or+Email+already+exists");
-        exit();
     }
-    $check->close();
 
     // Insert new employee
     $stmt = $conn->prepare("
@@ -49,24 +62,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
-    $stmt->bind_param("sssssss",
-        $first_name,
-        $last_name,
-        $username,
-        $email,
-        $password,
-        $role,
-        $department
-    );
-
-    if ($stmt->execute()) {
-        header("Location: ../manage_employees.php?success=1");
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        if ($stmt->execute([$first_name, $last_name, $username, $email, $password, $role, $department])) {
+            header("Location: ../manage_employees.php?success=1");
+        } else {
+            header("Location: ../manage_employees.php?error=Database+Error");
+        }
     } else {
-        header("Location: ../manage_employees.php?error=Database+Error");
+        // MySQLi
+        $stmt->bind_param("sssssss",
+            $first_name,
+            $last_name,
+            $username,
+            $email,
+            $password,
+            $role,
+            $department
+        );
+        if ($stmt->execute()) {
+            header("Location: ../manage_employees.php?success=1");
+        } else {
+            header("Location: ../manage_employees.php?error=Database+Error");
+        }
+        $stmt->close();
+        $conn->close();
     }
-
-    $stmt->close();
-    $conn->close();
     exit();
 }
 ?>

@@ -14,14 +14,23 @@ if (isset($_GET['id'])) {
     // Sub Admins can only delete EMPLOYEE accounts from their own department
     if ($_SESSION['role'] === 'ADMIN') {
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ? AND role = 'EMPLOYEE' AND department = ?");
-        $stmt->bind_param("is", $emp_id, $admin_dept);
+        if ($conn instanceof PDO) {
+            $stmt->execute([$emp_id, $admin_dept]);
+        } else {
+            $stmt->bind_param("is", $emp_id, $admin_dept);
+            $stmt->execute();
+            $stmt->close();
+        }
     } else {
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ? AND role = 'EMPLOYEE'");
-        $stmt->bind_param("i", $emp_id);
+        if ($conn instanceof PDO) {
+            $stmt->execute([$emp_id]);
+        } else {
+            $stmt->bind_param("i", $emp_id);
+            $stmt->execute();
+            $stmt->close();
+        }
     }
-
-    $stmt->execute();
-    $stmt->close();
 }
 
 header("Location: ../manage_employees.php");
