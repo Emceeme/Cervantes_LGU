@@ -64,6 +64,7 @@ $migrations = [
     'migrations/create_news_posts_table.php',
     'migrations/create_procurement_posts_table.php',
     'migrations/add_procurement_file_columns.php',
+    'migrations/make_procurement_description_nullable.php',
     'mswd/migrations/create_tables.php',
     'mswd/migrations/seed_assistance_types.php',
     'migrations/add_applicant_account_link.php',
