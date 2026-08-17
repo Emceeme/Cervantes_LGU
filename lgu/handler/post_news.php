@@ -26,7 +26,7 @@ if (!empty($_FILES['image']['name'])) {
 
     $image = time() . '_' . basename($_FILES['image']['name']);
 
-    $uploadDir = "../uploads/news/";
+    $uploadDir = __DIR__ . "/../uploads/news/";
 
     // Create the folder if it doesn't exist
     if (!is_dir($uploadDir)) {

@@ -90,7 +90,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
     $filename .= '.' . $file_ext;
 
-    $folder = "../uploads/procurement/";
+    $folder = __DIR__ . "/../uploads/procurement/";
 
     if(!is_dir($folder)){
         mkdir($folder, 0755, true);
