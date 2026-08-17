@@ -13,20 +13,35 @@ function getDepartmentSettings($department) {
     global $conn;
     
     $stmt = $conn->prepare("SELECT settings_json FROM department_settings WHERE department = ?");
-    $stmt->bind_param("s", $department);
-    $stmt->execute();
-    $result = $stmt->get_result();
     
-    if ($result->num_rows === 0) {
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $stmt->execute([$department]);
+        $result = $stmt->fetchAll();
+        
+        if (count($result) === 0) {
+            return [];
+        }
+        
+        $settings = json_decode($result[0]['settings_json'], true);
+        return $settings ?: [];
+    } else {
+        // MySQLi
+        $stmt->bind_param("s", $department);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            $stmt->close();
+            return [];
+        }
+        
+        $row = $result->fetch_assoc();
+        $settings = json_decode($row['settings_json'], true);
         $stmt->close();
-        return [];
+        
+        return $settings ?: [];
     }
-    
-    $row = $result->fetch_assoc();
-    $settings = json_decode($row['settings_json'], true);
-    $stmt->close();
-    
-    return $settings ?: [];
 }
 
 /**
@@ -52,13 +67,21 @@ function updateDepartmentSettings($department, $settings) {
     
     $settings_json = json_encode($settings);
     
-    $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) ON DUPLICATE KEY UPDATE settings_json = VALUES(settings_json)");
-    $stmt->bind_param("ss", $department, $settings_json);
-    
-    $success = $stmt->execute();
-    $stmt->close();
-    
-    return $success;
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO - use ON CONFLICT instead of ON DUPLICATE KEY
+        $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) ON CONFLICT (department) DO UPDATE SET settings_json = EXCLUDED.settings_json");
+        $stmt->execute([$department, $settings_json]);
+        return true;
+    } else {
+        // MySQLi
+        $stmt = $conn->prepare("INSERT INTO department_settings (department, settings_json) VALUES (?, ?) ON DUPLICATE KEY UPDATE settings_json = VALUES(settings_json)");
+        $stmt->bind_param("ss", $department, $settings_json);
+        
+        $success = $stmt->execute();
+        $stmt->close();
+        
+        return $success;
+    }
 }
 
 /**
@@ -84,8 +107,17 @@ function getAllDepartmentSettings() {
     $result = $conn->query("SELECT department, settings_json FROM department_settings");
     $departments = [];
     
-    while ($row = $result->fetch_assoc()) {
-        $departments[$row['department']] = json_decode($row['settings_json'], true);
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $rows = $result->fetchAll();
+        foreach ($rows as $row) {
+            $departments[$row['department']] = json_decode($row['settings_json'], true);
+        }
+    } else {
+        // MySQLi
+        while ($row = $result->fetch_assoc()) {
+            $departments[$row['department']] = json_decode($row['settings_json'], true);
+        }
     }
     
     return $departments;

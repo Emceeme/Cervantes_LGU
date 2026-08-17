@@ -63,6 +63,7 @@ $migrations = [
     'migrations/create_applicants_table.php',
     'migrations/create_news_posts_table.php',
     'migrations/create_procurement_posts_table.php',
+    'migrations/add_procurement_file_columns.php',
     'mswd/migrations/create_tables.php',
     'mswd/migrations/seed_assistance_types.php',
     'migrations/add_applicant_account_link.php',
