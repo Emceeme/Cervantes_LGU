@@ -99,7 +99,8 @@ if (!empty($row['image']) && file_exists($imagePath)) {
     ">
         <strong>⚠ Image not found</strong><br><br>
         <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
-        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?>
+        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?><br>
+        <strong>Uploads Dir Exists:</strong> <?= is_dir(__DIR__ . '/uploads/news') ? 'Yes' : 'No' ?>
     </div>
 <?php
 }
@@ -143,7 +144,8 @@ if (!empty($row['image']) && file_exists($imagePath)) {
     ">
         <strong>⚠ Image not found</strong><br><br>
         <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
-        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?>
+        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?><br>
+        <strong>Uploads Dir Exists:</strong> <?= is_dir(__DIR__ . '/uploads/news') ? 'Yes' : 'No' ?>
     </div>
 <?php
 }
