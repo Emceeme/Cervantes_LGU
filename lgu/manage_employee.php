@@ -59,6 +59,9 @@ $employees = $stmt->get_result();
         <a href="applicants.php">Applicants</a>
         <a href="procurement.php">Procurement</a>
         <a href="newsfeed.php">News Feed</a>
+        <a href="scholarship_applications.php">Scholarship Applications</a>
+        <a href="settings.php">Settings</a>
+        <a href="../logout.php">Logout</a>
         
         <?php if ($_SESSION['role'] === 'ADMIN' || $_SESSION['role'] === 'SUPER_ADMIN'): ?>
             <a href="manage_employees.php" class="active">Employees</a>

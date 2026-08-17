@@ -92,6 +92,8 @@ $csrf_token = generateCsrfToken();
             <a href="applicants.php">Applicants</a>
             <a href="procurement.php" class="active">Procurement</a>
             <a href="newsfeed.php">News Feed</a>
+            <a href="scholarship_applications.php">Scholarship Applications</a>
+            <a href="settings.php">Settings</a>
             <a href="../logout.php">Logout</a>
         </nav>
     </aside>

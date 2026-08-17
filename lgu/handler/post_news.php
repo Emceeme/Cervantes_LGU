@@ -45,15 +45,21 @@ INSERT INTO news_posts
 VALUES (?,?,?,?)
 ");
 
-$stmt->bind_param(
-"isss",
-$user_id,
-$title,
-$content,
-$image
-);
-
-$stmt->execute();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $stmt->execute([$user_id, $title, $content, $image]);
+} else {
+    // MySQLi
+    $stmt->bind_param(
+        "isss",
+        $user_id,
+        $title,
+        $content,
+        $image
+    );
+    $stmt->execute();
+    $stmt->close();
+}
 
     header("Location: ../newsfeed.php");
 exit();

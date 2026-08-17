@@ -111,27 +111,35 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     ");
 
     if (!$stmt) {
-        logError('Database prepare failed', ['error' => $conn->error]);
+        if ($conn instanceof PDO) {
+            logError('Database prepare failed', ['error' => implode(", ", $conn->errorInfo())]);
+        } else {
+            logError('Database prepare failed', ['error' => $conn->error]);
+        }
         header("Location: ../procurement.php?error=Database+error");
         exit();
     }
 
-    $stmt->bind_param("ssssss",
-        $title,
-        $category,
-        $filename,
-        $file_name,
-        $status,
-        $custom_date
-    );
-
-    if (!$stmt->execute()) {
-        logError('Database execute failed', ['error' => $stmt->error]);
-        header("Location: ../procurement.php?error=Failed+to+save+record");
-        exit();
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $stmt->execute([$title, $category, $filename, $file_name, $status, $custom_date]);
+    } else {
+        // MySQLi
+        $stmt->bind_param("ssssss",
+            $title,
+            $category,
+            $filename,
+            $file_name,
+            $status,
+            $custom_date
+        );
+        if (!$stmt->execute()) {
+            logError('Database execute failed', ['error' => $stmt->error]);
+            header("Location: ../procurement.php?error=Failed+to+save+record");
+            exit();
+        }
+        $stmt->close();
     }
-
-    $stmt->close();
 
     // Redirect to admin procurement list page with success message
     header("Location: ../procurement.php?status=success");

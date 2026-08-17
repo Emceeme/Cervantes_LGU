@@ -34,26 +34,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ");
 
     if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
+        if ($conn instanceof PDO) {
+            die("Prepare failed: " . implode(", ", $conn->errorInfo()));
+        } else {
+            die("Prepare failed: " . $conn->error);
+        }
     }
 
-    $stmt->bind_param(
-        "sssssss",
-        $title,
-        $dept,
-        $type,
-        $salary,
-        $location,
-        $desc,
-        $status
-    );
-
-    if ($stmt->execute()) {
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $stmt->execute([$title, $dept, $type, $salary, $location, $desc, $status]);
         // SUCCESS → go back to dashboard with popup
         header("Location: ../dashboard.php?success=1");
         exit();
     } else {
-        die("Insert failed: " . $stmt->error);
+        // MySQLi
+        $stmt->bind_param(
+            "sssssss",
+            $title,
+            $dept,
+            $type,
+            $salary,
+            $location,
+            $desc,
+            $status
+        );
+        if ($stmt->execute()) {
+            // SUCCESS → go back to dashboard with popup
+            header("Location: ../dashboard.php?success=1");
+            exit();
+        } else {
+            die("Insert failed: " . $stmt->error);
+        }
     }
 
 } else {
