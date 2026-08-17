@@ -80,11 +80,12 @@ $csrf_token = generateCsrfToken();
         <div class="card">
 
 <?php
-$imagePath = "uploads/news/" . $row['image'];
+$imagePath = __DIR__ . "/uploads/news/" . $row['image'];
+$imageUrl = "uploads/news/" . $row['image'];
 
 if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
-    <img src="<?= htmlspecialchars($imagePath) ?>" class="news-image">
+    <img src="<?= htmlspecialchars($imageUrl) ?>" class="news-image">
 <?php
 } else {
 ?>
@@ -123,11 +124,12 @@ if (!empty($row['image']) && file_exists($imagePath)) {
         <div class="card">
 
 <?php
-$imagePath = "uploads/news/" . $row['image'];
+$imagePath = __DIR__ . "/uploads/news/" . $row['image'];
+$imageUrl = "uploads/news/" . $row['image'];
 
 if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
-    <img src="<?= htmlspecialchars($imagePath) ?>" class="news-image">
+    <img src="<?= htmlspecialchars($imageUrl) ?>" class="news-image">
 <?php
 } else {
 ?>
