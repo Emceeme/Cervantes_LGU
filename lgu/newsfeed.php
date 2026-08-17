@@ -80,7 +80,7 @@ $csrf_token = generateCsrfToken();
         <div class="card">
 
 <?php
-$imagePath = "../uploads/news/" . $row['image'];
+$imagePath = "/uploads/news/" . $row['image'];
 
 if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
