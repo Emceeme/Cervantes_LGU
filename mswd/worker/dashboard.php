@@ -227,15 +227,15 @@ $fallback_barangays = [
                 <option value="">All Types</option>
                 <?php if ($conn instanceof PDO): ?>
                     <?php foreach ($assistance_types as $type): ?>
-                <?php else: ?>
-                    <?php while ($type = $assistance_types->fetch_assoc()): ?>
-                <?php endif; ?>
                 <option value="<?= $type['id'] ?>" <?= $assistance_filter == $type['id'] ? 'selected' : '' ?>>
                     <?= htmlspecialchars($type['name']) ?>
                 </option>
-                <?php if ($conn instanceof PDO): ?>
                     <?php endforeach; ?>
                 <?php else: ?>
+                    <?php while ($type = $assistance_types->fetch_assoc()): ?>
+                <option value="<?= $type['id'] ?>" <?= $assistance_filter == $type['id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($type['name']) ?>
+                </option>
                     <?php endwhile; ?>
                 <?php endif; ?>
             </select>
@@ -268,9 +268,6 @@ $fallback_barangays = [
                 <tbody>
                     <?php if ($conn instanceof PDO): ?>
                         <?php foreach ($applications as $app): ?>
-                    <?php else: ?>
-                        <?php while ($app = $applications->fetch_assoc()): ?>
-                    <?php endif; ?>
                     <tr>
                         <td><span class="tracking-number"><?= htmlspecialchars($app['tracking_number']) ?></span></td>
                         <td><?= htmlspecialchars($app['first_name'] . ' ' . $app['last_name']) ?></td>
@@ -288,9 +285,26 @@ $fallback_barangays = [
                             </a>
                         </td>
                     </tr>
-                    <?php if ($conn instanceof PDO): ?>
                         <?php endforeach; ?>
                     <?php else: ?>
+                        <?php while ($app = $applications->fetch_assoc()): ?>
+                    <tr>
+                        <td><span class="tracking-number"><?= htmlspecialchars($app['tracking_number']) ?></span></td>
+                        <td><?= htmlspecialchars($app['first_name'] . ' ' . $app['last_name']) ?></td>
+                        <td><?= htmlspecialchars($app['assistance_type_name']) ?></td>
+                        <td><?= htmlspecialchars($app['barangay']) ?></td>
+                        <td>
+                            <span class="status-badge status-<?= str_replace('_', '-', $app['status']) ?>">
+                                <?= ucfirst(str_replace('_', ' ', $app['status'])) ?>
+                            </span>
+                        </td>
+                        <td><?= date('M j, Y', strtotime($app['submitted_at'])) ?></td>
+                        <td>
+                            <a href="review.php?id=<?= $app['id'] ?>" class="action-btn">
+                                <i class="fas fa-eye"></i> Review
+                            </a>
+                        </td>
+                    </tr>
                         <?php endwhile; ?>
                     <?php endif; ?>
                 </tbody>
