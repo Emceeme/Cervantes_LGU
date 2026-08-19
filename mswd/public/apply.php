@@ -17,7 +17,13 @@ $assistance_types_stmt = $conn->prepare("
 
 if ($assistance_types_stmt) {
     $assistance_types_stmt->execute();
-    $assistance_types = $assistance_types_stmt->get_result();
+    
+    // Support both PDO and MySQLi
+    if ($conn instanceof PDO) {
+        $assistance_types = $assistance_types_stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $assistance_types = $assistance_types_stmt->get_result();
+    }
 } else {
     $assistance_types = false;
 }
@@ -86,15 +92,32 @@ if ($assistance_types_stmt) {
                 <h3>Select Assistance Type</h3>
                 
                 <div class="assistance-types">
-                    <?php if ($assistance_types && $assistance_types->num_rows > 0): ?>
-                        <?php while ($type = $assistance_types->fetch_assoc()): ?>
+                    <?php if ($assistance_types && (is_array($assistance_types) || ($assistance_types instanceof mysqli_result && $assistance_types->num_rows > 0))): ?>
+                        <?php 
+                        if ($conn instanceof PDO) {
+                            foreach ($assistance_types as $type): 
+                        ?>
                         <label class="assistance-card">
                             <input type="radio" name="assistance_type_id" value="<?= $type['id'] ?>" required onchange="selectAssistanceType(this, <?= htmlspecialchars(json_encode($type)) ?>)">
                             <div class="card-icon"><i class="fas fa-hand-holding-heart"></i></div>
                             <h4><?= htmlspecialchars($type['name']) ?></h4>
                             <p><?= htmlspecialchars($type['description']) ?></p>
                         </label>
-                        <?php endwhile; ?>
+                        <?php 
+                            endforeach;
+                        } else {
+                            while ($type = $assistance_types->fetch_assoc()):
+                        ?>
+                        <label class="assistance-card">
+                            <input type="radio" name="assistance_type_id" value="<?= $type['id'] ?>" required onchange="selectAssistanceType(this, <?= htmlspecialchars(json_encode($type)) ?>)">
+                            <div class="card-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                            <h4><?= htmlspecialchars($type['name']) ?></h4>
+                            <p><?= htmlspecialchars($type['description']) ?></p>
+                        </label>
+                        <?php 
+                            endwhile;
+                        }
+                        ?>
                     <?php else: ?>
                         <div class="error-message">
                             <i class="fas fa-exclamation-triangle"></i>
