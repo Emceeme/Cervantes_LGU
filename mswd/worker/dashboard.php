@@ -56,15 +56,25 @@ $applications_stmt = $conn->prepare("
     ORDER BY a.submitted_at DESC
 ");
 
-if (!empty($params)) {
-    $applications_stmt->bind_param($types, ...$params);
-}
-
-if ($applications_stmt) {
-    $applications_stmt->execute();
-    $applications = $applications_stmt->get_result();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    if (!empty($params)) {
+        $applications_stmt->execute($params);
+    } else {
+        $applications_stmt->execute();
+    }
+    $applications = $applications_stmt->fetchAll();
 } else {
-    $applications = false;
+    // MySQLi
+    if (!empty($params)) {
+        $applications_stmt->bind_param($types, ...$params);
+    }
+    if ($applications_stmt) {
+        $applications_stmt->execute();
+        $applications = $applications_stmt->get_result();
+    } else {
+        $applications = false;
+    }
 }
 
 // Fetch statistics
@@ -77,24 +87,52 @@ $stats_stmt = $conn->prepare("
         SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected
     FROM applications
 ");
-$stats_stmt->execute();
-$stats = $stats_stmt->get_result()->fetch_assoc();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $stats_stmt->execute();
+    $stats_result = $stats_stmt->fetchAll();
+    $stats = $stats_result[0];
+} else {
+    // MySQLi
+    $stats_stmt->execute();
+    $stats = $stats_stmt->get_result()->fetch_assoc();
+}
 
 // Fetch assistance types for filter
 $types_stmt = $conn->prepare("SELECT id, name FROM assistance_types WHERE is_active = 1 ORDER BY name");
-$types_stmt->execute();
-$assistance_types = $types_stmt->get_result();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $types_stmt->execute();
+    $assistance_types = $types_stmt->fetchAll();
+} else {
+    // MySQLi
+    $types_stmt->execute();
+    $assistance_types = $types_stmt->get_result();
+}
 
 // Fetch unique barangays
 $barangays_stmt = $conn->prepare("SELECT DISTINCT barangay FROM applications ORDER BY barangay");
-$barangays_stmt->execute();
-$barangays_result = $barangays_stmt->get_result();
-
-// Fetch barangays into array for reuse
-$barangays_list = [];
-if ($barangays_result) {
-    while ($barangay = $barangays_result->fetch_assoc()) {
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $barangays_stmt->execute();
+    $barangays_result = $barangays_stmt->fetchAll();
+    
+    // Fetch barangays into array for reuse
+    $barangays_list = [];
+    foreach ($barangays_result as $barangay) {
         $barangays_list[] = $barangay['barangay'];
+    }
+} else {
+    // MySQLi
+    $barangays_stmt->execute();
+    $barangays_result = $barangays_stmt->get_result();
+    
+    // Fetch barangays into array for reuse
+    $barangays_list = [];
+    if ($barangays_result) {
+        while ($barangay = $barangays_result->fetch_assoc()) {
+            $barangays_list[] = $barangay['barangay'];
+        }
     }
 }
 
@@ -187,11 +225,19 @@ $fallback_barangays = [
             <label>Assistance Type</label>
             <select onchange="window.location.href='?status=<?= urlencode($status_filter) ?>&barangay=<?= urlencode($barangay_filter) ?>&assistance_type='+this.value">
                 <option value="">All Types</option>
-                <?php while ($type = $assistance_types->fetch_assoc()): ?>
+                <?php if ($conn instanceof PDO): ?>
+                    <?php foreach ($assistance_types as $type): ?>
+                <?php else: ?>
+                    <?php while ($type = $assistance_types->fetch_assoc()): ?>
+                <?php endif; ?>
                 <option value="<?= $type['id'] ?>" <?= $assistance_filter == $type['id'] ? 'selected' : '' ?>>
                     <?= htmlspecialchars($type['name']) ?>
                 </option>
-                <?php endwhile; ?>
+                <?php if ($conn instanceof PDO): ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php endwhile; ?>
+                <?php endif; ?>
             </select>
         </div>
         <a href="dashboard.php" class="clear-filters">
@@ -202,10 +248,10 @@ $fallback_barangays = [
     <!-- Applications Table -->
     <div class="applications-section">
         <div class="section-header">
-            <h2>Applications (<?= $applications ? $applications->num_rows : 0 ?>)</h2>
+            <h2>Applications (<?= $applications ? ($conn instanceof PDO ? count($applications) : $applications->num_rows) : 0 ?>)</h2>
         </div>
         
-        <?php if ($applications && $applications->num_rows > 0): ?>
+        <?php if ($applications && ($conn instanceof PDO ? count($applications) > 0 : $applications->num_rows > 0)): ?>
         <div class="table-container">
             <table>
                 <thead>
@@ -220,7 +266,11 @@ $fallback_barangays = [
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($app = $applications->fetch_assoc()): ?>
+                    <?php if ($conn instanceof PDO): ?>
+                        <?php foreach ($applications as $app): ?>
+                    <?php else: ?>
+                        <?php while ($app = $applications->fetch_assoc()): ?>
+                    <?php endif; ?>
                     <tr>
                         <td><span class="tracking-number"><?= htmlspecialchars($app['tracking_number']) ?></span></td>
                         <td><?= htmlspecialchars($app['first_name'] . ' ' . $app['last_name']) ?></td>
@@ -238,7 +288,11 @@ $fallback_barangays = [
                             </a>
                         </td>
                     </tr>
-                    <?php endwhile; ?>
+                    <?php if ($conn instanceof PDO): ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
