@@ -27,12 +27,20 @@ $app_stmt = $conn->prepare("
     WHERE a.id = ?
 ");
 
-if ($app_stmt) {
-    $app_stmt->bind_param("i", $application_id);
-    $app_stmt->execute();
-    $application = $app_stmt->get_result()->fetch_assoc();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $app_stmt->execute([$application_id]);
+    $result = $app_stmt->fetchAll();
+    $application = $result[0] ?? false;
 } else {
-    $application = false;
+    // MySQLi
+    if ($app_stmt) {
+        $app_stmt->bind_param("i", $application_id);
+        $app_stmt->execute();
+        $application = $app_stmt->get_result()->fetch_assoc();
+    } else {
+        $application = false;
+    }
 }
 
 if (!$application) {
@@ -46,9 +54,16 @@ $docs_stmt = $conn->prepare("
     WHERE application_id = ? 
     ORDER BY uploaded_at DESC
 ");
-$docs_stmt->bind_param("i", $application_id);
-$docs_stmt->execute();
-$documents = $docs_stmt->get_result();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $docs_stmt->execute([$application_id]);
+    $documents = $docs_stmt->fetchAll();
+} else {
+    // MySQLi
+    $docs_stmt->bind_param("i", $application_id);
+    $docs_stmt->execute();
+    $documents = $docs_stmt->get_result();
+}
 
 // Fetch status history
 $history_stmt = $conn->prepare("
@@ -58,9 +73,16 @@ $history_stmt = $conn->prepare("
     WHERE ash.application_id = ?
     ORDER BY ash.changed_at DESC
 ");
-$history_stmt->bind_param("i", $application_id);
-$history_stmt->execute();
-$status_history = $history_stmt->get_result();
+if ($conn instanceof PDO) {
+    // PostgreSQL/PDO
+    $history_stmt->execute([$application_id]);
+    $status_history = $history_stmt->fetchAll();
+} else {
+    // MySQLi
+    $history_stmt->bind_param("i", $application_id);
+    $history_stmt->execute();
+    $status_history = $history_stmt->get_result();
+}
 
 // Handle status update
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -75,7 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!in_array($new_status, $valid_statuses)) {
             $error = "Invalid status";
         } else {
-            $conn->begin_transaction();
+            if ($conn instanceof PDO) {
+                // PostgreSQL/PDO
+                $conn->beginTransaction();
+            } else {
+                // MySQLi
+                $conn->begin_transaction();
+            }
             
             try {
                 $update_stmt = $conn->prepare("
@@ -83,16 +111,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     SET status = ?, remarks = ?, assigned_worker_id = ?, reviewed_at = NOW() 
                     WHERE id = ?
                 ");
-                $update_stmt->bind_param("ssii", $new_status, $remarks, $worker_id, $application_id);
-                $update_stmt->execute();
+                if ($conn instanceof PDO) {
+                    // PostgreSQL/PDO
+                    $update_stmt->execute([$new_status, $remarks, $worker_id, $application_id]);
+                } else {
+                    // MySQLi
+                    $update_stmt->bind_param("ssii", $new_status, $remarks, $worker_id, $application_id);
+                    $update_stmt->execute();
+                }
                 
                 $log_stmt = $conn->prepare("
                     INSERT INTO application_status_history 
                     (application_id, old_status, new_status, changed_by, remarks)
                     VALUES (?, ?, ?, ?, ?)
                 ");
-                $log_stmt->bind_param("issis", $application_id, $application['status'], $new_status, $worker_id, $remarks);
-                $log_stmt->execute();
+                if ($conn instanceof PDO) {
+                    // PostgreSQL/PDO
+                    $log_stmt->execute([$application_id, $application['status'], $new_status, $worker_id, $remarks]);
+                } else {
+                    // MySQLi
+                    $log_stmt->bind_param("issis", $application_id, $application['status'], $new_status, $worker_id, $remarks);
+                    $log_stmt->execute();
+                }
                 
                 $conn->commit();
                 
@@ -188,9 +228,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="card">
                 <h3><i class="fas fa-file-alt"></i> Uploaded Documents</h3>
                 
-                <?php if ($documents && $documents->num_rows > 0): ?>
+                <?php if ($documents && ($conn instanceof PDO ? count($documents) > 0 : $documents->num_rows > 0)): ?>
                     <div class="document-list">
-                        <?php while ($doc = $documents->fetch_assoc()): ?>
+                        <?php if ($conn instanceof PDO): ?>
+                            <?php foreach ($documents as $doc): ?>
                         <div class="document-item">
                             <div class="document-info">
                                 <div class="document-icon">
@@ -209,7 +250,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </a>
                             </div>
                         </div>
-                        <?php endwhile; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php while ($doc = $documents->fetch_assoc()): ?>
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <div>
+                                    <div class="document-name"><?= htmlspecialchars($doc['document_type']) ?></div>
+                                    <div class="document-size">
+                                        <?= htmlspecialchars($doc['file_name']) ?> • <?= number_format($doc['file_size'] / 1024, 1) ?> KB
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <a href="../handler/view_document.php?id=<?= $doc['id'] ?>" target="_blank" class="doc-btn view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </div>
+                        </div>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <p style="opacity: 0.7;">No documents uploaded</p>
@@ -221,8 +284,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h3><i class="fas fa-history"></i> Status History</h3>
                 
                 <div class="timeline">
-                    <?php if ($status_history && $status_history->num_rows > 0): ?>
-                        <?php while ($history = $status_history->fetch_assoc()): ?>
+                    <?php if ($status_history && ($conn instanceof PDO ? count($status_history) > 0 : $status_history->num_rows > 0)): ?>
+                        <?php if ($conn instanceof PDO): ?>
+                            <?php foreach ($status_history as $history): ?>
                         <div class="timeline-item">
                             <div class="timeline-content">
                                 <h5><?= ucfirst(str_replace('_', ' ', $history['new_status'])) ?></h5>
@@ -235,7 +299,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="timeline-date"><?= date('F j, Y, g:i a', strtotime($history['changed_at'])) ?></div>
                             </div>
                         </div>
-                        <?php endwhile; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php while ($history = $status_history->fetch_assoc()): ?>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <h5><?= ucfirst(str_replace('_', ' ', $history['new_status'])) ?></h5>
+                                <p>
+                                    Changed by: <?= htmlspecialchars($history['changed_by_name'] ?? 'System') ?>
+                                    <?php if ($history['remarks']): ?>
+                                    <br>Remarks: <?= htmlspecialchars($history['remarks']) ?>
+                                    <?php endif; ?>
+                                </p>
+                                <div class="timeline-date"><?= date('F j, Y, g:i a', strtotime($history['changed_at'])) ?></div>
+                            </div>
+                        </div>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     <?php else: ?>
                         <p style="opacity: 0.7;">No status history available</p>
                     <?php endif; ?>
