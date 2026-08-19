@@ -59,12 +59,18 @@
                             <a href="public/notice_to_proceed.php">Notice to Proceed</a>
                             <a href="public/news.php">News</a>
                             <a href="public/scholarship.php">Scholarship</a>
+                            <a href="../mswd/public/apply.php">MSWD</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="nav-right">
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
             </div>
         </nav>
@@ -129,6 +135,18 @@
     </main>
 
     <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Dropdown toggle
         document.querySelectorAll('.dropdown-toggle').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation();

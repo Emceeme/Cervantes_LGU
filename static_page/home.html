@@ -60,6 +60,7 @@
                             <a href="public/notice_to_proceed.php">Notice to Proceed</a>
                             <a href="public/news.php">News</a>
                             <a href="public/scholarship.php">Scholarship</a>
+                            <a href="../mswd/public/apply.php">MSWD</a>
                         </div>
                     </div>
 
@@ -137,5 +138,34 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Dropdown toggle
+        document.querySelectorAll('.dropdown-toggle').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentElement;
+                dropdown.classList.toggle('hovered');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('hovered');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

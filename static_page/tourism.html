@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="tourism.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Tourism - Municipality of Cervantes</title>
@@ -25,7 +26,7 @@
                 </div>
 
                 <div class="nav-links">
-                    <a href="index.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
 
                     <div class="dropdown">
                         <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
@@ -60,18 +61,36 @@
                             <a href="public/notice_to_proceed.php">Notice to Proceed</a>
                             <a href="public/news.php">News</a>
                             <a href="public/scholarship.php">Scholarship</a>
+                            <a href="../mswd/public/apply.php">MSWD</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="nav-right">
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <a href="#" class="contacts-btn"><i class="fas fa-phone"></i> CONTACTS</a>
             </div>
         </nav>
     </header>
 
     <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Dropdown toggle
         document.querySelectorAll('.dropdown-toggle').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -151,5 +170,4 @@
 
     <script src="script.js"></script>
 </body>
-</html>
 </html>
