@@ -20,9 +20,15 @@ $app_stmt = $conn->prepare("
 ");
 
 if ($app_stmt) {
-    $app_stmt->bind_param("s", $tracking_number);
-    $app_stmt->execute();
-    $application = $app_stmt->get_result()->fetch_assoc();
+    if ($conn instanceof PDO) {
+        $app_stmt->execute([$tracking_number]);
+        $application = $app_stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        $app_stmt->bind_param("s", $tracking_number);
+        $app_stmt->execute();
+        $result = $app_stmt->get_result();
+        $application = $result ? $result->fetch_assoc() : false;
+    }
 } else {
     $application = false;
 }
