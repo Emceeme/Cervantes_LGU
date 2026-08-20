@@ -24,9 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ");
         
         if ($app_stmt) {
-            $app_stmt->bind_param("s", $tracking_number);
-            $app_stmt->execute();
-            $application = $app_stmt->get_result()->fetch_assoc();
+            if ($conn instanceof PDO) {
+                $app_stmt->execute([$tracking_number]);
+                $application = $app_stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $app_stmt->bind_param("s", $tracking_number);
+                $app_stmt->execute();
+                $result = $app_stmt->get_result();
+                $application = $result ? $result->fetch_assoc() : false;
+            }
         }
         
         if (!$application) {
@@ -40,9 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 WHERE ash.application_id = ?
                 ORDER BY ash.changed_at DESC
             ");
-            $history_stmt->bind_param("i", $application['id']);
-            $history_stmt->execute();
-            $status_history = $history_stmt->get_result();
+            
+            if ($conn instanceof PDO) {
+                $history_stmt->execute([$application['id']]);
+                $status_history = $history_stmt->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $history_stmt->bind_param("i", $application['id']);
+                $history_stmt->execute();
+                $status_history = $history_stmt->get_result();
+            }
         }
     }
 }
@@ -135,8 +147,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         <div class="timeline">
             <h4>Status History</h4>
-            <?php if ($status_history && $status_history->num_rows > 0): ?>
-                <?php while ($history = $status_history->fetch_assoc()): ?>
+            <?php if ($status_history && ($conn instanceof PDO ? count($status_history) > 0 : $status_history->num_rows > 0)): ?>
+                <?php if ($conn instanceof PDO): ?>
+                    <?php foreach ($status_history as $history): ?>
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h5><?= ucfirst(str_replace('_', ' ', $history['new_status'])) ?></h5>
@@ -149,7 +162,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="timeline-date"><?= date('F j, Y, g:i a', strtotime($history['changed_at'])) ?></div>
                     </div>
                 </div>
-                <?php endwhile; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php while ($history = $status_history->fetch_assoc()): ?>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h5><?= ucfirst(str_replace('_', ' ', $history['new_status'])) ?></h5>
+                        <p>
+                            Changed by: <?= htmlspecialchars($history['changed_by_name'] ?? 'System') ?>
+                            <?php if ($history['remarks']): ?>
+                            <br>Remarks: <?= htmlspecialchars($history['remarks']) ?>
+                            <?php endif; ?>
+                        </p>
+                        <div class="timeline-date"><?= date('F j, Y, g:i a', strtotime($history['changed_at'])) ?></div>
+                    </div>
+                </div>
+                    <?php endwhile; ?>
+                <?php endif; ?>
             <?php else: ?>
                 <p style="opacity: 0.7;">No status history available</p>
             <?php endif; ?>
