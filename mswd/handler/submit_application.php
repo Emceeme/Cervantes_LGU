@@ -58,7 +58,11 @@ if (!empty($email) && !validateEmail($email)) {
 $tracking_number = 'MSWD-' . date('Y') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
 
 // Start transaction for atomic operation
-$conn->begin_transaction();
+if ($conn instanceof PDO) {
+    $conn->beginTransaction();
+} else {
+    $conn->begin_transaction();
+}
 
 try {
     // Insert application
@@ -71,21 +75,35 @@ try {
     ");
     
     if (!$insert_app) {
-        throw new Exception("Failed to prepare statement: " . $conn->error);
+        $error = $conn instanceof PDO ? implode(' ', $conn->errorInfo()) : $conn->error;
+        throw new Exception("Failed to prepare statement: " . $error);
     }
     
-    $insert_app->bind_param(
-        "sisssssssssss",
-        $tracking_number, $assistance_type_id, $applicant_id, $first_name, $middle_name, $last_name,
-        $birthdate, $gender, $civil_status, $contact_number, $email, $barangay, $street_address
-    );
-    
-    if (!$insert_app->execute()) {
-        throw new Exception("Failed to insert application: " . $insert_app->error);
+    if ($conn instanceof PDO) {
+        $insert_app->execute([
+            $tracking_number, $assistance_type_id, $applicant_id, $first_name, $middle_name, $last_name,
+            $birthdate, $gender, $civil_status, $contact_number, $email, $barangay, $street_address
+        ]);
+        
+        if ($insert_app->errorCode() !== '00000') {
+            throw new Exception("Failed to insert application: " . implode(' ', $insert_app->errorInfo()));
+        }
+        
+        $application_id = $conn->lastInsertId();
+    } else {
+        $insert_app->bind_param(
+            "sisssssssssss",
+            $tracking_number, $assistance_type_id, $applicant_id, $first_name, $middle_name, $last_name,
+            $birthdate, $gender, $civil_status, $contact_number, $email, $barangay, $street_address
+        );
+        
+        if (!$insert_app->execute()) {
+            throw new Exception("Failed to insert application: " . $insert_app->error);
+        }
+        
+        $application_id = $conn->insert_id;
+        $insert_app->close();
     }
-    
-    $application_id = $conn->insert_id;
-    $insert_app->close();
     
     // Handle file uploads
     if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
@@ -138,16 +156,27 @@ try {
                 ");
                 
                 $relative_path = 'storage/mswd_documents/' . $application_id . '/' . $secure_filename;
-                $insert_doc->bind_param(
-                    "isssi",
-                    $application_id, $document_type, $file_name, $relative_path, $file_size
-                );
                 
-                if (!$insert_doc->execute()) {
-                    throw new Exception("Failed to save document record: " . $insert_doc->error);
+                if ($conn instanceof PDO) {
+                    $insert_doc->execute([
+                        $application_id, $document_type, $file_name, $relative_path, $file_size
+                    ]);
+                    
+                    if ($insert_doc->errorCode() !== '00000') {
+                        throw new Exception("Failed to save document record: " . implode(' ', $insert_doc->errorInfo()));
+                    }
+                } else {
+                    $insert_doc->bind_param(
+                        "isssi",
+                        $application_id, $document_type, $file_name, $relative_path, $file_size
+                    );
+                    
+                    if (!$insert_doc->execute()) {
+                        throw new Exception("Failed to save document record: " . $insert_doc->error);
+                    }
+                    
+                    $insert_doc->close();
                 }
-                
-                $insert_doc->close();
             }
         }
     }
@@ -168,7 +197,13 @@ try {
     
 } catch (Exception $e) {
     // Rollback transaction on error
-    $conn->rollback();
+    if ($conn instanceof PDO) {
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+    } else {
+        $conn->rollback();
+    }
     
     // Log error
     logError('Application submission failed: ' . $e->getMessage());
