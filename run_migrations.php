@@ -5,7 +5,12 @@
 
 require_once 'config/db.php';
 
-header('Content-Type: text/plain');
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+header('Content-Type: text/plain; charset=utf-8');
 
 echo "=== LGU System Migration Runner ===\n\n";
 
