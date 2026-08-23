@@ -24,10 +24,6 @@ RewriteRule ^ - [L]
 RewriteCond %{REQUEST_FILENAME} \.php$
 RewriteRule ^ - [L]
 
-# Route all other requests to index.php (for SPA-like behavior if needed)
-# Comment this out if you want direct file access
-# RewriteRule ^ index.php [L]
-
 # Security: Prevent directory listing
 Options -Indexes
 
