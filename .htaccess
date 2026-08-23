@@ -1,0 +1,66 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Set the base directory
+RewriteBase /
+
+# Directory index
+DirectoryIndex index.php index.html
+
+# Redirect trailing slashes if not a directory
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# Serve existing files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Serve existing directories directly
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Handle PHP files
+RewriteCond %{REQUEST_FILENAME} \.php$
+RewriteRule ^ - [L]
+
+# Route all other requests to index.php (for SPA-like behavior if needed)
+# Comment this out if you want direct file access
+# RewriteRule ^ index.php [L]
+
+# Security: Prevent directory listing
+Options -Indexes
+
+# Security: Prevent access to hidden files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Security: Prevent access to sensitive files
+<FilesMatch "(env\.php|\.env|composer\.json|composer\.lock|package\.json)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP settings for Render
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# Enable CORS if needed (uncomment and adjust)
+# <IfModule mod_headers.c>
+#     Header set Access-Control-Allow-Origin "*"
+#     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+#     Header set Access-Control-Allow-Headers "Content-Type"
+# </IfModule>

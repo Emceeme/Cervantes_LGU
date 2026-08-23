@@ -1,0 +1,15 @@
+# Render Build Configuration
+services:
+  - type: web
+    name: cervantes-lgu
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    
+    # Environment variables (can also be set in Render dashboard)
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
