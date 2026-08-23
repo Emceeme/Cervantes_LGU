@@ -145,12 +145,22 @@
             });
         }
 
-        // Dropdown toggle
+        // Dropdown toggle - works for both desktop and mobile
         document.querySelectorAll('.dropdown-toggle').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const dropdown = this.parentElement;
+                
+                // Close other dropdowns
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('hovered', 'active');
+                    }
+                });
+                
+                // Toggle current dropdown
                 dropdown.classList.toggle('hovered');
+                dropdown.classList.toggle('active');
             });
         });
 
@@ -158,6 +168,7 @@
             document.querySelectorAll('.dropdown').forEach(dropdown => {
                 if (!dropdown.contains(event.target)) {
                     dropdown.classList.remove('hovered');
+                    dropdown.classList.remove('active');
                 }
             });
         });
