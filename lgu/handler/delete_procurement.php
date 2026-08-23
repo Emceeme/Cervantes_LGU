@@ -16,8 +16,8 @@ if (!isset($_SESSION['id'])) {
 $department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
 if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
     logSecurityEvent('unauthorized_delete_attempt', $_SESSION['id'] ?? null, ['endpoint' => 'delete_procurement', 'department' => $department]);
-    http_response_code(403);
-    die("Access Denied: You do not have permission to delete procurement posts.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Check if ID is provided

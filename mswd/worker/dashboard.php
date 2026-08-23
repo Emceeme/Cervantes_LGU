@@ -8,8 +8,8 @@ setSecurityHeaders();
 // SECURITY GUARD: MSWD Department only
 if (!isset($_SESSION['department']) || $_SESSION['department'] !== 'MSWD') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'mswd_worker_dashboard']);
-    http_response_code(403);
-    die("Access Denied: MSWD Department privileges required.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 $worker_id = $_SESSION['id'];

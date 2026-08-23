@@ -10,8 +10,8 @@ setSecurityHeaders();
 // SECURITY GUARD: Restrict access to Super Admin only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'SUPER_ADMIN') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'admin/settings', 'role' => $_SESSION['role'] ?? 'none']);
-    http_response_code(403);
-    die("Access Denied: You do not have permission to access system settings.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Handle form submission

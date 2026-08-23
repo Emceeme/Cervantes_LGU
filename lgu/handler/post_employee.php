@@ -9,7 +9,8 @@ setSecurityHeaders();
 // Access Check
 if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['ADMIN', 'SUPER_ADMIN'], true)) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'post_employee']);
-    die("Access denied.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

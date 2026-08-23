@@ -9,8 +9,8 @@ setSecurityHeaders();
 // SECURITY GUARD: Restrict access to applicants only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'APPLICANT') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'mswd/applicant/my-applications', 'role' => $_SESSION['role'] ?? 'none']);
-    http_response_code(403);
-    die("Access Denied: This page is for registered applicants only.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 $applicant_id = $_SESSION['id'];

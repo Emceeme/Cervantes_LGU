@@ -8,8 +8,8 @@ setSecurityHeaders();
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'SUPER_ADMIN') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'admin_dashboard']);
-    http_response_code(403);
-    die("Access Denied: Super Admin privileges required.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Generate CSRF token

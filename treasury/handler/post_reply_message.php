@@ -12,7 +12,8 @@ setSecurityHeaders();
 // Ensure user is authenticated
 if (!isset($_SESSION['user_id'])) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'post_reply_message']);
-    die("Unauthorized access.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

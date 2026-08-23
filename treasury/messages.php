@@ -12,7 +12,7 @@ setSecurityHeaders();
 // 🔒 SECURITY GUARD: Treasury Staff/Sub-Admin or Super Admin only
 if (!isset($_SESSION['name']) || ($_SESSION['department'] !== 'Treasury' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'treasury_messages']);
-    header("Location: ../login.php");
+    header("Location: /login.php?unauthorized=1");
     exit();
 }
 

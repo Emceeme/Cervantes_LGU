@@ -4,7 +4,8 @@ include '../config/db.php';
 
 // Only ADMIN (Sub Admin) and SUPER_ADMIN are authorized to access employee management
 if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['ADMIN', 'SUPER_ADMIN'], true)) {
-    die("Access denied: You do not have permissions to manage employees.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Fetch session info

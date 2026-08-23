@@ -13,8 +13,8 @@ setSecurityHeaders();
 
 // SECURITY GUARD: Super Admin only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'SUPER_ADMIN') {
-    http_response_code(403);
-    die("Access Denied: Super Admin privileges required.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 $username_to_update = $_GET['username'] ?? '';

@@ -4,7 +4,8 @@ require_once '../../config/security.php';
 include '../../config/db.php';
 
 if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['ADMIN', 'SUPER_ADMIN'], true)) {
-    die("Access denied.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if (isset($_GET['id'])) {

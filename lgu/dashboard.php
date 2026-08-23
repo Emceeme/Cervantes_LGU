@@ -10,8 +10,8 @@ setSecurityHeaders();
 $department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
 if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'lgu_dashboard', 'department' => $department]);
-    http_response_code(403);
-    die("Access Denied: You do not have permission to view LGU records.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Fetch job listings

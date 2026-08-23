@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // 🔒 SECURITY GUARD: Treasury Staff/Sub-Admin or Super Admin only
 if (!isset($_SESSION['name']) || ($_SESSION['department'] !== 'Treasury' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
-    header("Location: ../login.php");
+    header("Location: /login.php?unauthorized=1");
     exit();
 }
 

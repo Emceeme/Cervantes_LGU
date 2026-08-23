@@ -9,7 +9,7 @@ setSecurityHeaders();
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'send_inquiry']);
-    header("Location: ../../login.php");
+    header("Location: /login.php?unauthorized=1");
     exit();
 }
 

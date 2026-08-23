@@ -8,8 +8,8 @@ setSecurityHeaders();
 // Access Control - MSWD Department only
 if (!isset($_SESSION['department']) || $_SESSION['department'] !== 'MSWD') {
     logSecurityEvent('unauthorized_document_access', $_SESSION['id'] ?? null, ['endpoint' => 'view_document']);
-    http_response_code(403);
-    die("Access Denied.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 $doc_id = intval($_GET['id'] ?? 0);

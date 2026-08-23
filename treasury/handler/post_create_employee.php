@@ -13,7 +13,8 @@ if (
     ($_SESSION['role'] !== 'SUB_ADMIN' && $_SESSION['role'] !== 'SUPER_ADMIN')
 ) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'post_create_employee']);
-    die("Unauthorized access.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

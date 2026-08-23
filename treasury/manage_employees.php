@@ -16,7 +16,7 @@ if (
     ($_SESSION['role'] !== 'SUB_ADMIN' && $_SESSION['role'] !== 'SUPER_ADMIN')
 ) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'manage_employees']);
-    header("Location: dashboard.php");
+    header("Location: /login.php?unauthorized=1");
     exit();
 }
 

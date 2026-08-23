@@ -11,8 +11,8 @@ setSecurityHeaders();
 $department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
 if (!isset($_SESSION['role']) || $department !== 'MSWD') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'mswd/settings', 'department' => $department]);
-    http_response_code(403);
-    die("Access Denied: You do not have permission to access MSWD settings.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 // Handle form submission

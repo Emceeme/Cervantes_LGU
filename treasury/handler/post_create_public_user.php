@@ -9,7 +9,8 @@ setSecurityHeaders();
 // 🔒 Authorization Guard
 if (!isset($_SESSION['name']) || ($_SESSION['department'] !== 'Treasury' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'post_create_public_user']);
-    die("Access denied.");
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

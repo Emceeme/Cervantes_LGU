@@ -10,8 +10,8 @@ setSecurityHeaders();
 $department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
 if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'update_scholarship_status', 'department' => $department]);
-    http_response_code(403);
-    die(json_encode(['success' => false, 'error' => 'Access Denied']));
+    header('Location: /login.php?unauthorized=1');
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

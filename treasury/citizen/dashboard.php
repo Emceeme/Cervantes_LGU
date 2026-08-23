@@ -12,7 +12,7 @@ setSecurityHeaders();
 // 🔒 SECURITY GUARD: Only CITIZEN role allowed
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'CITIZEN') {
     logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'citizen_dashboard']);
-    header("Location: ../../login.php");
+    header("Location: /login.php?unauthorized=1");
     exit();
 }
 
