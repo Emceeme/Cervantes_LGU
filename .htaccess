@@ -34,7 +34,7 @@ Options -Indexes
 </FilesMatch>
 
 # Security: Prevent access to sensitive files
-<FilesMatch "(env\.php|\.env|composer\.json|composer\.lock|package\.json)">
+<FilesMatch "(env\.php|\.env|composer\.json|composer\.lock|package\.json|backup_database\.php)">
     Order allow,deny
     Deny from all
 </FilesMatch>

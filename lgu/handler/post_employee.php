@@ -21,11 +21,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $first_name = trim($_POST['first_name']);
-    $last_name  = trim($_POST['last_name']);
-    $username   = trim($_POST['username']);
-    $email      = trim($_POST['email']);
-    $password   = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    // Validate required fields
+    $required_fields = ['first_name', 'last_name', 'username', 'email', 'password'];
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            header("Location: ../manage_employees.php?error=Missing+required+field:+" . urlencode($field));
+            exit();
+        }
+    }
+
+    $first_name = sanitizeInput(trim($_POST['first_name']));
+    $last_name = sanitizeInput(trim($_POST['last_name']));
+    $username = sanitizeInput(trim($_POST['username']));
+    $email = sanitizeInput(trim($_POST['email']));
+    $password = $_POST['password'];
+    
+    // Validate name format (letters, spaces, hyphens, apostrophes only)
+    if (!preg_match('/^[a-zA-Z\s\-\'\.]+$/', $first_name)) {
+        header("Location: ../manage_employees.php?error=Invalid+first+name+format");
+        exit();
+    }
+
+    if (!preg_match('/^[a-zA-Z\s\-\'\.]+$/', $last_name)) {
+        header("Location: ../manage_employees.php?error=Invalid+last+name+format");
+        exit();
+    }
+
+    // Validate username (alphanumeric, underscores, hyphens only, 3-30 chars)
+    if (!preg_match('/^[a-zA-Z0-9_\-]{3,30}$/', $username)) {
+        header("Location: ../manage_employees.php?error=Username+must+be+3-30+characters+and+contain+only+letters,+numbers,+underscores,+and+hyphens");
+        exit();
+    }
+
+    // Validate email format
+    if (!validateEmail($email)) {
+        header("Location: ../manage_employees.php?error=Invalid+email+address");
+        exit();
+    }
+
+    // Validate password strength (minimum 8 characters)
+    if (strlen($password) < 8) {
+        header("Location: ../manage_employees.php?error=Password+must+be+at+least+8+characters");
+        exit();
+    }
+
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
     
     // Sub Admins can only assign users to their own department
     $department = ($_SESSION['role'] === 'ADMIN') ? $_SESSION['department'] : trim($_POST['department']);

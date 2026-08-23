@@ -45,6 +45,55 @@ $email = sanitizeInput($_POST['email'] ?? '');
 $barangay = sanitizeInput($_POST['barangay']);
 $street_address = sanitizeInput($_POST['street_address']);
 
+// Validate assistance type ID
+if ($assistance_type_id <= 0) {
+    header("Location: ../public/apply.php?error=Invalid+assistance+type");
+    exit();
+}
+
+// Validate name format (letters, spaces, hyphens, apostrophes only)
+if (!preg_match('/^[a-zA-Z\s\-\'\.]+$/', $first_name)) {
+    header("Location: ../public/apply.php?error=Invalid+first+name+format");
+    exit();
+}
+
+if (!empty($middle_name) && !preg_match('/^[a-zA-Z\s\-\'\.]+$/', $middle_name)) {
+    header("Location: ../public/apply.php?error=Invalid+middle+name+format");
+    exit();
+}
+
+if (!preg_match('/^[a-zA-Z\s\-\'\.]+$/', $last_name)) {
+    header("Location: ../public/apply.php?error=Invalid+last+name+format");
+    exit();
+}
+
+// Validate birth date (must be a valid date and at least 18 years old)
+$birthdate_obj = DateTime::createFromFormat('Y-m-d', $birthdate);
+if (!$birthdate_obj || $birthdate_obj > new DateTime('-18 years')) {
+    header("Location: ../public/apply.php?error=Applicant+must+be+at+least+18+years+old");
+    exit();
+}
+
+// Validate gender
+$allowed_genders = ['male', 'female', 'other'];
+if (!in_array(strtolower($gender), $allowed_genders)) {
+    header("Location: ../public/apply.php?error=Invalid+gender+value");
+    exit();
+}
+
+// Validate civil status
+$allowed_civil_status = ['single', 'married', 'widowed', 'separated'];
+if (!in_array(strtolower($civil_status), $allowed_civil_status)) {
+    header("Location: ../public/apply.php?error=Invalid+civil+status+value");
+    exit();
+}
+
+// Validate phone number (Philippine format: 11 digits, starts with 09)
+if (!preg_match('/^09\d{9}$/', $contact_number)) {
+    header("Location: ../public/apply.php?error=Invalid+phone+number+format.+Use+11+digit+format+starting+with+09");
+    exit();
+}
+
 // Check if user is logged in as applicant
 $applicant_id = isset($_SESSION['id']) && $_SESSION['role'] === 'APPLICANT' ? $_SESSION['id'] : null;
 

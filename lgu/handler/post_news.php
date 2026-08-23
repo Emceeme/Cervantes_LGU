@@ -15,27 +15,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+    // Validate required fields
+    $required_fields = ['title', 'content'];
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            header("Location: ../newsfeed.php?error=Missing+required+field:+" . urlencode($field));
+            exit();
+        }
+    }
+
     $user_id = $_SESSION['id'];
 
-    $title = $_POST['title'];
-    $content = $_POST['content'];
+    $title = sanitizeInput($_POST['title']);
+    $content = sanitizeInput($_POST['content']);
+
+    // Validate title length
+    if (strlen($title) < 5 || strlen($title) > 200) {
+        header("Location: ../newsfeed.php?error=Title+must+be+between+5+and+200+characters");
+        exit();
+    }
+
+    // Validate content length
+    if (strlen($content) < 10 || strlen($content) > 10000) {
+        header("Location: ../newsfeed.php?error=Content+must+be+between+10+and+10000+characters");
+        exit();
+    }
 
 $image = '';
 
 if (!empty($_FILES['image']['name'])) {
+    // Validate file size (5MB max)
+    if ($_FILES['image']['size'] > 5 * 1024 * 1024) {
+        header("Location: ../newsfeed.php?error=Image+size+exceeds+5MB+limit");
+        exit();
+    }
 
-    $image = time() . '_' . basename($_FILES['image']['name']);
+    // Validate file type using MIME type
+    $allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime_type = $finfo->file($_FILES['image']['tmp_name']);
+    
+    if (!in_array($mime_type, $allowed_types)) {
+        header("Location: ../newsfeed.php?error=Invalid+image+type.+Only+JPG,+PNG,+GIF,+and+WebP+allowed");
+        exit();
+    }
+
+    // Validate file extension
+    $file_extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if (!in_array($file_extension, $allowed_extensions)) {
+        header("Location: ../newsfeed.php?error=Invalid+image+extension");
+        exit();
+    }
+
+    $image = time() . '_' . bin2hex(random_bytes(8)) . '.' . $file_extension;
 
     $uploadDir = __DIR__ . "/../uploads/news/";
 
     // Create the folder if it doesn't exist
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        mkdir($uploadDir, 0755, true);
     }
 
     // Upload the image
     if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $image)) {
-        die("Image upload failed.");
+        header("Location: ../newsfeed.php?error=Image+upload+failed");
+        exit();
     }
 }
 

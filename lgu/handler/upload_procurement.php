@@ -46,8 +46,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         }
     }
 
-    $title = $_POST['title'] ?? '';
-    $status = $_POST['status'] ?? 'OPEN';
+    $title = sanitizeInput($_POST['title'] ?? '');
+    $status = sanitizeInput($_POST['status'] ?? 'OPEN');
+
+    // Validate title length
+    if (!empty($title) && (strlen($title) < 5 || strlen($title) > 200)) {
+        header("Location: ../procurement.php?error=Title+must+be+between+5+and+200+characters");
+        exit();
+    }
+
+    // Validate status
+    $allowed_statuses = ['OPEN', 'CLOSED'];
+    if (!in_array(strtoupper($status), $allowed_statuses)) {
+        header("Location: ../procurement.php?error=Invalid+status");
+        exit();
+    }
 
     // File upload validation
     if (!isset($_FILES['document_file']) || $_FILES['document_file']['error'] !== UPLOAD_ERR_OK) {
