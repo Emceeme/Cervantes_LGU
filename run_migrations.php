@@ -70,14 +70,14 @@ $migrations = [
     'migrations/create_procurement_posts_table.php',
     'migrations/add_procurement_file_columns.php',
     'migrations/make_procurement_description_nullable.php',
-    'mswd/migrations/create_tables.php',
-    'mswd/migrations/seed_assistance_types.php',
+    // 'mswd/migrations/create_tables.php', // DISABLED
+    // 'mswd/migrations/seed_assistance_types.php', // DISABLED
     'migrations/add_applicant_account_link.php',
     'migrations/add_procurement_custom_date.php',
     'migrations/add_view_count_procurement.php',
     'migrations/create_scholarship_applications.php',
-    'migrations/create_scholarship_posts.php',
-    'mswd/migrations/add_eligibility_column.php'
+    'migrations/create_scholarship_posts.php'
+    // 'mswd/migrations/add_eligibility_column.php' // DISABLED
 ];
 
 $success_count = 0;
