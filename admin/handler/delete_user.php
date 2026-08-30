@@ -23,25 +23,41 @@ if (isset($_GET['id'])) {
 
     // 1. Double check target is not another Super Admin
     $check_stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
-    $check_stmt->bind_param("i", $user_id);
-    $check_stmt->execute();
-    $target_user = $check_stmt->get_result()->fetch_assoc();
-    $check_stmt->close();
+    
+    if ($conn instanceof PDO) {
+        // PostgreSQL/PDO
+        $check_stmt->execute([$user_id]);
+        $target_user = $check_stmt->fetch();
+    } else {
+        // MySQLi
+        $check_stmt->bind_param("i", $user_id);
+        $check_stmt->execute();
+        $target_user = $check_stmt->get_result()->fetch_assoc();
+        $check_stmt->close();
+    }
 
     if ($target_user && $target_user['role'] !== 'SUPER_ADMIN') {
         // 2. Safely delete the account using prepared statements
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
-        $stmt->bind_param("i", $user_id);
+        
+        if ($conn instanceof PDO) {
+            // PostgreSQL/PDO
+            $stmt->execute([$user_id]);
+            $success = true;
+        } else {
+            // MySQLi
+            $stmt->bind_param("i", $user_id);
+            $success = $stmt->execute();
+            $stmt->close();
+        }
 
-        if ($stmt->execute()) {
+        if ($success) {
             $_SESSION['msg'] = "User account successfully deleted.";
             $_SESSION['msg_type'] = "success";
         } else {
             $_SESSION['msg'] = "Failed to delete user account.";
             $_SESSION['msg_type'] = "error";
         }
-
-        $stmt->close();
     } else {
         $_SESSION['msg'] = "User not found or cannot be deleted.";
         $_SESSION['msg_type'] = "error";

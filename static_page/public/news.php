@@ -52,7 +52,7 @@ if ($conn instanceof PDO) {
                     <?php foreach($posts as $row): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::uploads('news/' . $row['image']) ?>" alt="News Image">
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -72,7 +72,7 @@ if ($conn instanceof PDO) {
                     <?php while($row = $posts->fetch_assoc()): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::uploads('news/' . $row['image']) ?>" alt="News Image">
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>

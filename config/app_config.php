@@ -70,6 +70,14 @@ class AppConfig {
     public static function uploads($path) {
         return self::getBaseUrl() . '/lgu/uploads/' . ltrim($path, '/');
     }
+
+    public static function newsUploads($path) {
+        return self::getBaseUrl() . '/lgu/uploads/news/' . ltrim($path, '/');
+    }
+
+    public static function scholarshipUploads($path) {
+        return self::getBaseUrl() . '/lgu/uploads/scholarship/' . ltrim($path, '/');
+    }
     
     public static function isHttps() {
         return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';

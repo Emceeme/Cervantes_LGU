@@ -36,3 +36,27 @@ loadEnv();
 function env($key, $default = null) {
     return $_ENV[$key] ?? getenv($key) ?? $default;
 }
+
+// Configure error handling based on APP_ENV
+$app_env = env('APP_ENV', 'development');
+
+if ($app_env === 'production') {
+    // Production: Hide errors, log them
+    ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
+    ini_set('log_errors', '1');
+    // Use absolute path for Render
+    $error_log_path = env('ERROR_LOG_PATH', __DIR__ . '/../storage/logs/php_errors.log');
+    $error_dir = dirname($error_log_path);
+    if (!is_dir($error_dir)) {
+        mkdir($error_dir, 0755, true);
+    }
+    ini_set('error_log', $error_log_path);
+    error_reporting(E_ALL);
+} else {
+    // Development: Show errors for debugging
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    ini_set('log_errors', '1');
+    error_reporting(E_ALL);
+}

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/security.php';
+require_once '../config/app_config.php';
 include '../config/db.php';
 
 // Set security headers
@@ -108,7 +109,7 @@ if ($conn instanceof PDO) {
                         <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
                         <td>
                             <a class="btn btn-secondary"
-                                href="public/<?= $row['resume']; ?>"
+                                href="<?= AppConfig::uploads($row['resume']); ?>"
                                 target="_blank">
                                 View Resume
                             </a>
@@ -162,7 +163,7 @@ if ($conn instanceof PDO) {
                         <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
                         <td>
                             <a class="btn btn-secondary"
-                                href="public/<?= $row['resume']; ?>"
+                                href="<?= AppConfig::uploads($row['resume']); ?>"
                                 target="_blank">
                                 View Resume
                             </a>

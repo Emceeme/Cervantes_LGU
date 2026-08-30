@@ -262,7 +262,7 @@ function viewApplication(data) {
     if (data.file_path) {
         html += `
             <h4 style="margin: 20px 0 10px 0; color: #1e3a5f;">Uploaded Documents</h4>
-            <a href="${BASE_URL}/uploads/scholarship/${data.file_path}" target="_blank" class="view-btn">Download ${data.original_file_name}</a>
+            <a href="${BASE_URL}/lgu/uploads/scholarship/${data.file_path}" target="_blank" class="view-btn">Download ${data.original_file_name}</a>
         `;
     }
     
