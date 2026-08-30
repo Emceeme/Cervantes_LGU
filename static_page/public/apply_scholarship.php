@@ -172,18 +172,22 @@ if (isset($_FILES['requirements_file']) && $_FILES['requirements_file']['error']
     }
 }
 
+// Generate tracking number
+$tracking_number = 'LGU-' . strtoupper(bin2hex(random_bytes(4)));
+
 // Insert into database
 $stmt = $conn->prepare("
     INSERT INTO scholarship_applications
-    (full_name, email, phone, address, birth_date, gender, civil_status,
+    (tracking_number, full_name, email, phone, address, birth_date, gender, civil_status,
      school_name, course, year_level, gpa, family_income, family_members,
      parent_name, parent_contact, parent_occupation, essay, file_path, original_file_name)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
 if ($conn instanceof PDO) {
     // PostgreSQL/PDO
     $params = [
+        $tracking_number,
         $full_name,
         $email,
         $phone,
@@ -205,7 +209,7 @@ if ($conn instanceof PDO) {
         $original_file_name
     ];
     if ($stmt->execute($params)) {
-        header("Location: scholarship.php?status=success");
+        header("Location: scholarship.php?status=success&tracking=" . $tracking_number);
         exit();
     } else {
         die("Database Error: " . implode(', ', $stmt->errorInfo()));
@@ -214,6 +218,7 @@ if ($conn instanceof PDO) {
     // MySQLi
     $stmt->bind_param(
         "sssssssssisssissss",
+        $tracking_number,
         $full_name,
         $email,
         $phone,
@@ -235,7 +240,7 @@ if ($conn instanceof PDO) {
         $original_file_name
     );
     if ($stmt->execute()) {
-        header("Location: scholarship.php?status=success");
+        header("Location: scholarship.php?status=success&tracking=" . $tracking_number);
         exit();
     } else {
         die("Database Error: " . $stmt->error);

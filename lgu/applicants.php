@@ -90,6 +90,7 @@ if ($conn instanceof PDO) {
                         <th>Message</th>
                         <th>Resume</th>
                         <th>Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -116,6 +117,13 @@ if ($conn instanceof PDO) {
                             </a>
                         </td>
                         <td><?= $row['created_at']; ?></td>
+                        <td>
+                            <a class="btn-danger"
+                               href="handler/delete_applicant.php?id=<?= $row['id'] ?>"
+                               onclick="return confirm('Delete this applicant?')">
+                               Delete
+                            </a>
+                        </td>
                     </tr>
 
                 <?php endforeach; ?>
@@ -145,6 +153,7 @@ if ($conn instanceof PDO) {
                         <th>Message</th>
                         <th>Resume</th>
                         <th>Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -171,6 +180,13 @@ if ($conn instanceof PDO) {
                             </a>
                         </td>
                         <td><?= $row['created_at']; ?></td>
+                        <td>
+                            <a class="btn-danger"
+                               href="handler/delete_applicant.php?id=<?= $row['id'] ?>"
+                               onclick="return confirm('Delete this applicant?')">
+                               Delete
+                            </a>
+                        </td>
                     </tr>
 
                 <?php endwhile; ?>

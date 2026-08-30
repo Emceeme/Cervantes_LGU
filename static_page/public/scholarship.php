@@ -31,6 +31,7 @@ $csrf_token = bin2hex(random_bytes(32));
 $_SESSION['scholarship_csrf_token'] = $csrf_token;
 
 $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
+$tracking_number = isset($_GET['tracking']) ? $_GET['tracking'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +53,11 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
         </div>
         <div class="container">
             <?php if($success_message): ?>
-            <div class="success-message">✅ Application submitted successfully! Please bring original documents to the LGU office for verification.</div>
+            <div class="success-message">
+                ✅ Application submitted successfully!<br>
+                Your Tracking Number: <strong><?= htmlspecialchars($tracking_number) ?></strong><br>
+                Please bring original documents to the LGU office for verification.
+            </div>
             <?php endif; ?>
             
             <div class="card">
