@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/security.php';
+require_once '../config/app_config.php';
 include '../config/db.php';
 
 // Set security headers
@@ -155,7 +156,7 @@ $csrf_token = generateCsrfToken();
                         <td><?= htmlspecialchars($row['title']) ?></td>
                         <td><?= htmlspecialchars($row['category'] ?? 'N/A') ?></td>
                         <td>
-                            <a href="uploads/procurement/<?= $row['file_path'] ?>" target="_blank">
+                            <a href="<?= AppConfig::procurementUploads($row['file_path']) ?>" target="_blank">
                                 View File
                             </a>
                         </td>
@@ -187,7 +188,7 @@ $csrf_token = generateCsrfToken();
                         <td><?= htmlspecialchars($row['title']) ?></td>
                         <td><?= htmlspecialchars($row['category'] ?? 'N/A') ?></td>
                         <td>
-                            <a href="uploads/procurement/<?= $row['file_path'] ?>" target="_blank">
+                            <a href="<?= AppConfig::procurementUploads($row['file_path']) ?>" target="_blank">
                                 View File
                             </a>
                         </td>
