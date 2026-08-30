@@ -70,6 +70,7 @@ if (!empty($_FILES['image']['name'])) {
 
     $image = time() . '_' . bin2hex(random_bytes(8)) . '.' . $file_extension;
 
+    // Use absolute path for Render
     $uploadDir = __DIR__ . "/../uploads/news/";
 
     // Create the folder if it doesn't exist

@@ -318,6 +318,59 @@ window.onclick = function(event) {
 </script>
 
 <style>
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    color: #1E293B;
+    padding: 35px;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.close {
+    cursor: pointer;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    color: #64748B;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #1E293B;
+}
+
+.view-btn {
+    padding: 10px 20px;
+    background: #3B82F6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+    background: #2563EB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
 .status-rejected {
     background: #fecaca;
     color: #dc2626;
@@ -325,6 +378,13 @@ window.onclick = function(event) {
     border-radius: 4px;
     font-weight: 600;
     font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 25px;
+        width: 95%;
+    }
 }
 </style>
 </body>

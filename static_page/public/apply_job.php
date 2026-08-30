@@ -82,7 +82,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $fileName = time() . "_" . bin2hex(random_bytes(8)) . "." . $file_extension;
 
-    $uploadDir = __DIR__ . "/../uploads/";
+    // Use lgu/uploads/resumes/ for job applications
+    $uploadDir = __DIR__ . "/../../lgu/uploads/resumes/";
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -110,8 +111,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     ");
 
     if ($conn instanceof PDO) {
-        // PostgreSQL/PDO
-        if($stmt->execute([$job_id, $full_name, $email, $phone, $message, $uploadPath])){
+        // PostgreSQL/PDO - store only filename
+        if($stmt->execute([$job_id, $full_name, $email, $phone, $message, $fileName])){
             echo "
             <script>
                 alert('Application submitted successfully!');
@@ -122,7 +123,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             echo "Database Error: " . implode(', ', $stmt->errorInfo());
         }
     } else {
-        // MySQLi
+        // MySQLi - store only filename
         $stmt->bind_param(
             "isssss",
             $job_id,
@@ -130,7 +131,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $email,
             $phone,
             $message,
-            $uploadPath
+            $fileName
         );
         if($stmt->execute()){
             echo "
