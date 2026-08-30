@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Validate employment type
-    $allowed_types = ['full-time', 'part-time', 'contract', 'temporary'];
+    $allowed_types = ['permanent', 'contractual', 'full-time', 'part-time', 'contract', 'temporary'];
     if (!in_array(strtolower($type), $allowed_types)) {
         header("Location: ../dashboard.php?error=Invalid+employment+type");
         exit();
