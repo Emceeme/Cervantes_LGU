@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config/security.php';
-require_once __DIR__ . '/../../config/db.php';
+// require_once __DIR__ . '/../../config/db.php'; // TEMPORARILY DISABLED
 
 setSecurityHeaders();
 
