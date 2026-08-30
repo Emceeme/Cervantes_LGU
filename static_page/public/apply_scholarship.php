@@ -8,8 +8,12 @@ include '../../config/app_config.php';
 setSecurityHeaders();
 
 // Validate CSRF token
-if (!isset($_POST['csrf_token']) || !isset($_SESSION['scholarship_csrf_token']) || $_POST['csrf_token'] !== $_SESSION['scholarship_csrf_token']) {
-    die("Security validation failed. Please try again.");
+if (!isset($_POST['csrf_token']) || !isset($_SESSION['scholarship_csrf_token'])) {
+    die("Security validation failed. Missing CSRF token.");
+}
+
+if ($_POST['csrf_token'] !== $_SESSION['scholarship_csrf_token']) {
+    die("Security validation failed. Invalid CSRF token.");
 }
 
 // Clean up CSRF token
