@@ -207,9 +207,9 @@ if ($conn instanceof PDO) {
 </div>
 
 <!-- Application Modal -->
-<div id="applicationModal" class="modal">
+<div id="applicationModal" class="modal" style="display: none;">
     <div class="modal-content" style="max-width: 900px;">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModal()" style="cursor: pointer; float: right; font-size: 28px; font-weight: bold;">&times;</span>
         <h2 id="modalTitle">Application Details</h2>
         <div id="modalBody"></div>
         <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -225,6 +225,7 @@ const BASE_URL = "<?= AppConfig::getBaseUrl() ?>";
 let currentApplicationId = null;
 
 function viewApplication(data) {
+    console.log('viewApplication called with data:', data);
     currentApplicationId = data.id;
     document.getElementById("modalTitle").innerText = data.full_name;
     
@@ -273,6 +274,7 @@ function viewApplication(data) {
     
     document.getElementById("modalBody").innerHTML = html;
     document.getElementById("applicationModal").style.display = "flex";
+    console.log('Modal display set to flex');
 }
 
 function closeModal() {

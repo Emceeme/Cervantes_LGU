@@ -110,7 +110,8 @@ if ($conn instanceof PDO) {
                         <td>
                             <a class="btn btn-secondary"
                                 href="<?= AppConfig::uploads($row['resume']); ?>"
-                                target="_blank">
+                                target="_blank"
+                                download>
                                 View Resume
                             </a>
                         </td>
@@ -164,7 +165,8 @@ if ($conn instanceof PDO) {
                         <td>
                             <a class="btn btn-secondary"
                                 href="<?= AppConfig::uploads($row['resume']); ?>"
-                                target="_blank">
+                                target="_blank"
+                                download>
                                 View Resume
                             </a>
                         </td>
