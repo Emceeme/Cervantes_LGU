@@ -63,7 +63,7 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
                     <?php foreach($posts as $row): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::uploads('scholarship/' . $row['image']) ?>" alt="Scholarship Image">
+                        <img src="<?= AppConfig::scholarshipUploads($row['image']) ?>" alt="Scholarship Image">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -83,7 +83,7 @@ $success_message = isset($_GET['status']) && $_GET['status'] === 'success';
                     <?php while($row = $posts->fetch_assoc()): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::uploads('scholarship/' . $row['image']) ?>" alt="Scholarship Image">
+                        <img src="<?= AppConfig::scholarshipUploads($row['image']) ?>" alt="Scholarship Image">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -233,7 +233,7 @@ function openScholarship(title, description, image, date){
     document.getElementById("modalDate").innerText = date;
     document.getElementById("modalContent").innerHTML = description;
     if(image){
-        document.getElementById("modalGallery").innerHTML = '<img src="' + BASE_URL + '/uploads/scholarship/' + image + '" alt="Scholarship Image">';
+        document.getElementById("modalGallery").innerHTML = '<img src="' + BASE_URL + '/lgu/uploads/scholarship/' + image + '" alt="Scholarship Image">';
     } else {
         document.getElementById("modalGallery").innerHTML = '';
     }

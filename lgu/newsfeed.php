@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/security.php';
+require_once '../config/app_config.php';
 include '../config/db.php';
 
 // Set security headers
@@ -81,7 +82,7 @@ $csrf_token = generateCsrfToken();
 
 <?php
 $imagePath = __DIR__ . "/uploads/news/" . $row['image'];
-$imageUrl = "uploads/news/" . $row['image'];
+$imageUrl = AppConfig::newsUploads($row['image']);
 
 if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
@@ -126,7 +127,7 @@ if (!empty($row['image']) && file_exists($imagePath)) {
 
 <?php
 $imagePath = __DIR__ . "/uploads/news/" . $row['image'];
-$imageUrl = "uploads/news/" . $row['image'];
+$imageUrl = AppConfig::newsUploads($row['image']);
 
 if (!empty($row['image']) && file_exists($imagePath)) {
 ?>
