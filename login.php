@@ -70,53 +70,23 @@ if (isset($_POST['login'])) {
                         // Log successful login
                         logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
 
-                        // 3. ROUTING LOGIC
-                        
+                        // 3. ROUTING LOGIC (LGU ONLY - MSWD and Treasury disabled)
+
                         // A. Super Admins (highest priority)
                         if ($user['role'] === 'SUPER_ADMIN') {
                             header("Location: admin/dashboard.php");
                             exit();
                         }
 
-                        // B. MSWD Department (based on department, not role)
-                        if ($user['department'] === 'MSWD') {
-                            header("Location: mswd/worker/dashboard.php");
-                            exit();
-                        }
-
-                        // C. Treasury Department Staff
-                        if ($user['department'] === 'Treasury') {
-                            header("Location: treasury/dashboard.php");
-                            exit();
-                        }
-
-                        // D. Mayor's Office and other LGU departments
+                        // B. Mayor's Office and LGU departments ONLY
                         if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
                             header("Location: lgu/dashboard.php");
                             exit();
                         }
 
-                        // E. APPLICANT Role (MSWD applicants with accounts)
-                        if ($user['role'] === 'APPLICANT') {
-                            header("Location: mswd/applicant/my-applications.php");
-                            exit();
-                        }
-
-                        // F. Citizens (only if not in Treasury or MSWD department)
-                        if ($user['role'] === 'CITIZEN') {
-                            header("Location: treasury/citizen/dashboard.php");
-                            exit();
-                        }
-
-                        // F. Other LGU Departments (Mayor's Office, HR, IT, etc.)
-                        else {
-                            if ($user['role'] === 'ADMIN') {
-                                header("Location: lgu/manage_employees.php");
-                            } else {
-                                header("Location: lgu/dashboard.php");
-                            }
-                            exit();
-                        }
+                        // C. All other users redirect to LGU (MSWD and Treasury disabled)
+                        header("Location: lgu/dashboard.php");
+                        exit();
 
                     } else {
                         $error = "Invalid password.";
@@ -172,53 +142,23 @@ if (isset($_POST['login'])) {
                         // Log successful login
                         logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
 
-                        // 3. ROUTING LOGIC
-                        
+                        // 3. ROUTING LOGIC (LGU ONLY - MSWD and Treasury disabled)
+
                         // A. Super Admins (highest priority)
                         if ($user['role'] === 'SUPER_ADMIN') {
                             header("Location: admin/dashboard.php");
                             exit();
                         }
 
-                        // B. MSWD Department (based on department, not role)
-                        if ($user['department'] === 'MSWD') {
-                            header("Location: mswd/worker/dashboard.php");
-                            exit();
-                        }
-
-                        // C. Treasury Department Staff
-                        if ($user['department'] === 'Treasury') {
-                            header("Location: treasury/dashboard.php");
-                            exit();
-                        }
-
-                        // D. Mayor's Office and other LGU departments
+                        // B. Mayor's Office and LGU departments ONLY
                         if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
                             header("Location: lgu/dashboard.php");
                             exit();
                         }
 
-                        // E. APPLICANT Role (MSWD applicants with accounts)
-                        if ($user['role'] === 'APPLICANT') {
-                            header("Location: mswd/applicant/my-applications.php");
-                            exit();
-                        }
-
-                        // F. Citizens (only if not in Treasury or MSWD department)
-                        if ($user['role'] === 'CITIZEN') {
-                            header("Location: treasury/citizen/dashboard.php");
-                            exit();
-                        }
-
-                        // F. Other LGU Departments (Mayor's Office, HR, IT, etc.)
-                        else {
-                            if ($user['role'] === 'ADMIN') {
-                                header("Location: lgu/manage_employees.php");
-                            } else {
-                                header("Location: lgu/dashboard.php");
-                            }
-                            exit();
-                        }
+                        // C. All other users redirect to LGU (MSWD and Treasury disabled)
+                        header("Location: lgu/dashboard.php");
+                        exit();
 
                     } else {
                         $error = "Invalid password.";
