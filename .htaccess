@@ -27,14 +27,8 @@ RewriteRule ^ - [L]
 # Security: Prevent directory listing
 Options -Indexes
 
-# Security: Prevent access to LGU upload directories
-<FilesMatch "^lgu/uploads">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
 # Security: Prevent access to hidden files
-<FilesMatch "(env\.php|\.env|composer\.json|composer\.lock|package\.json|backup_database\.php)">
+<FilesMatch "(env\.php|\.env|composer\.json|composer\.lock|package\.json)">
     Order allow,deny
     Deny from all
 </FilesMatch>

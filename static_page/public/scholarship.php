@@ -1,7 +1,11 @@
 <?php
 session_start();
-include '../../config/db.php';
-include '../../config/app_config.php';
+require_once '../../config/security.php';
+require_once '../../config/app_config.php';
+require_once '../../config/db.php';
+
+// Set security headers
+setSecurityHeaders();
 
 // Get scholarship programs
 $posts_stmt = $conn->prepare("

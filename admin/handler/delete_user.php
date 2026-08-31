@@ -1,7 +1,7 @@
 <?php
 session_start();
-// Since this file lives in admin/handler/, we step up 2 levels (../../) to reach config/db.php
-include '../../config/db.php';
+require_once '../../config/security.php';
+require_once '../../config/db.php';
 
 // 🔒 SECURITY GUARD: Super Admin privileges required
 if (!isset($_SESSION['name']) || $_SESSION['role'] !== 'SUPER_ADMIN') {

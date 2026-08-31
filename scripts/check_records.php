@@ -1,5 +1,5 @@
 <?php
-include 'config/db.php';
+require_once 'config/db.php';
 
 echo "=== Checking procurement_posts records ===\n\n";
 $result = $conn->query("SELECT * FROM procurement_posts");

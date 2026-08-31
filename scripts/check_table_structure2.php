@@ -1,5 +1,5 @@
 <?php
-include 'config/db.php';
+require_once 'config/db.php';
 
 echo "=== Procurement Posts Table Structure ===\n\n";
 $result = $conn->query("DESCRIBE procurement_posts");

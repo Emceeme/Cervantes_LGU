@@ -1,18 +1,13 @@
 <?php
-// Load environment variables first
 require_once 'config/env.php';
-
-// Load security functions
 require_once 'config/security.php';
+require_once 'config/db.php';
 
 // Start secure session
 startSecureSession();
 
 // Set security headers
 setSecurityHeaders();
-
-// Load database connection
-include 'config/db.php';
 
 $error = "";
 

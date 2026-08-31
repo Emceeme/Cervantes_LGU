@@ -1,5 +1,10 @@
 <?php
-include '../../config/db.php';
+require_once '../../config/security.php';
+require_once '../../config/app_config.php';
+require_once '../../config/db.php';
+
+// Set security headers
+setSecurityHeaders();
 
 $category = 'bid_bulletin';
 $category_name = 'Bid Bulletin';
