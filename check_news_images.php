@@ -1,5 +1,6 @@
 <?php
 require_once 'config/db.php';
+require_once 'config/upload_helper.php';
 
 echo "=== Checking news_posts table ===\n\n";
 
@@ -11,7 +12,7 @@ if ($conn instanceof PDO) {
         echo "ID: " . $r['id'] . "\n";
         echo "Title: " . $r['title'] . "\n";
         echo "Image: " . $r['image'] . "\n";
-        echo "File exists: " . (file_exists('lgu/uploads/news/' . $r['image']) ? 'YES' : 'NO') . "\n";
+        echo "File exists: " . (UploadHelper::fileExists($r['image'], 'news') ? 'YES' : 'NO') . "\n";
         echo "---\n";
     }
 } else {
@@ -20,7 +21,7 @@ if ($conn instanceof PDO) {
         echo "ID: " . $r['id'] . "\n";
         echo "Title: " . $r['title'] . "\n";
         echo "Image: " . $r['image'] . "\n";
-        echo "File exists: " . (file_exists('lgu/uploads/news/' . $r['image']) ? 'YES' : 'NO') . "\n";
+        echo "File exists: " . (UploadHelper::fileExists($r['image'], 'news') ? 'YES' : 'NO') . "\n";
         echo "---\n";
     }
 }
