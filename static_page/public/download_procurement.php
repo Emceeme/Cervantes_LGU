@@ -1,6 +1,9 @@
 <?php
-include '../../config/db.php';
-include '../../config/app_config.php';
+session_start();
+require_once '../../config/security.php';
+require_once '../../config/upload_helper.php';
+require_once '../../config/db.php';
+require_once '../../config/app_config.php';
 
 $id = intval($_GET['id'] ?? 0);
 
@@ -48,11 +51,11 @@ if ($conn instanceof PDO) {
 }
 
 // Serve file
-$file_path = __DIR__ . '/../../lgu/uploads/procurement/' . $row['file_path'];
+$file_path = UploadHelper::getUploadDir('procurement') . '/' . $row['file_path'];
 $original_name = $row['original_file_name'];
 
 if (!file_exists($file_path)) {
-    die("File not found on server");
+    die("File not found");
 }
 
 // Get file extension

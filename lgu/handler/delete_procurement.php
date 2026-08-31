@@ -1,7 +1,8 @@
 <?php
 session_start();
 require_once '../../config/security.php';
-require_once '../../config/db.php';
+require_once '../../config/upload_helper.php';
+include '../../config/db.php';
 
 // Set security headers
 setSecurityHeaders();
@@ -64,12 +65,10 @@ $stmt = $conn->prepare("DELETE FROM procurement_posts WHERE id = ?");
 if ($conn instanceof PDO) {
     // PostgreSQL/PDO
     if ($stmt->execute([$id])) {
-        // Delete the file from uploads folder
-        $upload_dir = __DIR__ . '/../uploads/procurement/';
-        if (file_exists($upload_dir . $file_path)) {
-            unlink($upload_dir . $file_path);
+        // Delete the file using UploadHelper
+        if (!empty($file_path)) {
+            UploadHelper::deleteFile($file_path, 'procurement');
         }
-        
         header("Location: ../procurement.php?status=deleted");
     } else {
         header("Location: ../procurement.php?error=Failed+to+delete");
@@ -78,12 +77,10 @@ if ($conn instanceof PDO) {
     // MySQLi
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
-        // Delete the file from uploads folder
-        $upload_dir = __DIR__ . '/../uploads/procurement/';
-        if (file_exists($upload_dir . $file_path)) {
-            unlink($upload_dir . $file_path);
+        // Delete the file using UploadHelper
+        if (!empty($file_path)) {
+            UploadHelper::deleteFile($file_path, 'procurement');
         }
-        
         header("Location: ../procurement.php?status=deleted");
     } else {
         header("Location: ../procurement.php?error=Failed+to+delete");

@@ -12,6 +12,7 @@
  */
 
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/config/upload_helper.php';
 
 echo "=== LGU Portal Cleanup Script ===\n\n";
 
@@ -68,31 +69,27 @@ foreach ($tables as $table) {
 }
 
 // Delete uploaded files
-$upload_dirs = [
-    __DIR__ . '/lgu/uploads/news',
-    __DIR__ . '/lgu/uploads/scholarship',
-    __DIR__ . '/lgu/uploads/resumes',
-    __DIR__ . '/lgu/uploads/procurement'
-];
+$upload_types = ['news', 'scholarship', 'resumes', 'procurement'];
 
 echo "\nDeleting uploaded files...\n";
 
-foreach ($upload_dirs as $dir) {
-    echo "Cleaning: $dir ... ";
+foreach ($upload_types as $type) {
+    $upload_dir = UploadHelper::getUploadDir($type);
+    echo "Cleaning: $upload_dir ... ";
     
-    if (is_dir($dir)) {
-        $files = glob($dir . '/*');
-        $deleted = 0;
+    if (is_dir($upload_dir)) {
+        $files = glob($upload_dir . '/*');
+        $deleted_count = 0;
         
         foreach ($files as $file) {
             if (is_file($file)) {
                 if (unlink($file)) {
-                    $deleted++;
+                    $deleted_count++;
                 }
             }
         }
         
-        echo "✅ (Deleted $deleted files)\n";
+        echo "✅ (Deleted $deleted_count files)\n";
     } else {
         echo "⚠️  Directory does not exist\n";
     }
