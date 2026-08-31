@@ -200,6 +200,7 @@ if (isset($_POST['login'])) {
     <title>Login - LGU System</title>
     <link rel="stylesheet" href="static_page/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -211,7 +212,7 @@ if (isset($_POST['login'])) {
 
     <div class="login-card">
 
-        <div class="logo">🏛️</div>
+        <div class="logo"><i class="fas fa-building"></i></div>
 
         <h1>LGU System</h1>
         <p>Login to continue</p>

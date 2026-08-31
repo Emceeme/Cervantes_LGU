@@ -11,9 +11,9 @@ body{
     background:
     linear-gradient(
         135deg,
-        #0f172a,
-        #1e293b,
-        #2563eb
+        #1e3a8a,
+        #2563eb,
+        #3b82f6
     );
 
     display:flex;
@@ -180,7 +180,7 @@ body{
 .blur1{
     width:350px;
     height:350px;
-    background:#3b82f6;
+    background:#60a5fa;
 
     top:-100px;
     left:-100px;
@@ -189,7 +189,7 @@ body{
 .blur2{
     width:450px;
     height:450px;
-    background:#8b5cf6;
+    background:#93c5fd;
 
     bottom:-150px;
     right:-150px;
@@ -509,7 +509,7 @@ tbody tr:hover{
 .blur1{
     width:350px;
     height:350px;
-    background:#3b82f6;
+    background:#60a5fa;
 
     top:-100px;
     left:-100px;
@@ -518,7 +518,7 @@ tbody tr:hover{
 .blur2{
     width:450px;
     height:450px;
-    background:#8b5cf6;
+    background:#93c5fd;
 
     bottom:-150px;
     right:-150px;
