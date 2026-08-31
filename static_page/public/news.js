@@ -49,7 +49,7 @@ function openNews(title, content, image, date){
 
                 const img = document.createElement("img");
 
-                img.src = BASE_URL + "/uploads/news/" + imgName;
+                img.src = BASE_URL + "/lgu/uploads/news/" + imgName;
 
                 img.className = "modal-image";
 

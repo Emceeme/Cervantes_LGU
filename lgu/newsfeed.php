@@ -79,33 +79,9 @@ $csrf_token = generateCsrfToken();
             <?php foreach($posts as $row): ?>
 
         <div class="card">
-
-<?php
-$imagePath = __DIR__ . "/uploads/news/" . $row['image'];
-$imageUrl = AppConfig::newsUploads($row['image']);
-
-if (!empty($row['image']) && file_exists($imagePath)) {
-?>
-    <img src="<?= htmlspecialchars($imageUrl) ?>" class="news-image">
-<?php
-} else {
-?>
-    <div style="
-        background:#FEF3C7;
-        color:#92400E;
-        padding:15px;
-        margin:20px;
-        border-radius:8px;
-        border:1px solid #FCD34D;
-    ">
-        <strong>⚠ Image not found</strong><br><br>
-        <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
-        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?><br>
-        <strong>Uploads Dir Exists:</strong> <?= is_dir(__DIR__ . '/uploads/news') ? 'Yes' : 'No' ?>
-    </div>
-<?php
-}
-?>
+            <?php if (!empty($row['image'])): ?>
+                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>">
+            <?php endif; ?>
             <div class="card-content">
                 <h3><?= htmlspecialchars($row['title']) ?></h3>
                 <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
@@ -124,33 +100,9 @@ if (!empty($row['image']) && file_exists($imagePath)) {
             <?php while($row = $posts->fetch_assoc()): ?>
 
         <div class="card">
-
-<?php
-$imagePath = __DIR__ . "/uploads/news/" . $row['image'];
-$imageUrl = AppConfig::newsUploads($row['image']);
-
-if (!empty($row['image']) && file_exists($imagePath)) {
-?>
-    <img src="<?= htmlspecialchars($imageUrl) ?>" class="news-image">
-<?php
-} else {
-?>
-    <div style="
-        background:#FEF3C7;
-        color:#92400E;
-        padding:15px;
-        margin:20px;
-        border-radius:8px;
-        border:1px solid #FCD34D;
-    ">
-        <strong>⚠ Image not found</strong><br><br>
-        <strong>Database Value:</strong> <?= htmlspecialchars($row['image']) ?><br>
-        <strong>Looking For:</strong> <?= htmlspecialchars($imagePath) ?><br>
-        <strong>Uploads Dir Exists:</strong> <?= is_dir(__DIR__ . '/uploads/news') ? 'Yes' : 'No' ?>
-    </div>
-<?php
-}
-?>
+            <?php if (!empty($row['image'])): ?>
+                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>">
+            <?php endif; ?>
             <div class="card-content">
                 <h3><?= htmlspecialchars($row['title']) ?></h3>
                 <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
