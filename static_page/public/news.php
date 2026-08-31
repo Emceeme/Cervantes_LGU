@@ -1,6 +1,6 @@
 <?php
-include '../../config/db.php';
-include '../../config/app_config.php';
+require_once '../../config/db.php';
+require_once '../../config/app_config.php';
 
 $posts_stmt = $conn->prepare("
 SELECT *
@@ -52,7 +52,7 @@ if ($conn instanceof PDO) {
                     <?php foreach($posts as $row): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image">
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" onerror="this.style.display='none'">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -72,7 +72,7 @@ if ($conn instanceof PDO) {
                     <?php while($row = $posts->fetch_assoc()): ?>
                     <div class="news-card">
                         <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image">
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" onerror="this.style.display='none'">
                         <?php endif; ?>
                         <div class="news-content">
                             <h3><?= htmlspecialchars($row['title']) ?></h3>
