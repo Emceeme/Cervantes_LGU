@@ -110,7 +110,7 @@ if ($conn instanceof PDO) {
                         <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
                         <td>
                             <a class="btn btn-secondary"
-                                href="<?= AppConfig::resumeUploads($row['resume']); ?>"
+                                href="handler/download_resume.php?id=<?= $row['id'] ?>"
                                 target="_blank"
                                 download>
                                 View Resume
@@ -173,7 +173,7 @@ if ($conn instanceof PDO) {
                         <td><?= htmlspecialchars(substr($row['message'], 0, 80)); ?>...</td>
                         <td>
                             <a class="btn btn-secondary"
-                                href="<?= AppConfig::resumeUploads($row['resume']); ?>"
+                                href="handler/download_resume.php?id=<?= $row['id'] ?>"
                                 target="_blank"
                                 download>
                                 View Resume
