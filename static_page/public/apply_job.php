@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../config/security.php';
+require_once '../../config/upload_helper.php';
 require_once '../../config/db.php';
 
 // Set security headers
@@ -82,17 +83,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $fileName = time() . "_" . bin2hex(random_bytes(8)) . "." . $file_extension;
 
-    // Use lgu/uploads/resumes/ for job applications
-    $uploadDir = __DIR__ . "/../../lgu/uploads/resumes/";
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-    }
-    $uploadPath = $uploadDir . $fileName;
-
-    if(!move_uploaded_file(
-        $_FILES['resume']['tmp_name'],
-        $uploadPath
-    )){
+    // Upload using UploadHelper
+    $uploaded_filename = UploadHelper::uploadFile($_FILES['resume'], 'resumes', $fileName);
+    
+    if (!$uploaded_filename) {
         die("Failed to upload resume.");
     }
 

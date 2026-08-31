@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../config/security.php';
+require_once '../../config/upload_helper.php';
 include '../../config/db.php';
 
 // Set security headers
@@ -97,21 +98,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
 
     // Generate secure random filename
-    $filename = bin2hex(random_bytes(16)) . '_' . time();
-
-    // Get file extension
     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-    $filename .= '.' . $file_ext;
+    $filename = bin2hex(random_bytes(16)) . '_' . time() . '.' . $file_ext;
 
-    $folder = __DIR__ . "/../uploads/procurement/";
-
-    if(!is_dir($folder)){
-        mkdir($folder, 0755, true);
-    }
-
-    // Move uploaded file
-    if (!move_uploaded_file($tmp, $folder . $filename)) {
-        logError('File move failed', ['filename' => $filename, 'folder' => $folder]);
+    // Upload using UploadHelper
+    $uploaded_filename = UploadHelper::uploadFile($file, 'procurement', $filename);
+    
+    if (!$uploaded_filename) {
+        logError('File upload failed', ['filename' => $filename]);
         header("Location: ../procurement.php?error=Failed+to+save+file");
         exit();
     }

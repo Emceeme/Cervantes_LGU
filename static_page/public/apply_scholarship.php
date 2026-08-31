@@ -1,8 +1,9 @@
 <?php
 session_start();
-include '../../config/security.php';
-include '../../config/db.php';
-include '../../config/app_config.php';
+require_once '../../config/security.php';
+require_once '../../config/upload_helper.php';
+require_once '../../config/db.php';
+require_once '../../config/app_config.php';
 
 // Set security headers
 setSecurityHeaders();
@@ -155,19 +156,15 @@ if (isset($_FILES['requirements_file']) && $_FILES['requirements_file']['error']
         die("Invalid file extension. Allowed: .pdf, .doc, .docx, .jpg, .jpeg, .png");
     }
     
-    // Create upload directory if it doesn't exist
-    $upload_dir = __DIR__ . '/../../lgu/uploads/scholarship/';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    
     // Generate unique filename
     $file_name = time() . '_' . bin2hex(random_bytes(8)) . '.' . $file_extension;
     $file_path = $file_name;
     $original_file_name = $file['name'];
     
-    // Move uploaded file
-    if (!move_uploaded_file($file['tmp_name'], $upload_dir . $file_name)) {
+    // Upload using UploadHelper
+    $uploaded_filename = UploadHelper::uploadFile($file, 'scholarship', $file_name);
+    
+    if (!$uploaded_filename) {
         die("Failed to upload file.");
     }
 }

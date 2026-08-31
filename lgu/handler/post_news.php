@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../config/security.php';
+require_once '../../config/upload_helper.php';
 include '../../config/db.php';
 
 // Set security headers
@@ -68,18 +69,10 @@ if (!empty($_FILES['image']['name'])) {
         exit();
     }
 
-    $image = time() . '_' . bin2hex(random_bytes(8)) . '.' . $file_extension;
-
-    // Use absolute path for Render
-    $uploadDir = __DIR__ . "/../uploads/news/";
-
-    // Create the folder if it doesn't exist
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-    }
-
-    // Upload the image
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $image)) {
+    // Upload using UploadHelper
+    $image = UploadHelper::uploadFile($_FILES['image'], 'news');
+    
+    if (!$image) {
         header("Location: ../newsfeed.php?error=Image+upload+failed");
         exit();
     }
