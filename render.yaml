@@ -13,3 +13,12 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: BASE_URL
+        value: https://cervantes-lgu.onrender.com
+
+# Cron job for automated database backups (requires Render Standard plan)
+crons:
+  - name: daily-database-backup
+    schedule: "0 2 * * *"  # Run daily at 2 AM UTC
+    command: "php backup_database.php"
+    service: cervantes-lgu
