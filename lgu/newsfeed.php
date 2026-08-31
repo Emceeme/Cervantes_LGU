@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/security.php';
 require_once '../config/app_config.php';
+require_once '../config/upload_helper.php';
 include '../config/db.php';
 
 // Set security headers
@@ -80,7 +81,7 @@ $csrf_token = generateCsrfToken();
 
         <div class="card">
             <?php if (!empty($row['image'])): ?>
-                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>">
+                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>" onerror="this.style.display='none'">
             <?php endif; ?>
             <div class="card-content">
                 <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -101,7 +102,7 @@ $csrf_token = generateCsrfToken();
 
         <div class="card">
             <?php if (!empty($row['image'])): ?>
-                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>">
+                <img src="<?= AppConfig::newsUploads($row['image']) ?>" class="news-image" alt="<?= htmlspecialchars($row['title']) ?>" onerror="this.style.display='none'">
             <?php endif; ?>
             <div class="card-content">
                 <h3><?= htmlspecialchars($row['title']) ?></h3>
@@ -151,7 +152,7 @@ $csrf_token = generateCsrfToken();
 
             <div class="form-group">
                 <label>Image</label>
-                <input type="file" name="image">
+                <input type="file" name="image" accept="image/*">
             </div>
 
             <button class="btn btn-primary" type="submit">
