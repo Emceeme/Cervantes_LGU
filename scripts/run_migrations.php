@@ -147,6 +147,6 @@ foreach ($migrations as $migration) {
 echo "=== Migration Summary ===\n";
 echo "Successful: $success_count\n";
 echo "Failed: $failed_count\n";
-echo "\nNext step: Run create_super_admin.php\n";
-echo "Use: curl -X POST -d 'auth_key=run_migrations_secure_key' https://your-app.onrender.com/run_super_admin.php\n";
+echo "\nNext step: Run scripts/create_super_admin.php\n";
+echo "Use: curl -X POST -d 'auth_key=run_migrations_secure_key' https://your-app.onrender.com/scripts/run_super_admin.php\n";
 ?>

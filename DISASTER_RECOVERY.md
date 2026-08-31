@@ -22,7 +22,7 @@ This document provides comprehensive procedures for recovering the LGU Portal sy
 
 **Manual Backups**
 ```bash
-php backup_database.php
+php scripts/backup_database.php
 ```
 
 **Backup Contents**

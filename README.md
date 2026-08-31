@@ -65,12 +65,12 @@ A comprehensive web-based portal for Local Government Unit (LGU) operations, inc
 
 3. **Set up upload directories**
    ```bash
-   php setup_uploads.php
+   php scripts/setup_uploads.php
    ```
 
 4. **Run migrations**
    ```bash
-   php run_migrations.php
+   php scripts/run_migrations.php
    ```
 
 5. **Configure web server**
@@ -156,10 +156,10 @@ php migrations/add_tracking_number_to_scholarship.php
    - `APP_ENV`: `production`
 
 3. **Post-Deployment Steps**
-   - Run `setup_uploads.php` to create upload directories
-   - Run `run_migrations.php` to set up database tables
-   - Run `add_tracking_number_to_scholarship.php` for tracking number support
-   - Delete `run_migrations.php` and `cleanup.php` for security
+   - Run `scripts/setup_uploads.php` to create upload directories
+   - Run `scripts/run_migrations.php` to set up database tables
+   - Run `migrations/add_tracking_number_to_scholarship.php` for tracking number support
+   - Delete `scripts/run_migrations.php` and `scripts/cleanup.php` for security
 
 4. **Automated Backups (Recommended)**
    - Upgrade to Render Standard plan for cron jobs
@@ -219,11 +219,15 @@ Cervantes_LGU/
 │       ├── apply_job.php    # Job application handler
 │       └── apply_scholarship.php  # Scholarship application handler
 ├── migrations/              # Database migration scripts
+├── scripts/                 # Utility scripts
+│   ├── backup_database.php # Database backup
+│   ├── cleanup.php         # Database/file cleanup
+│   ├── run_migrations.php  # Migration runner
+│   ├── setup_uploads.php   # Upload directory setup
+│   └── check_*.php          # Debug/check scripts
 ├── login.php               # Login page
 ├── logout.php              # Logout handler
-├── setup_uploads.php       # Upload directory setup
-├── cleanup.php             # Database/file cleanup utility
-└── run_migrations.php      # Migration runner
+└── index.php               # Entry point
 ```
 
 ## Security
@@ -269,7 +273,7 @@ mysqldump -u root -p lgu_portal > backup.sql
 
 To reset the database and delete all uploaded files:
 ```bash
-php cleanup.php
+php scripts/cleanup.php
 ```
 
 **Warning**: This will permanently delete all data and files. Type "DELETE" to confirm.
