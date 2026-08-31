@@ -37,10 +37,17 @@ class AppConfig {
             return self::$baseUrl;
         }
         
-        // Check for BASE_URL in environment
+        // Check for BASE_URL in environment (Render sets this)
         $baseUrl = getenv('BASE_URL');
         if ($baseUrl) {
             self::$baseUrl = rtrim($baseUrl, '/');
+            return self::$baseUrl;
+        }
+        
+        // Check for Render-specific environment variable
+        $renderServiceUrl = getenv('RENDER_SERVICE_URL');
+        if ($renderServiceUrl) {
+            self::$baseUrl = rtrim($renderServiceUrl, '/');
             return self::$baseUrl;
         }
         

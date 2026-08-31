@@ -20,4 +20,12 @@ WORKDIR /var/www/html
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
+# Create upload directories with proper permissions
+RUN mkdir -p /var/www/html/lgu/uploads/news \
+    /var/www/html/lgu/uploads/scholarship \
+    /var/www/html/lgu/uploads/resumes \
+    /var/www/html/lgu/uploads/procurement \
+    && chown -R www-data:www-data /var/www/html/lgu/uploads \
+    && chmod -R 755 /var/www/html/lgu/uploads
+
 EXPOSE 80
