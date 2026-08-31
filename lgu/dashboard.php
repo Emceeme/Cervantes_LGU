@@ -17,6 +17,14 @@ if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $departmen
 // Fetch job listings
 $jobs_stmt = $conn->prepare("SELECT * FROM jobs ORDER BY id DESC");
 
+if (!$jobs_stmt) {
+    if ($conn instanceof PDO) {
+        die("Query error: " . implode(", ", $conn->errorInfo()));
+    } else {
+        die("Query error: " . $conn->error);
+    }
+}
+
 if ($conn instanceof PDO) {
     // PostgreSQL/PDO
     $jobs_stmt->execute();

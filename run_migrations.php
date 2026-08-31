@@ -5,6 +5,10 @@
 
 require_once 'config/db.php';
 
+// Detect database type
+$is_postgres = (strpos(getenv('DATABASE_URL') ?? '', 'postgres') !== false) || 
+               ($conn instanceof PDO);
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -30,12 +34,55 @@ if ($auth_key !== 'run_migrations_secure_key') {
 
 echo "Starting migrations...\n\n";
 
+// Function to check if a migration has already been executed
+function is_migration_executed($migration_name, $conn) {
+    global $is_postgres;
+    
+    $stmt = $conn->prepare("SELECT id FROM schema_migrations WHERE migration_name = ?");
+    
+    if ($conn instanceof PDO) {
+        $stmt->execute([$migration_name]);
+        $result = $stmt->fetch();
+        return $result !== false;
+    } else {
+        $stmt->bind_param("s", $migration_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exists = $result->num_rows > 0;
+        $stmt->close();
+        return $exists;
+    }
+}
+
+// Function to mark a migration as executed
+function mark_migration_executed($migration_name, $conn) {
+    $stmt = $conn->prepare("INSERT INTO schema_migrations (migration_name) VALUES (?)");
+    
+    if ($conn instanceof PDO) {
+        $stmt->execute([$migration_name]);
+    } else {
+        $stmt->bind_param("s", $migration_name);
+        $stmt->execute();
+        $stmt->close();
+    }
+}
+
 // Function to run a migration file
 function run_migration($file_path, $conn) {
+    global $is_postgres;
+    
+    $migration_name = basename($file_path);
+    
+    // Check if migration has already been executed
+    if (is_migration_executed($migration_name, $conn)) {
+        echo "Skipping (already executed): $file_path\n";
+        return true;
+    }
+    
     echo "Running: $file_path\n";
     
     if (!file_exists($file_path)) {
-        echo "  ✗ File not\n";
+        echo "  ✗ File not found\n";
         return false;
     }
     
@@ -56,12 +103,16 @@ function run_migration($file_path, $conn) {
     // Restore original directory
     chdir($original_dir);
     
+    // Mark migration as executed
+    mark_migration_executed($migration_name, $conn);
+    
     echo "  ✓ Completed\n";
     return true;
 }
 
 // List of migrations to run (in order)
 $migrations = [
+    'migrations/create_migrations_table.php',
     'migrations/create_users_table.php',
     'migrations/create_department_settings.php',
     'migrations/create_jobs_table.php',
@@ -76,7 +127,8 @@ $migrations = [
     'migrations/add_procurement_custom_date.php',
     'migrations/add_view_count_procurement.php',
     'migrations/create_scholarship_applications.php',
-    'migrations/create_scholarship_posts.php'
+    'migrations/create_scholarship_posts.php',
+    'migrations/add_tracking_number_to_scholarship.php'
     // 'mswd/migrations/add_eligibility_column.php' // DISABLED
 ];
 

@@ -12,6 +12,15 @@ $jobs_stmt = $conn->prepare("
     WHERE status = 'OPEN'
     ORDER BY id DESC
 ");
+
+if (!$jobs_stmt) {
+    if ($conn instanceof PDO) {
+        die("Query error: " . implode(", ", $conn->errorInfo()));
+    } else {
+        die("Query error: " . $conn->error);
+    }
+}
+
 $jobs_stmt->execute();
 
 if ($conn instanceof PDO) {
