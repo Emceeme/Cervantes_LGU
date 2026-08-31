@@ -46,7 +46,7 @@ $current_settings = getDepartmentSettings('ADMIN');
 <head>
 <meta charset="UTF-8">
 <title>System Settings</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../static_page/styles.css">
 </head>
 <body>
 

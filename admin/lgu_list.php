@@ -36,7 +36,7 @@ if ($conn instanceof PDO) {
 <head>
 <meta charset="UTF-8">
 <title>LGU Accounts</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../static_page/styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
