@@ -15,6 +15,16 @@ services:
         value: false
       - key: BASE_URL
         value: https://cervantes-lgu.onrender.com
+      - key: DB_HOST
+        value: dpg-dau9pgugekts73dik73g-a
+      - key: DB_NAME
+        value: lgu_system_e8ti
+      - key: DB_USER
+        value: lgu_system_e8ti_user
+      - key: DB_PASSWORD
+        value: dMuywiaDueikCEZd5LSw63rFvrJYHni4
+      - key: DB_TYPE
+        value: pgsql
 
 # Cron job for automated database backups (requires Render Standard plan)
 crons:
