@@ -8,13 +8,17 @@ storage/logs/
 storage/rate_limits/
 storage/login_attempts/
 
-# Uploads
+# Uploads (created at runtime)
 uploads/
 uploads/news/
 uploads/procurement/
+uploads/mswd_documents/
 
-# MSWD Documents (private storage)
+# MSWD Documents (private storage - old location)
 storage/mswd_documents/
+
+# Vendor directory (installed during build)
+vendor/
 
 # IDE files
 .vscode/
