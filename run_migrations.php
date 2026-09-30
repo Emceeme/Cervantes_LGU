@@ -25,13 +25,13 @@ $migrations = [
     'migrations/create_procurement_posts_table.php',
     'migrations/create_department_settings.php',
     'migrations/create_migrations_table.php',
-    'migrations/add_applicant_account_link.php',
+    'mswd/migrations/create_tables.php', // Run MSWD migrations before modifying its tables
+    'migrations/add_applicant_account_link.php', // This modifies MSWD applications table
     'migrations/add_procurement_file_columns.php',
     'migrations/add_procurement_custom_date.php',
     'migrations/add_tracking_number_to_scholarship.php',
     'migrations/add_view_count_procurement.php',
     'migrations/make_procurement_description_nullable.php',
-    'mswd/migrations/create_tables.php',
 ];
 
 echo "<h1>Database Migration Runner</h1>";
