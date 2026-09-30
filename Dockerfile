@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install mysqli, PDO MySQL, and PDO PostgreSQL extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql
+# Install mysqli, PDO MySQL, PDO PostgreSQL, and other required extensions
+RUN docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql gd zip mbstring xml
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
