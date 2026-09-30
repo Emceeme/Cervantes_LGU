@@ -24,7 +24,7 @@ COPY . /var/www/html/
 WORKDIR /var/www/html
 
 # Install Composer dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer update --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html

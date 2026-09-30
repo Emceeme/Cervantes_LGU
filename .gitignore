@@ -20,9 +20,6 @@ storage/mswd_documents/
 # Vendor directory (installed during build)
 vendor/
 
-# Composer lock (regenerated during build due to local environment limitations)
-composer.lock
-
 # IDE files
 .vscode/
 .idea/
