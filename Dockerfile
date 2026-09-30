@@ -3,14 +3,10 @@ FROM php:8.2-apache
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    libzip-dev \
     unzip \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions (skip GD to avoid configuration issues)
-RUN docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql zip mbstring xml
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -24,7 +20,7 @@ COPY . /var/www/html/
 # Set Apache document root
 WORKDIR /var/www/html
 
-# Install Composer dependencies (ignore platform requirements for GD)
+# Install Composer dependencies (ignore all platform requirements)
 RUN composer update --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Set permissions
