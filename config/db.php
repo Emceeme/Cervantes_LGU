@@ -53,22 +53,41 @@ if ($database_url) {
         $conn->set_charset("utf8mb4");
     }
 } else {
-    // Traditional MySQL connection for local deployment
+    // Check for individual environment variables (Render, custom config)
+    $db_type = env('DB_TYPE', 'mysql');
     $db_host = env('DB_HOST', 'localhost');
     $db_user = env('DB_USER', 'root');
-    $db_pass = env('DB_PASS', '');
+    $db_pass = env('DB_PASS', env('DB_PASSWORD', ''));
     $db_name = env('DB_NAME', 'lgu_system');
+    $db_port = env('DB_PORT', $db_type === 'pgsql' ? 5432 : 3306);
     
-    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
-    
-    if ($conn->connect_error) {
-        if (env('APP_DEBUG', false)) {
-            die("Database connection failed: " . $conn->connect_error);
-        } else {
-            die("Database connection failed. Please contact system administrator.");
+    if ($db_type === 'pgsql') {
+        // PostgreSQL connection using PDO
+        try {
+            $dsn = "pgsql:host={$db_host};port={$db_port};dbname={$db_name}";
+            $conn = new PDO($dsn, $db_user, $db_pass);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            if (env('APP_DEBUG', false)) {
+                die("PostgreSQL connection failed: " . $e->getMessage() . " | DSN: $dsn");
+            } else {
+                die("Database connection failed. Please contact system administrator.");
+            }
         }
+    } else {
+        // MySQL connection
+        $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
+        
+        if ($conn->connect_error) {
+            if (env('APP_DEBUG', false)) {
+                die("MySQL connection failed: " . $conn->connect_error);
+            } else {
+                die("Database connection failed. Please contact system administrator.");
+            }
+        }
+        
+        $conn->set_charset("utf8mb4");
     }
-    
-    $conn->set_charset("utf8mb4");
 }
 ?>
