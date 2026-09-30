@@ -1,15 +1,18 @@
 FROM php:8.2-apache
 
-# Cache bust - v3
-RUN echo "Build v3"
+# Cache bust - v4
+RUN echo "Build v4"
 
-# Install system dependencies
+# Install system dependencies for PostgreSQL
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     unzip \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install PDO PostgreSQL extension
+RUN docker-php-ext-install pdo pdo_pgsql mysqli
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
