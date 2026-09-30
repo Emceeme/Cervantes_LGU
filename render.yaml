@@ -15,6 +15,8 @@ services:
         value: false
       - key: BASE_URL
         value: https://cervantes-lgu.onrender.com
+      - key: DATABASE_URL
+        value: postgresql://lgu_system_e8ti_user:dMuywiaDueikCEZd5LSw63rFvrJYHni4@dpg-dau9pgugekts73dik73g-a/lgu_system_e8ti
       - key: DB_HOST
         value: dpg-dau9pgugekts73dik73g-a
       - key: DB_NAME
