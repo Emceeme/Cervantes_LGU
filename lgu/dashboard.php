@@ -29,6 +29,10 @@ if ($conn instanceof PDO) {
     // PostgreSQL/PDO
     $jobs_stmt->execute();
     $jobs = $jobs_stmt->fetchAll();
+    // Debug: check if jobs exist
+    if (empty($jobs)) {
+        error_log("No jobs found in database");
+    }
 } else {
     // MySQLi
     $jobs_stmt->execute();
@@ -102,6 +106,11 @@ $csrf_token = generateCsrfToken();
                 <tbody>
 
                 <?php if($conn instanceof PDO): ?>
+                    <?php if(empty($jobs)): ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">No job postings found. Click the + button to create one.</td>
+                    </tr>
+                    <?php else: ?>
                     <?php foreach($jobs as $row): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['job_title']) ?></td>
@@ -124,7 +133,13 @@ $csrf_token = generateCsrfToken();
                     </td>
                 </tr>
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 <?php else: ?>
+                    <?php if($jobs->num_rows === 0): ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">No job postings found. Click the + button to create one.</td>
+                    </tr>
+                    <?php else: ?>
                     <?php while($row = $jobs->fetch_assoc()): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['job_title']) ?></td>
@@ -147,6 +162,7 @@ $csrf_token = generateCsrfToken();
                     </td>
                 </tr>
                     <?php endwhile; ?>
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 </tbody>
