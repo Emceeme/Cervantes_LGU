@@ -62,10 +62,13 @@ if (isset($_POST['login'])) {
                         $_SESSION['department'] = html_entity_decode($user['department'], ENT_QUOTES);
                         $_SESSION['login_time'] = time();
 
+                        // Regenerate session ID to prevent session fixation
+                        session_regenerate_id(true);
+
                         // Log successful login
                         logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
 
-                        // 3. ROUTING LOGIC (LGU ONLY - MSWD and Treasury disabled)
+                        // 3. ROUTING LOGIC
 
                         // A. Super Admins (highest priority)
                         if ($user['role'] === 'SUPER_ADMIN') {
@@ -73,13 +76,25 @@ if (isset($_POST['login'])) {
                             exit();
                         }
 
-                        // B. Mayor's Office and LGU departments ONLY
+                        // B. MSWD Applicants
+                        if ($user['role'] === 'APPLICANT') {
+                            header("Location: mswd/applicant/my-applications.php");
+                            exit();
+                        }
+
+                        // C. MSWD Workers
+                        if ($user['role'] === 'MSWD_WORKER' || $user['department'] === 'MSWD') {
+                            header("Location: mswd/worker/dashboard.php");
+                            exit();
+                        }
+
+                        // D. Mayor's Office and LGU departments
                         if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
                             header("Location: lgu/dashboard.php");
                             exit();
                         }
 
-                        // C. All other users redirect to LGU (MSWD and Treasury disabled)
+                        // E. All other users redirect to LGU
                         header("Location: lgu/dashboard.php");
                         exit();
 
@@ -134,10 +149,13 @@ if (isset($_POST['login'])) {
                         $_SESSION['department'] = html_entity_decode($user['department'], ENT_QUOTES);
                         $_SESSION['login_time'] = time();
 
+                        // Regenerate session ID to prevent session fixation
+                        session_regenerate_id(true);
+
                         // Log successful login
                         logSecurityEvent('login_success', $user['id'], ['ip' => $client_ip, 'username' => $username_or_email]);
 
-                        // 3. ROUTING LOGIC (LGU ONLY - MSWD and Treasury disabled)
+                        // 3. ROUTING LOGIC
 
                         // A. Super Admins (highest priority)
                         if ($user['role'] === 'SUPER_ADMIN') {
@@ -145,13 +163,25 @@ if (isset($_POST['login'])) {
                             exit();
                         }
 
-                        // B. Mayor's Office and LGU departments ONLY
+                        // B. MSWD Applicants
+                        if ($user['role'] === 'APPLICANT') {
+                            header("Location: mswd/applicant/my-applications.php");
+                            exit();
+                        }
+
+                        // C. MSWD Workers
+                        if ($user['role'] === 'MSWD_WORKER' || $user['department'] === 'MSWD') {
+                            header("Location: mswd/worker/dashboard.php");
+                            exit();
+                        }
+
+                        // D. Mayor's Office and LGU departments
                         if ($user['department'] === "Mayor's Office" || $user['department'] === 'Mayor Office' || $user['department'] === 'LGU') {
                             header("Location: lgu/dashboard.php");
                             exit();
                         }
 
-                        // C. All other users redirect to LGU (MSWD and Treasury disabled)
+                        // E. All other users redirect to LGU
                         header("Location: lgu/dashboard.php");
                         exit();
 

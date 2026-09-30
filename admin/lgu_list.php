@@ -36,7 +36,7 @@ if ($conn instanceof PDO) {
 <head>
 <meta charset="UTF-8">
 <title>LGU Accounts</title>
-<link rel="stylesheet" href="../static_page/styles.css">
+<link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -106,7 +106,11 @@ if ($conn instanceof PDO) {
                                     </td>
                                     
                                     <td>
-                                        <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                        <form method="POST" action="handler/delete_user.php" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display:inline;">
+                                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                                            <button type="submit" class="btn-danger">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -139,7 +143,11 @@ if ($conn instanceof PDO) {
                                     </td>
                                     
                                     <td>
-                                        <a href="handler/delete_user.php?id=<?php echo $row['id']; ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                        <form method="POST" action="handler/delete_user.php" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display:inline;">
+                                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                                            <button type="submit" class="btn-danger">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>

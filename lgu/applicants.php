@@ -69,6 +69,7 @@ if ($conn instanceof PDO) {
         <div class="top-bar">
             <h2>Job Applicants</h2>
             <p>View and manage all job applications</p>
+            <a href="export_applicants.php" style="padding: 10px 20px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px; margin-left: auto;">Export to Excel</a>
         </div>
 
         <section class="card">

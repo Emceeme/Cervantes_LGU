@@ -1,0 +1,122 @@
+<?php
+session_start();
+require_once '../config/security.php';
+require_once '../config/db.php';
+require_once '../vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+
+// Security check
+$department = html_entity_decode($_SESSION['department'] ?? '', ENT_QUOTES);
+if (!isset($_SESSION['role']) || ($department !== "Mayor's Office" && $department !== 'Mayor Office' && $department !== 'LGU' && $_SESSION['role'] !== 'SUPER_ADMIN')) {
+    logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'export_scholarship_applications']);
+    header('Location: /login.php?unauthorized=1');
+    exit();
+}
+
+// Get filter parameters
+$status_filter = $_GET['status'] ?? '';
+
+// Build query
+$sql = "SELECT full_name, email, phone, address, school_name, course, year_level, gpa, family_income, status, submitted_at FROM scholarship_applications";
+$params = [];
+
+if (!empty($status_filter)) {
+    $sql .= " WHERE status = ?";
+    $params[] = $status_filter;
+}
+
+$sql .= " ORDER BY submitted_at DESC";
+
+$stmt = $conn->prepare($sql);
+
+if ($conn instanceof PDO) {
+    if (!empty($params)) {
+        $stmt->execute($params);
+    } else {
+        $stmt->execute();
+    }
+    $applications = $stmt->fetchAll();
+} else {
+    if (!empty($params)) {
+        $types = "s";
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $applications = [];
+    while ($row = $result->fetch_assoc()) {
+        $applications[] = $row;
+    }
+    $stmt->close();
+}
+
+// Create spreadsheet
+$spreadsheet = new Spreadsheet();
+$sheet = $spreadsheet->getActiveSheet();
+
+// Set column headers
+$headers = array('Full Name', 'Email', 'Phone', 'Address', 'School Name', 'Course', 'Year Level', 'GPA', 'Family Income', 'Status', 'Submitted Date');
+$col = 1;
+foreach ($headers as $header) {
+    $sheet->setCellValue(chr(64 + $col) . '1', $header);
+    $col++;
+}
+
+// Style header row
+$headerStyle = array(
+    'font' => array('bold' => true, 'color' => array('rgb' => 'FFFFFF')),
+    'fill' => array('fillType' => Fill::FILL_SOLID, 'startColor' => array('rgb' => '4472C4')),
+    'alignment' => array('horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER),
+    'borders' => array('allBorders' => array('borderStyle' => Border::BORDER_THIN))
+);
+
+$sheet->getStyle('A1:K1')->applyFromArray($headerStyle);
+
+// Add data
+$row = 2;
+foreach ($applications as $app) {
+    $sheet->setCellValueExplicit('A' . $row, $app['full_name'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('B' . $row, $app['email'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('C' . $row, $app['phone'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('D' . $row, $app['address'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('E' . $row, $app['school_name'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('F' . $row, $app['course'], DataType::TYPE_STRING);
+    $sheet->setCellValueExplicit('G' . $row, $app['year_level'], DataType::TYPE_STRING);
+    $sheet->setCellValue('H' . $row, $app['gpa']);
+    $sheet->setCellValue('I' . $row, $app['family_income']);
+    $sheet->setCellValueExplicit('J' . $row, $app['status'], DataType::TYPE_STRING);
+    $sheet->setCellValue('K' . $row, date('Y-m-d', strtotime($app['submitted_at'])));
+    $row++;
+}
+
+// Auto-size columns
+foreach (range('A', 'K') as $col) {
+    $sheet->getColumnDimension($col)->setAutoSize(true);
+}
+
+// Add borders to data
+if ($row > 2) {
+    $sheet->getStyle('A2:K' . ($row - 1))->applyFromArray(array(
+        'borders' => array('allBorders' => array('borderStyle' => Border::BORDER_THIN))
+    ));
+}
+
+// Generate filename
+$filename = 'scholarship_applications_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+// Set headers
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="' . $filename . '"');
+header('Cache-Control: max-age=0');
+
+// Save file
+$writer = new Xlsx($spreadsheet);
+$writer->save('php://output');
+exit();
+?>

@@ -3,15 +3,32 @@ session_start();
 require_once '../../config/security.php';
 require_once '../../config/db.php';
 
+setSecurityHeaders();
+
+// Only allow POST requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo 'Method Not Allowed';
+    exit();
+}
+
+// Validate CSRF token
+if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
+    http_response_code(403);
+    echo 'Security validation failed';
+    exit();
+}
+
 // 🔒 SECURITY GUARD: Super Admin privileges required
 if (!isset($_SESSION['name']) || $_SESSION['role'] !== 'SUPER_ADMIN') {
+    logSecurityEvent('unauthorized_access', $_SESSION['id'] ?? null, ['endpoint' => 'delete_user', 'reason' => 'not_super_admin']);
     header("Location: ../../login.php");
     exit();
 }
 
-// Check if an ID was provided via GET request
-if (isset($_GET['id'])) {
-    $user_id = intval($_GET['id']);
+// Check if an ID was provided via POST request
+if (isset($_POST['id'])) {
+    $user_id = intval($_POST['id']);
 
     // Prevent Super Admin from deleting their active session account
     if (isset($_SESSION['id']) && $user_id === intval($_SESSION['id'])) {
@@ -52,9 +69,11 @@ if (isset($_GET['id'])) {
         }
 
         if ($success) {
+            logSecurityEvent('user_deleted', $_SESSION['id'], ['deleted_user_id' => $user_id]);
             $_SESSION['msg'] = "User account successfully deleted.";
             $_SESSION['msg_type'] = "success";
         } else {
+            logError('Failed to delete user: ' . ($conn instanceof PDO ? $conn->errorInfo()[2] : $conn->error));
             $_SESSION['msg'] = "Failed to delete user account.";
             $_SESSION['msg_type'] = "error";
         }

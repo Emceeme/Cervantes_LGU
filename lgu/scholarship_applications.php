@@ -105,6 +105,7 @@ if ($conn instanceof PDO) {
             <?php if(!empty($status_filter)): ?>
                 <a href="scholarship_applications.php" style="padding: 10px 20px; background: #64748b; color: white; text-decoration: none; border-radius: 8px;">Clear</a>
             <?php endif; ?>
+            <a href="export_scholarship_applications.php<?= !empty($status_filter) ? '?status=' . $status_filter : '' ?>" style="padding: 10px 20px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px;">Export to Excel</a>
         </form>
 
         <section class="card">
