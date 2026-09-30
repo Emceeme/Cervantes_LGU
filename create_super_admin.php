@@ -44,9 +44,13 @@ $password   = password_hash($raw_pass, PASSWORD_DEFAULT);
 $role       = "SUPER_ADMIN";
 $department = "IT Department";
 
-// Validate environment variables
+// Validate environment variables - use defaults if not set
 if (empty($username) || empty($email) || empty($raw_pass)) {
-    die("Error: Super Admin credentials not set. Using defaults.");
+    echo "Note: Super Admin credentials not set in environment. Using defaults.<br>";
+    $username = 'superadmin';
+    $email = 'admin@lgu.local';
+    $raw_pass = 'admin123';
+    $password = password_hash($raw_pass, PASSWORD_DEFAULT);
 }
 
 if ($conn instanceof PDO) {
