@@ -1,15 +1,20 @@
 FROM php:8.2-apache
 
-# Install dependencies for PostgreSQL and Composer
+# Install dependencies for PostgreSQL, PHP extensions, and Composer
 RUN apt-get update && apt-get install -y \
     libpq-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libzip-dev \
     unzip \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install mysqli, PDO MySQL, PDO PostgreSQL, and other required extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql gd zip mbstring xml
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql gd zip mbstring xml
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
