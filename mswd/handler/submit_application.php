@@ -29,7 +29,11 @@ try {
     $tracking_number = 'MSWD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
 
     // Start transaction
-    $conn->begin_transaction();
+    if ($conn instanceof PDO) {
+        $conn->beginTransaction();
+    } else {
+        $conn->begin_transaction();
+    }
 
     // Insert application
     $stmt = $conn->prepare("
@@ -173,7 +177,11 @@ try {
     ]);
 
 } catch (Exception $e) {
-    $conn->rollback();
+    if ($conn instanceof PDO) {
+        $conn->rollBack();
+    } else {
+        $conn->rollback();
+    }
     logError('MSWD application submission failed: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
