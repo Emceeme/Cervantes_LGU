@@ -241,11 +241,12 @@ document.getElementById('applicationForm').addEventListener('submit', function(e
         if (data.success) {
             window.location.href = data.redirect;
         } else {
-            alert(data.error || 'Submission failed');
+            alert('Error: ' + (data.error || 'Submission failed'));
         }
     })
     .catch(error => {
-        alert('Error submitting application');
+        console.error('Submission error:', error);
+        alert('Error submitting application: ' + error.message);
     });
 });
 </script>
