@@ -1,7 +1,14 @@
 <?php
-// Disable error output to prevent HTML in JSON response
+// Disable ALL error output to prevent HTML in JSON response - MUST be first
 error_reporting(0);
 ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+
+// Start output buffering to capture any stray HTML
+ob_start();
+
+// Set JSON header immediately
+header('Content-Type: application/json');
 
 session_start();
 require_once __DIR__ . '/../../config/security.php';
@@ -190,4 +197,8 @@ try {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
+
+// Clean output buffer and send JSON
+ob_end_clean();
+exit();
 ?>
