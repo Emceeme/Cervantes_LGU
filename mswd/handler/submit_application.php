@@ -8,8 +8,8 @@ ini_set('display_startup_errors', 0);
 header('Content-Type: application/json');
 
 session_start();
-require_once __DIR__ . '/../../config/security.php';
-require_once __DIR__ . '/../../config/db.php';
+@require_once __DIR__ . '/../../config/security.php';
+@require_once __DIR__ . '/../../config/db.php';
 
 setSecurityHeaders();
 
