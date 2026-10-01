@@ -4,9 +4,6 @@ error_reporting(0);
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
 
-// Start output buffering to capture any stray HTML
-ob_start();
-
 // Set JSON header immediately
 header('Content-Type: application/json');
 
@@ -197,8 +194,5 @@ try {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
-
-// Clean output buffer and send JSON
-ob_end_clean();
 exit();
 ?>
