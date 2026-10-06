@@ -10,7 +10,391 @@ ini_set('display_startup_errors', 0);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Municipality of Cervantes - Mayor's Office</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- FACEBOOK-STYLE LAYOUT --- */
+        .fb-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 300px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .fb-left-sidebar {
+            position: sticky;
+            top: 90px;
+            height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background-color: #f0f4f8;
+            color: #0056b3;
+        }
+
+        .sidebar-link.active {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .fb-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feed-composer {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .composer-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .composer-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .composer-body {
+            padding: 15px 20px;
+        }
+
+        .composer-placeholder {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .composer-placeholder i {
+            color: #999;
+        }
+
+        .composer-actions {
+            display: flex;
+            gap: 15px;
+            padding: 10px 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .composer-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: #f0f4f8;
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .composer-action i {
+            color: #0056b3;
+        }
+
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .fb-post {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .post-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #eaf2fc;
+            flex-shrink: 0;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .author-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .post-category {
+            font-size: 0.75rem;
+            color: #0056b3;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .post-date {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .post-content {
+            padding: 20px;
+        }
+
+        .post-content h3 {
+            color: #0056b3;
+            margin: 0 0 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .post-content p {
+            color: #444;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: none;
+            border: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .post-action:hover {
+            background-color: #0056b3;
+            color: white;
+            border-color: #0056b3;
+        }
+
+        .post-action i {
+            font-size: 0.9rem;
+        }
+
+        .empty-feed {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .fb-right-sidebar {
+            position: sticky;
+            top: 90px;
+            height: calc(100vh - 110px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mayor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .mayor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            background: #eaf2fc;
+        }
+
+        .mayor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mayor-card h4 {
+            margin: 0 0 5px;
+            color: #0056b3;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .mayor-card p {
+            margin: 0 0 15px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .btn-link {
+            color: #0056b3;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .quick-services {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .quick-services h4 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .service-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .service-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #444;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .service-link:hover {
+            background-color: #f0f4f8;
+            color: #0056b3;
+        }
+
+        .service-link i {
+            width: 18px;
+            color: #0056b3;
+        }
+
+        .logo-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .fb-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .fb-left-sidebar, .fb-right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .fb-layout {
+                grid-template-columns: 1fr 280px;
+            }
+            
+            .fb-left-sidebar {
+                display: none;
+            }
+            
+            .fb-right-sidebar {
+                position: static;
+                height: auto;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
