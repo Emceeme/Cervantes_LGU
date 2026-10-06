@@ -78,13 +78,11 @@
         </nav>
     </header>
 
-    <main class="hero-section">
-        <h2 class="section-title">Mayor's Office</h2>
-        <div class="title-underline"></div>
-
-        <div class="grid-container">
-            <div class="card circle-card">
-                <!-- Mayor's Profile Image added here -->
+    <!-- Facebook-style Layout -->
+    <main class="fb-layout">
+        <!-- Left Sidebar - Mayor's Profile -->
+        <aside class="fb-left-sidebar">
+            <div class="profile-card">
                 <div class="profile-image-container">
                     <img src="https://tse1.mm.bing.net/th/id/OIP.YNr_SYktStEzQN7ChwfglgHaFP?pid=Api&P=0&h=180" alt="Mayor of Cervantes" class="mayor-profile-img">
                 </div>
@@ -92,37 +90,119 @@
                 <button class="btn-blue">View Profile</button>
             </div>
 
-            <div class="middle-cards">
-                <div class="card square-card">
-                    <div class="card-header">
-                        <div class="small-icon"><i class="fas fa-user"></i></div>
-                        <h3>Mayor Of Cervantes</h3>
-                    </div>
-                    <div class="card-line"></div>
-                    <p>Learn more about the leadership, vision, and initiatives of our municipality.</p>
-                    <button class="btn-blue">Learn More</button>
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="small-icon"><i class="fas fa-user"></i></div>
+                    <h3>Mayor Of Cervantes</h3>
                 </div>
+                <div class="card-line"></div>
+                <p>Learn more about the leadership, vision, and initiatives of our municipality.</p>
+                <button class="btn-blue">Learn More</button>
+            </div>
 
-                <div class="card square-card">
-                    <div class="card-header">
-                        <div class="small-icon info-icon">i</div>
-                        <h3>Mayor's info</h3>
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="small-icon info-icon">i</div>
+                    <h3>Mayor's info</h3>
+                </div>
+                <div class="card-line"></div>
+                <p>Stay updated with the latest announcements, programs, and activities from the Mayor's Office.</p>
+                <button class="btn-blue">View Updates</button>
+            </div>
+        </aside>
+
+        <!-- Center - News Feed -->
+        <section class="fb-feed">
+            <div class="feed-header">
+                <h2>Latest News & Announcements</h2>
+            </div>
+            <div class="feed-container">
+                <?php
+                require_once '../config/db.php';
+                require_once '../config/app_config.php';
+
+                $posts_stmt = $conn->prepare("
+                    SELECT *
+                    FROM news_posts
+                    ORDER BY created_at DESC
+                ");
+
+                if ($conn instanceof PDO) {
+                    $posts_stmt->execute();
+                    $posts = $posts_stmt->fetchAll();
+                } else {
+                    $posts_stmt->execute();
+                    $posts = $posts_stmt->get_result();
+                    $posts_stmt->close();
+                }
+                ?>
+
+                <?php if($conn instanceof PDO): ?>
+                    <?php if(count($posts) > 0): ?>
+                        <?php foreach($posts as $row): ?>
+                <div class="fb-post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
+                            </div>
+                            <div class="author-info">
+                                <h4>Municipality of Cervantes</h4>
+                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-line"></div>
-                    <p>Stay updated with the latest announcements, programs, and activities from the Mayor's Office.</p>
-                    <button class="btn-blue">View Updates</button>
+                    <div class="post-content">
+                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <?php if(!empty($row['image'])): ?>
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
+                        <?php endif; ?>
+                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                    </div>
+                </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                <div class="empty-feed">No news has been posted yet.</div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if($posts->num_rows > 0): ?>
+                        <?php while($row = $posts->fetch_assoc()): ?>
+                <div class="fb-post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
+                            </div>
+                            <div class="author-info">
+                                <h4>Municipality of Cervantes</h4>
+                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <?php if(!empty($row['image'])): ?>
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
+                        <?php endif; ?>
+                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                    </div>
+                </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                <div class="empty-feed">No news has been posted yet.</div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Right Sidebar - Logo Banner -->
+        <aside class="fb-right-sidebar">
+            <div class="logo-banner">
+                <div class="logo-image-container">
+                    <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="Cervantes Municipal Logo" class="muni-logo-img">
                 </div>
             </div>
-<!-- Right: Municipal Logo Banner -->
-            <div class="card right-banner">
-                <div class="banner-circle">
-                    <!-- Swapped icon for the official municipal logo image -->
-                    <div class="logo-image-container">
-                        <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="Cervantes Municipal Logo" class="muni-logo-img">
-                    </div>
-                </div>
-            </div>
-        </div>
+        </aside>
     </main>
 
     <div id="infoModal" class="modal-overlay">

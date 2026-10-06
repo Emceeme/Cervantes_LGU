@@ -36,8 +36,5 @@ $active_page = $active_page ?? '';
         <a href="scholarship.php" class="sidebar-link <?= $active_page === 'scholarship' ? 'active' : '' ?>">
             <i class="fas fa-graduation-cap"></i> Scholarship
         </a>
-        <a href="../home.html" class="sidebar-link">
-            <i class="fas fa-home"></i> Back to Home
-        </a>
     </nav>
 </aside>
