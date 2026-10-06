@@ -31,7 +31,7 @@ ini_set('display_startup_errors', 0);
                 </div>
 
                 <div class="nav-links">
-                    <a href="home.html" class="nav-item"><i class="fas fa-home"></i> HOME</a>
+                    <a href="home.php" class="nav-item"><i class="fas fa-home"></i> HOME</a>
 
                     <div class="dropdown">
                         <button class="dropdown-toggle nav-item">ABOUT <span class="arrow">▼</span></button>
@@ -86,42 +86,68 @@ ini_set('display_startup_errors', 0);
 
     <!-- Facebook-style Layout -->
     <main class="fb-layout">
-        <!-- Left Sidebar - Mayor's Profile -->
+        <!-- Left Sidebar - Navigation -->
         <aside class="fb-left-sidebar">
-            <div class="profile-card">
-                <div class="profile-image-container">
-                    <img src="https://tse1.mm.bing.net/th/id/OIP.YNr_SYktStEzQN7ChwfglgHaFP?pid=Api&P=0&h=180" alt="Mayor of Cervantes" class="mayor-profile-img">
-                </div>
-                <h3>Profile Of the Mayor</h3>
-                <button class="btn-blue">View Profile</button>
-            </div>
-
-            <div class="info-card">
-                <div class="card-header">
-                    <div class="small-icon"><i class="fas fa-user"></i></div>
-                    <h3>Mayor Of Cervantes</h3>
-                </div>
-                <div class="card-line"></div>
-                <p>Learn more about the leadership, vision, and initiatives of our municipality.</p>
-                <button class="btn-blue">Learn More</button>
-            </div>
-
-            <div class="info-card">
-                <div class="card-header">
-                    <div class="small-icon info-icon">i</div>
-                    <h3>Mayor's info</h3>
-                </div>
-                <div class="card-line"></div>
-                <p>Stay updated with the latest announcements, programs, and activities from the Mayor's Office.</p>
-                <button class="btn-blue">View Updates</button>
-            </div>
+            <nav class="sidebar-nav">
+                <a href="home.php" class="sidebar-link active">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="public/news.php" class="sidebar-link">
+                    <i class="fas fa-newspaper"></i> News & Announcements
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-user-tie"></i> Mayor's Office
+                </a>
+                <a href="public/public.php" class="sidebar-link">
+                    <i class="fas fa-briefcase"></i> Jobs
+                </a>
+                <a href="public/scholarship.php" class="sidebar-link">
+                    <i class="fas fa-graduation-cap"></i> Scholarships
+                </a>
+                <a href="public/philgeps.php" class="sidebar-link">
+                    <i class="fas fa-file-contract"></i> PhilGEPS
+                </a>
+                <a href="public/bids_awards.php" class="sidebar-link">
+                    <i class="fas fa-gavel"></i> Bids & Awards
+                </a>
+                <a href="tourism.html" class="sidebar-link">
+                    <i class="fas fa-map-marked-alt"></i> Tourism
+                </a>
+                <a href="accomodation.html" class="sidebar-link">
+                    <i class="fas fa-bed"></i> Accommodations
+                </a>
+                <a href="../mswd/public/index.php" class="sidebar-link">
+                    <i class="fas fa-hands-helping"></i> MSWD Services
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i> Events
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-phone"></i> Contact Us
+                </a>
+            </nav>
         </aside>
 
         <!-- Center - News Feed -->
         <section class="fb-feed">
-            <div class="feed-header">
-                <h2>Latest News & Announcements</h2>
+            <!-- Feed Composer (Informational Only) -->
+            <div class="feed-composer">
+                <div class="composer-header">
+                    <h3>What's happening in Cervantes?</h3>
+                </div>
+                <div class="composer-body">
+                    <div class="composer-placeholder">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Stay updated with the latest municipal announcements and news</span>
+                    </div>
+                </div>
+                <div class="composer-actions">
+                    <span class="composer-action"><i class="fas fa-bullhorn"></i> Announcement</span>
+                    <span class="composer-action"><i class="fas fa-image"></i> Photo</span>
+                    <span class="composer-action"><i class="fas fa-calendar"></i> Event</span>
+                </div>
             </div>
+
             <div class="feed-container">
                 <?php
                 try {
@@ -131,24 +157,68 @@ ini_set('display_startup_errors', 0);
                     if (!isset($conn) || $conn === null) {
                         echo '<div class="empty-feed">Database connection not available. Please check configuration.</div>';
                     } else {
-                        $posts_stmt = $conn->prepare("
-                            SELECT *
-                            FROM news_posts
-                            ORDER BY created_at DESC
-                        ");
+                        // Fetch all content types for the feed
+                        $feed_items = [];
 
+                        // News posts
+                        $news_stmt = $conn->prepare("SELECT id, title, content, image, created_at, 'news' as type, 'ANNOUNCEMENT' as category FROM news_posts ORDER BY created_at DESC LIMIT 20");
                         if ($conn instanceof PDO) {
-                            $posts_stmt->execute();
-                            $posts = $posts_stmt->fetchAll();
+                            $news_stmt->execute();
+                            $news = $news_stmt->fetchAll();
                         } else {
-                            $posts_stmt->execute();
-                            $posts = $posts_stmt->get_result();
-                            $posts_stmt->close();
+                            $news_stmt->execute();
+                            $news = $news_stmt->get_result();
+                            $news = $news->fetch_all(MYSQLI_ASSOC);
+                            $news_stmt->close();
                         }
+                        $feed_items = array_merge($feed_items, $news);
 
-                        if($conn instanceof PDO): ?>
-                            <?php if(count($posts) > 0): ?>
-                                <?php foreach($posts as $row): ?>
+                        // Jobs
+                        $jobs_stmt = $conn->prepare("SELECT id, job_title as title, description as content, department, created_at, 'job' as type, 'JOB' as category FROM jobs WHERE status = 'OPEN' ORDER BY created_at DESC LIMIT 10");
+                        if ($conn instanceof PDO) {
+                            $jobs_stmt->execute();
+                            $jobs = $jobs_stmt->fetchAll();
+                        } else {
+                            $jobs_stmt->execute();
+                            $jobs = $jobs_stmt->get_result();
+                            $jobs = $jobs->fetch_all(MYSQLI_ASSOC);
+                            $jobs_stmt->close();
+                        }
+                        $feed_items = array_merge($feed_items, $jobs);
+
+                        // Scholarships
+                        $scholarship_stmt = $conn->prepare("SELECT id, title, description as content, image, created_at, 'scholarship' as type, 'SCHOLARSHIP' as category FROM scholarship_posts ORDER BY created_at DESC LIMIT 10");
+                        if ($conn instanceof PDO) {
+                            $scholarship_stmt->execute();
+                            $scholarships = $scholarship_stmt->fetchAll();
+                        } else {
+                            $scholarship_stmt->execute();
+                            $scholarships = $scholarship_stmt->get_result();
+                            $scholarships = $scholarships->fetch_all(MYSQLI_ASSOC);
+                            $scholarship_stmt->close();
+                        }
+                        $feed_items = array_merge($feed_items, $scholarships);
+
+                        // Procurement
+                        $procurement_stmt = $conn->prepare("SELECT id, title, description as content, category, created_at, 'procurement' as type, UPPER(category) as category FROM procurement_posts WHERE status = 'OPEN' ORDER BY created_at DESC LIMIT 10");
+                        if ($conn instanceof PDO) {
+                            $procurement_stmt->execute();
+                            $procurements = $procurement_stmt->fetchAll();
+                        } else {
+                            $procurement_stmt->execute();
+                            $procurements = $procurement_stmt->get_result();
+                            $procurements = $procurements->fetch_all(MYSQLI_ASSOC);
+                            $procurement_stmt->close();
+                        }
+                        $feed_items = array_merge($feed_items, $procurements);
+
+                        // Sort by created_at
+                        usort($feed_items, function($a, $b) {
+                            return strtotime($b['created_at']) - strtotime($a['created_at']);
+                        });
+
+                        if (count($feed_items) > 0): ?>
+                            <?php foreach($feed_items as $item): ?>
                 <div class="fb-post">
                     <div class="post-header">
                         <div class="post-author">
@@ -157,60 +227,78 @@ ini_set('display_startup_errors', 0);
                             </div>
                             <div class="author-info">
                                 <h4>Municipality of Cervantes</h4>
-                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
+                                <span class="post-category"><?= htmlspecialchars($item['category']) ?></span>
+                                <span class="post-date"><?= time_elapsed_string($item['created_at']) ?></span>
                             </div>
                         </div>
                     </div>
                     <div class="post-content">
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
-                        <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
+                        <h3><?= htmlspecialchars($item['title']) ?></h3>
+                        <?php if(!empty($item['image'])): ?>
+                        <img src="<?= AppConfig::newsUploads($item['image']) ?>" alt="Post Image" class="post-image" onerror="this.style.display='none'">
                         <?php endif; ?>
-                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                        <p><?= nl2br(htmlspecialchars(substr($item['content'], 0, 300))) ?><?php if(strlen($item['content']) > 300) echo '...'; ?></p>
+                    </div>
+                    <div class="post-actions">
+                        <?php if($item['type'] === 'news'): ?>
+                            <a href="public/news.php" class="post-action"><i class="fas fa-book-open"></i> Read More</a>
+                        <?php elseif($item['type'] === 'job'): ?>
+                            <a href="public/public.php" class="post-action"><i class="fas fa-briefcase"></i> Apply Now</a>
+                        <?php elseif($item['type'] === 'scholarship'): ?>
+                            <a href="public/scholarship.php" class="post-action"><i class="fas fa-graduation-cap"></i> View Details</a>
+                        <?php elseif($item['type'] === 'procurement'): ?>
+                            <a href="public/procurement.php" class="post-action"><i class="fas fa-file-contract"></i> View Details</a>
+                        <?php endif; ?>
+                        <button class="post-action"><i class="fas fa-share-alt"></i> Share</button>
                     </div>
                 </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                <div class="empty-feed">No news has been posted yet.</div>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         <?php else: ?>
-                            <?php if($posts->num_rows > 0): ?>
-                                <?php while($row = $posts->fetch_assoc()): ?>
-                <div class="fb-post">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="author-avatar">
-                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
-                            </div>
-                            <div class="author-info">
-                                <h4>Municipality of Cervantes</h4>
-                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
-                        <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
-                        <?php endif; ?>
-                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
-                    </div>
-                </div>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                <div class="empty-feed">No news has been posted yet.</div>
-                            <?php endif; ?>
+                <div class="empty-feed">No announcements or updates at this time. Check back soon!</div>
                         <?php endif; ?>
                     <?php }
                 } catch (Exception $e) {
-                    echo '<div class="empty-feed">Unable to load news. Please try again later.</div>';
+                    echo '<div class="empty-feed">Unable to load feed. Please try again later.</div>';
                 }
                 ?>
             </div>
         </section>
 
-        <!-- Right Sidebar - Logo Banner -->
+        <!-- Right Sidebar - Quick Info -->
         <aside class="fb-right-sidebar">
+            <!-- Mayor Profile (Small) -->
+            <div class="mayor-card">
+                <div class="mayor-avatar">
+                    <img src="https://tse1.mm.bing.net/th/id/OIP.YNr_SYktStEzQN7ChwfglgHaFP?pid=Api&P=0&h=180" alt="Mayor of Cervantes">
+                </div>
+                <h4>Mayor's Office</h4>
+                <p>Municipality of Cervantes</p>
+                <a href="#" class="btn-link">View Profile</a>
+            </div>
+
+            <!-- Quick Services -->
+            <div class="quick-services">
+                <h4>Quick Services</h4>
+                <div class="service-links">
+                    <a href="public/public.php" class="service-link">
+                        <i class="fas fa-briefcase"></i> Job Openings
+                    </a>
+                    <a href="public/scholarship.php" class="service-link">
+                        <i class="fas fa-graduation-cap"></i> Scholarships
+                    </a>
+                    <a href="public/philgeps.php" class="service-link">
+                        <i class="fas fa-file-contract"></i> PhilGEPS
+                    </a>
+                    <a href="public/bids_awards.php" class="service-link">
+                        <i class="fas fa-gavel"></i> Bids & Awards
+                    </a>
+                    <a href="../mswd/public/index.php" class="service-link">
+                        <i class="fas fa-hands-helping"></i> MSWD Services
+                    </a>
+                </div>
+            </div>
+
+            <!-- Municipal Logo -->
             <div class="logo-banner">
                 <div class="logo-image-container">
                     <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="Cervantes Municipal Logo" class="muni-logo-img">
@@ -218,6 +306,20 @@ ini_set('display_startup_errors', 0);
             </div>
         </aside>
     </main>
+
+    <?php
+    // Helper function for time elapsed
+    function time_elapsed_string($datetime) {
+        $time = time() - strtotime($datetime);
+        
+        if ($time < 60) return 'Just now';
+        if ($time < 3600) return floor($time / 60) . ' min ago';
+        if ($time < 86400) return floor($time / 3600) . ' hours ago';
+        if ($time < 604800) return floor($time / 86400) . ' days ago';
+        
+        return date('F d, Y', strtotime($datetime));
+    }
+    ?>
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-content">

@@ -902,79 +902,133 @@ body {
 /* --- FACEBOOK-STYLE LAYOUT --- */
 .fb-layout {
     display: grid;
-    grid-template-columns: 280px 1fr 280px;
+    grid-template-columns: 260px 1fr 300px;
     gap: 20px;
     max-width: 1400px;
-    margin: 30px auto;
+    margin: 20px auto;
     padding: 0 20px;
 }
 
+/* Left Sidebar Navigation */
 .fb-left-sidebar {
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+}
+
+.sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
 }
 
-.fb-right-sidebar {
+.sidebar-link {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #444;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
-.profile-card, .info-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.profile-card h3, .info-card h3 {
+.sidebar-link:hover {
+    background-color: #f0f4f8;
     color: var(--primary-blue);
-    margin: 15px 0 10px;
-    font-size: 1rem;
 }
 
-.info-card p {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 15px;
-    line-height: 1.5;
+.sidebar-link.active {
+    background-color: var(--primary-blue);
+    color: white;
 }
 
-.logo-banner {
-    background: white;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.sidebar-link i {
+    width: 20px;
     text-align: center;
 }
 
+/* Center Feed */
 .fb-feed {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.feed-header {
+/* Feed Composer */
+.feed-composer {
     background: white;
     border-radius: 12px;
-    padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
-.feed-header h2 {
-    color: var(--primary-blue);
-    font-size: 1.3rem;
+.composer-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.composer-header h3 {
     margin: 0;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
+.composer-body {
+    padding: 15px 20px;
+}
+
+.composer-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.composer-placeholder i {
+    color: #999;
+}
+
+.composer-actions {
+    display: flex;
+    gap: 15px;
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+}
+
+.composer-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #f0f4f8;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: default;
+}
+
+.composer-action i {
+    color: var(--primary-blue);
+}
+
+/* Feed Container */
 .feed-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Post Card */
 .fb-post {
     background: white;
     border-radius: 12px;
@@ -999,6 +1053,7 @@ body {
     border-radius: 50%;
     overflow: hidden;
     background: var(--light-blue);
+    flex-shrink: 0;
 }
 
 .author-avatar img {
@@ -1007,10 +1062,24 @@ body {
     object-fit: cover;
 }
 
+.author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 .author-info h4 {
     margin: 0;
     font-size: 0.95rem;
     color: #333;
+    font-weight: 600;
+}
+
+.post-category {
+    font-size: 0.75rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .post-date {
@@ -1026,6 +1095,7 @@ body {
     color: var(--primary-blue);
     margin: 0 0 15px;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .post-image {
@@ -1040,6 +1110,40 @@ body {
     color: #444;
     line-height: 1.6;
     font-size: 0.95rem;
+    margin: 0;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: none;
+    border: 1px solid #e0e0e0;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.post-action:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+.post-action i {
+    font-size: 0.9rem;
 }
 
 .empty-feed {
@@ -1049,6 +1153,118 @@ body {
     text-align: center;
     color: #888;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Right Sidebar */
+.fb-right-sidebar {
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Mayor Card (Small) */
+.mayor-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.mayor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 15px;
+    background: var(--light-blue);
+}
+
+.mayor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayor-card h4 {
+    margin: 0 0 5px;
+    color: var(--primary-blue);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.mayor-card p {
+    margin: 0 0 15px;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.btn-link {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Quick Services */
+.quick-services {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.quick-services h4 {
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.service-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.service-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #444;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.service-link:hover {
+    background-color: #f0f4f8;
+    color: var(--primary-blue);
+}
+
+.service-link i {
+    width: 18px;
+    color: var(--primary-blue);
+}
+
+/* Logo Banner */
+.logo-banner {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
 }
 
 /* --- MOBILE RESPONSIVE CSS --- */
@@ -1197,5 +1413,10 @@ body {
     
     .fb-left-sidebar {
         display: none;
+    }
+    
+    .fb-right-sidebar {
+        position: static;
+        height: auto;
     }
 }
