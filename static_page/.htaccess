@@ -1,0 +1,12 @@
+DirectoryIndex index.php home.php index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /static_page/
+    
+    # Redirect home.html to home.php
+    RewriteRule ^home\.html$ home.php [L,R=301]
+    
+    # Redirect index.html to index.php
+    RewriteRule ^index\.html$ index.php [L,R=301]
+</IfModule>
