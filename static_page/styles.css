@@ -899,33 +899,6 @@ body {
     }
 }
 
-@media (max-width: 480px) {
-    .hero-section {
-        margin: 30px auto;
-    }
-
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .about-header h2 {
-        font-size: 2rem;
-    }
-
-    .card-icon-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .profile-image-container {
-        max-width: 120px;
-    }
-
-    .logo-image-container {
-        max-width: 140px;
-    }
-}
-
 /* --- FACEBOOK-STYLE LAYOUT --- */
 .fb-layout {
     display: grid;
@@ -1078,22 +1051,151 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+/* --- MOBILE RESPONSIVE CSS --- */
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px;
+        min-height: auto;
+    }
+
+    .hamburger {
+        display: flex !important;
+    }
+
+    .nav-right {
+        gap: 10px;
+    }
+
+    .contacts-btn {
+        display: none;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-radius: 0 0 16px 16px;
+        gap: 10px;
+        z-index: 999;
+    }
+
+    .nav-links.active {
+        display: flex !important;
+    }
+
+    .nav-item {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        background: none;
+    }
+
+    .nav-item.contacts-btn {
+        background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+        color: white;
+        border-radius: 12px;
+        margin-top: 10px;
+        display: block;
+    }
+
+    .dropdown {
+        width: 100%;
+    }
+
+    .dropdown-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dropdown-content {
+        position: static;
+        box-shadow: none;
+        background: #f8f9fa;
+        margin-top: 5px;
+        border-radius: 8px;
+        overflow: hidden;
+        display: none;
+    }
+
+    .dropdown.active .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content a {
+        padding: 12px 20px;
+        text-align: center;
+    }
+
+    .nav-left {
+        gap: 10px;
+    }
+
+    .logo-text .muni-name {
+        font-size: 1.1rem;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .circle-card, .right-banner {
+        max-width: 300px;
+    }
+
+    .profile-image-container {
+        max-width: 150px;
+    }
+
+    .logo-image-container {
+        max-width: 180px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+
+    .about-container {
+        margin: 40px auto;
+        padding: 0 15px;
+    }
+
+    .about-card {
+        padding: 25px;
+    }
+
+    .facts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Facebook layout responsive adjustments */
+    .fb-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .fb-left-sidebar, .fb-right-sidebar {
+        display: none;
+    }
+}
+
 @media (max-width: 1024px) {
     .fb-layout {
         grid-template-columns: 1fr 280px;
     }
     
     .fb-left-sidebar {
-        display: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .fb-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .fb-right-sidebar {
         display: none;
     }
 }
