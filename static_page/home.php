@@ -1,3 +1,9 @@
+<?php
+// Disable error output to prevent HTML from corrupting the page
+error_reporting(0);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,80 +124,88 @@
             </div>
             <div class="feed-container">
                 <?php
-                require_once '../config/db.php';
-                require_once '../config/app_config.php';
+                try {
+                    require_once __DIR__ . '/../config/db.php';
+                    require_once __DIR__ . '/../config/app_config.php';
 
-                $posts_stmt = $conn->prepare("
-                    SELECT *
-                    FROM news_posts
-                    ORDER BY created_at DESC
-                ");
+                    if (!isset($conn) || $conn === null) {
+                        echo '<div class="empty-feed">Database connection not available. Please check configuration.</div>';
+                    } else {
+                        $posts_stmt = $conn->prepare("
+                            SELECT *
+                            FROM news_posts
+                            ORDER BY created_at DESC
+                        ");
 
-                if ($conn instanceof PDO) {
-                    $posts_stmt->execute();
-                    $posts = $posts_stmt->fetchAll();
-                } else {
-                    $posts_stmt->execute();
-                    $posts = $posts_stmt->get_result();
-                    $posts_stmt->close();
+                        if ($conn instanceof PDO) {
+                            $posts_stmt->execute();
+                            $posts = $posts_stmt->fetchAll();
+                        } else {
+                            $posts_stmt->execute();
+                            $posts = $posts_stmt->get_result();
+                            $posts_stmt->close();
+                        }
+
+                        if($conn instanceof PDO): ?>
+                            <?php if(count($posts) > 0): ?>
+                                <?php foreach($posts as $row): ?>
+                <div class="fb-post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
+                            </div>
+                            <div class="author-info">
+                                <h4>Municipality of Cervantes</h4>
+                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <?php if(!empty($row['image'])): ?>
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
+                        <?php endif; ?>
+                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                    </div>
+                </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                <div class="empty-feed">No news has been posted yet.</div>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <?php if($posts->num_rows > 0): ?>
+                                <?php while($row = $posts->fetch_assoc()): ?>
+                <div class="fb-post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
+                            </div>
+                            <div class="author-info">
+                                <h4>Municipality of Cervantes</h4>
+                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <?php if(!empty($row['image'])): ?>
+                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
+                        <?php endif; ?>
+                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
+                    </div>
+                </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                <div class="empty-feed">No news has been posted yet.</div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php }
+                } catch (Exception $e) {
+                    echo '<div class="empty-feed">Unable to load news. Please try again later.</div>';
                 }
                 ?>
-
-                <?php if($conn instanceof PDO): ?>
-                    <?php if(count($posts) > 0): ?>
-                        <?php foreach($posts as $row): ?>
-                <div class="fb-post">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="author-avatar">
-                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
-                            </div>
-                            <div class="author-info">
-                                <h4>Municipality of Cervantes</h4>
-                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
-                        <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
-                        <?php endif; ?>
-                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
-                    </div>
-                </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                <div class="empty-feed">No news has been posted yet.</div>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <?php if($posts->num_rows > 0): ?>
-                        <?php while($row = $posts->fetch_assoc()): ?>
-                <div class="fb-post">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="author-avatar">
-                                <img src="https://tse2.mm.bing.net/th/id/OIP.XFNzT2MillEjgkKjmkiyHQHaHa?pid=Api&P=0&h=180" alt="LGU Logo">
-                            </div>
-                            <div class="author-info">
-                                <h4>Municipality of Cervantes</h4>
-                                <span class="post-date"><?= date("F d, Y h:i A", strtotime($row['created_at'])) ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
-                        <?php if(!empty($row['image'])): ?>
-                        <img src="<?= AppConfig::newsUploads($row['image']) ?>" alt="News Image" class="post-image" onerror="this.style.display='none'">
-                        <?php endif; ?>
-                        <p><?= nl2br(htmlspecialchars($row['content'])) ?></p>
-                    </div>
-                </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                <div class="empty-feed">No news has been posted yet.</div>
-                    <?php endif; ?>
-                <?php endif; ?>
             </div>
         </section>
 
